@@ -15,7 +15,7 @@ let formSubmit = function(event) {
         return
     }
 
-    for (let index = 2; index < value; index++) {
+    for (let index = 2; index < Math.ceil(value / 2); index++) {
         if (value % index === 0) {
             isDivisible = true;
             break;
