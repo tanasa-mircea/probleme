@@ -1,18 +1,18 @@
 let formSubmit = function(event) {
     event.preventDefault();
-    let firstValue = event.target[0].value,
-        finalNumber = [],
+    let inputValue = event.target[0].value,
+        result = '',
         isDone = false;
 
-    console.log('first value ', firstValue);
+    console.log('first value ', inputValue);
 
     while (!isDone) {
-        finalNumber.push(Math.floor(firstValue % 2));
-        isDone = (Math.floor(firstValue % 2) === 1 && Math.floor(firstValue / 2) === 0);
-        firstValue = Math.floor(firstValue / 2);
+        result = Math.floor(inputValue % 2) + result;
+        isDone = (Math.floor(inputValue % 2) === 1 && Math.floor(inputValue / 2) === 0);
+        inputValue = Math.floor(inputValue / 2);
     }
 
-    console.log('finalNumber ', finalNumber.reverse().join(''))
+    console.log('result ', result)
 };
 
 
