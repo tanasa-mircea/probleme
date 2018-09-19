@@ -12,7 +12,7 @@ let formSubmit = function(event) {
 
     if (value % 2 === 0) {
         console.log('Value is odd so it\'s not prime')
-        return
+        return;
     }
 
     for (let index = 3; index <= Math.ceil(value / 2); index = index + 2) {
