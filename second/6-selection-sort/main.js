@@ -5,16 +5,30 @@ let formSubmit = function(event) {
             return +elem;
         });
 
-    for (let step = 0; inputVector.length - step > 0; step++) {
-    
-        for (let index = step + 1; index < inputVector.length; index++) {
-            if (inputVector[index] && inputVector[step] > inputVector[index]) {
-                let temp = inputVector[index];
-                inputVector[index] = inputVector[step];
-                inputVector[step] = temp;
-            }
+    for (let index = 0; index < inputVector.length; index++) {
+        let minIndex = findMin(index);
+        
+        if (minIndex !== index) {
+            let temp = inputVector[index];
+            inputVector[index] = inputVector[minIndex];
+            inputVector[minIndex] = temp;
         }
     }
+
+    
+    function findMin(startIndex) {
+        let min = inputVector[startIndex],
+            minIndex = startIndex;
+
+        for (let index = startIndex + 1; index < inputVector.length; index++) {
+            if (inputVector[index] < min) {
+                min = inputVector[index];
+                minIndex = index;
+            }
+        }
+
+        return minIndex;
+    };
 
     console.log(`new vector final : ${inputVector}`);
 };
