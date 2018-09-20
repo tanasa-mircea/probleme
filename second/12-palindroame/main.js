@@ -18,8 +18,6 @@ let formSubmit = function(event) {
     }
 
     console.log('Palindroms are ', palindroms)
-
-    
 };
 
 function isPalindrom(vector) {
