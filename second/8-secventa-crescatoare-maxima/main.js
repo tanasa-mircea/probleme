@@ -12,16 +12,19 @@ let formSubmit = function(event) {
         let current = +inputVector[index],
             next = +inputVector[index + 1];
         
-        if (next && current === next - 1) {
+        if (next && current < next) {
             currentSequenceIndex = currentSequence ? currentSequenceIndex : index;
             currentSequence = currentSequence + current;
+            console.log("18", currentSequenceIndex);
         } else {
             currentSequence = "";
         }
 
         if (currentSequence.length > longestSequence.length) {
+            
             longestSequence = currentSequence;
             longestSequenceIndex = currentSequenceIndex;
+            console.log("27", longestSequenceIndex);
         }
     }
 
