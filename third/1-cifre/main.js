@@ -3,7 +3,7 @@ let formSubmit = function(event) {
     let input = event.target[0].value,
         sequenceString = "",
         digits = 1,
-        step = 0;
+        count = 0;
 
     console.log('sequenceString ', sequenceString);
 
@@ -23,10 +23,10 @@ let formSubmit = function(event) {
             digits++;
         }
     
-        step++;
+        count++;
     }
 
-    console.log('Number of steps ', step);
+    console.log('Counts ', count);
 };
 
 window.addEventListener('submit', formSubmit);
