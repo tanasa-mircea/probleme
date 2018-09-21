@@ -10,7 +10,7 @@ let formSubmit = function(event) {
         sequenceString += index;
     }
 
-    console.log('sequenceString ', sequenceString.length);
+    console.log('sequenceString ', sequenceString);
 
     let sequence = sequenceString.split('');
 
