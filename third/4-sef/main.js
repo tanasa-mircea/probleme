@@ -3,43 +3,37 @@ let formSubmit = function(event) {
     let code = +event.target[0].value,
         // limit = 32767,
         limit = 65535,
-        binaryCodeVector = convertToBinary(code);
+        searchedCodeVector = convertToBinary(code);
         count = 0;
     
-    console.log('binaryCodeVector ', binaryCodeVector)
+    console.log('searchedCodeVector ', searchedCodeVector)
     
     for (let index = 0; index <= limit; index++) {
         let bossWannabe = convertToBinary(index);
-        debugger
 
         if (isBoss(bossWannabe)) {
             count++;
         }
     }
 
-    function isBoss(codeVector) {
+    function isBoss(bossWannabe) {
         let allMatched = true,
             hasZero = false;
 
-        for (let index = 0; index < codeVector.length; index++) {
-            let originalCodeIndex = binaryCodeVector[binaryCodeVector.length - 1 - index] || 0,
-                testedCodeIndex = codeVector[codeVector.length - 1 - index] || 0
-
-            if (testedCodeIndex === 0 && hasZero === false) {
-                hasZero = true;
-            }
+        for (let index = 0; index < bossWannabe.length; index++) {
+            let originalCodeIndex = searchedCodeVector[searchedCodeVector.length - 1 - index] || 0,
+                testedCodeIndex = bossWannabe[bossWannabe.length - 1 - index] || 0
 
             if (testedCodeIndex === 0 && testedCodeIndex !== originalCodeIndex) {
                 allMatched = false;
             }
         }
-        
-        return !hasZero || allMatched;
+
+        return allMatched;
     }
         
-    function convertToBinary(code) {
-        let codeToConvert = code,
-            isDone = false,
+    function convertToBinary(codeToConvert) {
+        let isDone = false,
             result = [],
             index = 0;
 
