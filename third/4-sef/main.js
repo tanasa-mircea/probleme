@@ -1,21 +1,20 @@
 let formSubmit = function(event) {
     event.preventDefault();
     let code = +event.target[0].value,
-        // limit = 100,
-        limit = 32767,
-        binaryCode = convertToBinary(code),
-        binaryCodeVector = binaryCode.split('');
+        // limit = 300,
+        // limit = 32767,
+        limit = 65534,
+        binaryCodeVector = convertToBinary(code);
         count = 0;
     
     console.log('binaryCodeVector ', binaryCodeVector)
     
     for (let index = 0; index <= limit; index++) {
-        let bossWannabe = convertToBinary(index).split('');
-
-        console.log('bossWannabe ', bossWannabe);
+        let bossWannabe = convertToBinary(index);
+        debugger
 
         if (isBoss(bossWannabe)) {
-            console.log('boss ', bossWannabe)
+            // console.log('boss ', bossWannabe)
             count++;
         }
     }
@@ -26,35 +25,41 @@ let formSubmit = function(event) {
 
         for (let index = 0; index < codeVector.length; index++) {
             let originalCodeIndex = binaryCodeVector[binaryCodeVector.length - 1 - index] || "0",
-                testedCodeIndex = codeVector[codeVector.length - 1 - index]
+                testedCodeIndex = codeVector[codeVector.length - 1 - index] || "0"
 
-            if (testedCodeIndex === '0' && hasZero === false) {
-                hasZero = true;
-            }
+            debugger
 
-            if (testedCodeIndex !== originalCodeIndex) {
+            // if (testedCodeIndex === '0' && hasZero === false) {
+            //     hasZero = true;
+            // }
+
+            if (testedCodeIndex === '0' && testedCodeIndex !== originalCodeIndex) {
                 allMatched = false;
-
-                break;
             }
         }
         
-        return hasZero && allMatched;
+        return allMatched;
     }
         
     function convertToBinary(code) {
         let codeToConvert = code,
             isDone = false,
-            result = '';
+            result = [],
+            index = 0;
+
+        result.length = 16;
         
         if (codeToConvert === 0) {
-            return '0';
+            result[result.length - 1] = '0';
+            return result;
         }
 
+
         while (!isDone) {
-            result = Math.floor(codeToConvert % 2) + result;
+            result[result.length - 1 - index] = '' + Math.floor(codeToConvert % 2)
             isDone = (Math.floor(codeToConvert % 2) === 1 && Math.floor(codeToConvert / 2) === 0);
             codeToConvert = Math.floor(codeToConvert / 2);
+            index++;
         }
 
 
