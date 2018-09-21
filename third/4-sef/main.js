@@ -1,9 +1,8 @@
 let formSubmit = function(event) {
     event.preventDefault();
     let code = +event.target[0].value,
-        // limit = 300,
         // limit = 32767,
-        limit = 65534,
+        limit = 65535,
         binaryCodeVector = convertToBinary(code);
         count = 0;
     
@@ -14,7 +13,6 @@ let formSubmit = function(event) {
         debugger
 
         if (isBoss(bossWannabe)) {
-            // console.log('boss ', bossWannabe)
             count++;
         }
     }
@@ -24,21 +22,19 @@ let formSubmit = function(event) {
             hasZero = false;
 
         for (let index = 0; index < codeVector.length; index++) {
-            let originalCodeIndex = binaryCodeVector[binaryCodeVector.length - 1 - index] || "0",
-                testedCodeIndex = codeVector[codeVector.length - 1 - index] || "0"
+            let originalCodeIndex = binaryCodeVector[binaryCodeVector.length - 1 - index] || 0,
+                testedCodeIndex = codeVector[codeVector.length - 1 - index] || 0
 
-            debugger
+            if (testedCodeIndex === 0 && hasZero === false) {
+                hasZero = true;
+            }
 
-            // if (testedCodeIndex === '0' && hasZero === false) {
-            //     hasZero = true;
-            // }
-
-            if (testedCodeIndex === '0' && testedCodeIndex !== originalCodeIndex) {
+            if (testedCodeIndex === 0 && testedCodeIndex !== originalCodeIndex) {
                 allMatched = false;
             }
         }
         
-        return allMatched;
+        return !hasZero || allMatched;
     }
         
     function convertToBinary(code) {
@@ -50,18 +46,16 @@ let formSubmit = function(event) {
         result.length = 16;
         
         if (codeToConvert === 0) {
-            result[result.length - 1] = '0';
+            result[result.length - 1] = 0;
             return result;
         }
 
-
         while (!isDone) {
-            result[result.length - 1 - index] = '' + Math.floor(codeToConvert % 2)
+            result[result.length - 1 - index] = Math.floor(codeToConvert % 2)
             isDone = (Math.floor(codeToConvert % 2) === 1 && Math.floor(codeToConvert / 2) === 0);
             codeToConvert = Math.floor(codeToConvert / 2);
             index++;
         }
-
 
         return result;
     }
