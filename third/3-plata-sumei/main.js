@@ -13,7 +13,7 @@ let formSubmit = function(event) {
         }
 
         banknotes.push(newBanknote);
-    }
+    };
 
     let whileIndex = banknotes.length - 1;
     while (sumToPay > 0) {
@@ -26,7 +26,7 @@ let formSubmit = function(event) {
         }
         
         whileIndex--;
-    }
+    };
 
     console.log('Summary ', summary);
 
