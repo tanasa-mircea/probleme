@@ -5,11 +5,12 @@ let formSubmit = function(event) {
         digits = 1,
         count = 0;
 
-    console.log('sequenceString ', sequenceString);
-
+        
     for (let index = 1; index <= +input; index++) {
         sequenceString += index;
     }
+
+    console.log('sequenceString ', sequenceString.length);
 
     let sequence = sequenceString.split('');
 

@@ -12,6 +12,7 @@ let formSubmit = function(event) {
         let bossWannabe = convertToBinary(index);
 
         if (isBoss(bossWannabe)) {
+            console.log(bossWannabe, index.toString(2), index);
             count++;
         }
     }
@@ -20,6 +21,9 @@ let formSubmit = function(event) {
         let allMatched = true,
             hasZero = false;
 
+        if (bossWannabe.indexOf(0) == -1) {
+            return false;
+        }
         for (let index = 0; index < bossWannabe.length; index++) {
             let originalCodeIndex = searchedCodeVector[searchedCodeVector.length - 1 - index] || 0,
                 testedCodeIndex = bossWannabe[bossWannabe.length - 1 - index] || 0
@@ -28,7 +32,6 @@ let formSubmit = function(event) {
                 allMatched = false;
             }
         }
-
         return allMatched;
     }
         
@@ -38,6 +41,10 @@ let formSubmit = function(event) {
             index = 0;
 
         result.length = 16;
+
+        for (var i = 0; i < 16; i++) {
+            result[i] = 0;
+        }
         
         if (codeToConvert === 0) {
             result[result.length - 1] = 0;
