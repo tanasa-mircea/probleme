@@ -1,20 +1,12 @@
 let formSubmit = function(event) {
     event.preventDefault();
     let input = +event.target[0].value,
-        inputClone = input;
         count = 0,
-        index = 0;
+        index = 1;
  
-    while (inputClone > 0) {
-        debugger
-        
-        inputClone = Math.floor(inputClone / 10);
-
-
-        count += input % 10 ;
-
-
-        index++;
+    while (index < input) {
+        count += input - index + 1;
+        index = index * 10;
     }
 
     console.log('Counts ', count);

@@ -11,6 +11,7 @@ let formSubmit = function(event) {
     }
 
     console.log('sequenceString ', sequenceString);
+    console.log('sequenceString lng', sequenceString.length);
 
     let sequence = sequenceString.split('');
 
