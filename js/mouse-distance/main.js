@@ -13,7 +13,6 @@ function fillMatrix(matrix, config) {
             matrixElement.style.marginRight = `${config.marginX}px`;
             matrixElement.style.marginBottom = `${config.marginY}px`;
 
-
             matrix.appendChild(matrixElement.cloneNode());
         }
     }
@@ -48,7 +47,6 @@ function init() {
     // With JS
     newMatrix = draw(config);
     newMatrix.addEventListener('mousemove', mouseMoveOnMatrixHandler)
-    // newMatrix.addEventListener('mouseenter', mouseMoveOnMatrixHandler)
     displayer.appendChild(newMatrix);
 }
 
@@ -59,18 +57,19 @@ function contentLoadedHandler() {
 
 function mouseMoveOnMatrixHandler(event) {
     var mouseCoords = {
-            x: event.x,
-            y: event.y
+            x: event.x - matrixConfig.width,
+            y: event.y - matrixConfig.height
         },
         matrixElements = this.querySelectorAll('.matrix__element');
     
 
     matrixElements.forEach(function(node) {
         node.style.backgroundColor = '#3A69CD';
+        var nodeX = node.offsetLeft + matrixConfig.width / 2,
+            nodeY = node.offsetTop + matrixConfig.height / 2,
+            distance = Math.sqrt(Math.pow(mouseCoords.x - nodeX, 2) + Math.pow(mouseCoords.y - nodeY, 2));
 
-        var distance = Math.sqrt(Math.pow(mouseCoords.x - node.offsetLeft, 2) + Math.pow(mouseCoords.y - node.offsetTop, 2));
-
-        if (distance < matrixConfig.radius) {
+        if (distance <= matrixConfig.radius) {
             node.style.backgroundColor = '#0c0';
         }
     })
