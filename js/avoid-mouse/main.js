@@ -62,29 +62,39 @@ function mouseMoveOnMatrixHandler(event) {
         },
         matrixElements = this.querySelectorAll('.matrix__element');
     
-
     matrixElements.forEach(function(node) {
-        node.style.backgroundColor = '#3A69CD';
+        node.style.transform = '';
         var nodeX = node.offsetLeft + matrixConfig.width / 2,
             nodeY = node.offsetTop + matrixConfig.height / 2,
+            
             distance = Math.sqrt(Math.pow(mouseCoords.x - nodeX, 2) + Math.pow(mouseCoords.y - nodeY, 2));
 
-        if (distance <= matrixConfig.radius) {
-            node.style.backgroundColor = '#0c0';
+        if (distance > matrixConfig.radius) {
+            return;
         }
+
+        var angle = Math.atan2(nodeX, nodeY) * 180 / Math.PI,
+            polarX = distance * Math.cos(angle),
+            polarY = distance * Math.sin(angle);
+
+        console.log('angle ', angle);
+        console.log('polar ', polarX, polarY);
+        console.log('nodeX ', nodeX, nodeY);
+
+        node.style.transform = `translate(${polarX * 5}px, ${polarY * 5}px)`;
     })
 }
 
 // INIT
 var matrixConfig = {
-        rows: 20,
-        columns: 20,
+        rows: 10,
+        columns: 10,
         width: 10,
         height: 10,
         marginX: 3,
         marginY: 3,
         secondaryColor: '#D60D0D',
-        radius: 40
+        radius: 20
     },
     displayer = document.createElement('div');
 
