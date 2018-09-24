@@ -1,0 +1,49 @@
+.displayer {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.matrix {
+    background-color: #ccc;
+    border: 1px solid #000;
+    font-size: 0;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    position: relative;
+}
+
+.matrix__element {
+    background-color: #3A69CD;
+}
+
+.matrix__element--abs {
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+
+.matrix__element--static {
+    display: inline-block;
+}
+
+.matrix.even-line .row:nth-child(even) .matrix__element {
+    background-color: #D60D0D;
+}
+
+.matrix.diagonal .matrix__element:nth-child(11n - 10) {
+    background-color: #D60D0D;
+}
+
+.matrix.chess .row:nth-child(odd) .matrix__element:nth-child(2n + 1),
+.matrix.chess .row:nth-child(even) .matrix__element:nth-child(2n + 2) {
+    background-color: #D60D0D;
+}
+
+
+.matrix.above-main-diagonal .matrix__element:nth-child(10n) {
+    background-color: #D60D0D;
+}
+
+.matrix.above-secondary-diagonal .matrix__element:nth-child(3n - 20) {
+    background-color: #D60D0D;
+}
