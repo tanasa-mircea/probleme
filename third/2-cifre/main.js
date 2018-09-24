@@ -4,7 +4,7 @@ let formSubmit = function(event) {
         count = 0,
         index = 1;
  
-    while (index < input) {
+    while (index <= input) {
         count += input - index + 1;
         index = index * 10;
     }
