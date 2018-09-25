@@ -64,9 +64,11 @@ function contentLoadedHandler() {
 }
 
 function mouseMoveOnMatrixHandler(event) {
+    var matrix = this.querySelector('.matrix');
+
     var mouseCoords = {
-            x: event.x - this.offsetLeft,
-            y: event.y - this.offsetTop
+            x: event.x - matrix.offsetLeft,
+            y: event.y - matrix.offsetTop
         },
         matrixElements = this.querySelectorAll('.matrix__element');
     
@@ -81,8 +83,8 @@ function mouseMoveOnMatrixHandler(event) {
             let i = node.id.split("-")[1];
             let j = node.id.split("-")[2];
             
-            node.style.left = initPos[i][j].x + "px";
-            node.style.top = initPos[i][j].y + "px";
+            node.style.top = initPos[i][j].x + "px";
+            node.style.left = initPos[i][j].y + "px";
             
         }  else {
             //var angle = Math.atan2(nodeX, nodeY) * (180 / Math.PI),
@@ -93,15 +95,6 @@ function mouseMoveOnMatrixHandler(event) {
             node.style.left = polarX + "px";
             node.style.top = polarY + "px";
         }
-
-        // console.log('Math.cos(angle) ', Math.cos(angle))
-        // console.log('distance ', distance)
-        // console.log('angle ', angle)
-
-        // console.log('polarX ', polarX);
-        // console.log('polarY ', polarY);
-
-       // node.style.transform = `translate(${2 * polarX + (Math.sign(polarX) * matrixConfig.radius)}px, ${2 * polarY+(Math.sign(polarY) * matrixConfig.radius)}px)`;
     })
 }
 
