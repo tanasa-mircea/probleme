@@ -1,6 +1,10 @@
+var initPos = [];
+
 function fillMatrix(matrix, config) {
     for (let i = 0; i < config.rows; i++) {
+        initPos[i] = [];
         for (let j = 0; j < config.columns; j++) {
+            
             var matrixElement = document.createElement('div');
             matrixElement.classList.add('matrix__element');
             
@@ -12,6 +16,13 @@ function fillMatrix(matrix, config) {
             matrixElement.style.width = `${config.width}px`;
             matrixElement.style.marginRight = `${config.marginX}px`;
             matrixElement.style.marginBottom = `${config.marginY}px`;
+            matrixElement.style.top = `${positionX}px`;
+            matrixElement.style.left = `${positionY}px`;
+            initPos[i][j] = {
+                x: positionX,
+                y: positionY
+            }
+            matrixElement.id = "m" + "-" + i + "-" + j;
 
             matrix.appendChild(matrixElement.cloneNode());
         }
@@ -22,11 +33,7 @@ function fillMatrix(matrix, config) {
 function draw(config) {
     var newMatrix = document.createElement('div');
 
-    if (config.withRows) {
-        fillMatrixWithRows(newMatrix, config);
-    } else {
-        fillMatrix(newMatrix, config);
-    }
+    fillMatrix(newMatrix, config);
 
     newMatrix.classList.add('matrix');
 
@@ -46,13 +53,14 @@ function init() {
 
     // With JS
     newMatrix = draw(config);
-    newMatrix.addEventListener('mousemove', mouseMoveOnMatrixHandler)
+    
     displayer.appendChild(newMatrix);
 }
 
 
 function contentLoadedHandler() {
     document.querySelector('body').appendChild(displayer);
+    document.getElementsByTagName("body")[0].addEventListener('mousemove', mouseMoveOnMatrixHandler)
 }
 
 function mouseMoveOnMatrixHandler(event) {
@@ -70,31 +78,43 @@ function mouseMoveOnMatrixHandler(event) {
             distance = Math.sqrt(Math.pow(mouseCoords.x - nodeX, 2) + Math.pow(mouseCoords.y - nodeY, 2));
 
         if (distance > matrixConfig.radius) {
-            return;
+            let i = node.id.split("-")[1];
+            let j = node.id.split("-")[2];
+            
+            node.style.left = initPos[i][j].x + "px";
+            node.style.top = initPos[i][j].y + "px";
+            
+        }  else {
+            //var angle = Math.atan2(nodeX, nodeY) * (180 / Math.PI),
+            var angle = Math.atan2(nodeY - mouseCoords.y, nodeX - mouseCoords.x);
+            polarX = mouseCoords.x + Math.floor(150 * Math.cos(angle)),
+            polarY = mouseCoords.y + Math.floor(150 * Math.sin(angle));
+
+            node.style.left = polarX + "px";
+            node.style.top = polarY + "px";
         }
 
-        var angle = Math.atan2(nodeX, nodeY) * 180 / Math.PI,
-            polarX = distance * Math.cos(angle),
-            polarY = distance * Math.sin(angle);
+        // console.log('Math.cos(angle) ', Math.cos(angle))
+        // console.log('distance ', distance)
+        // console.log('angle ', angle)
 
-        console.log('angle ', angle);
-        console.log('polar ', polarX, polarY);
-        console.log('nodeX ', nodeX, nodeY);
+        // console.log('polarX ', polarX);
+        // console.log('polarY ', polarY);
 
-        node.style.transform = `translate(${polarX * 5}px, ${polarY * 5}px)`;
+       // node.style.transform = `translate(${2 * polarX + (Math.sign(polarX) * matrixConfig.radius)}px, ${2 * polarY+(Math.sign(polarY) * matrixConfig.radius)}px)`;
     })
 }
 
 // INIT
 var matrixConfig = {
-        rows: 10,
-        columns: 10,
+        rows: 25,
+        columns: 25,
         width: 10,
         height: 10,
         marginX: 3,
         marginY: 3,
         secondaryColor: '#D60D0D',
-        radius: 20
+        radius: 50
     },
     displayer = document.createElement('div');
 
