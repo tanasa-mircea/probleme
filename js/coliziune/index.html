@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="main.js"></script>
+    <style>
+        .container {
+            background-color: #ccc;
+            height: 200px;
+            position: relative;
+            width: 100%;
+        }
+
+        .patrat,
+        .circle {
+            background-color: #a3c;
+            border: 1px solid black;
+            height: 100px;
+            left: 12%;
+            top: 30%;
+            width: 100px;
+            position: absolute;
+            z-index: 2;
+        }
+
+        .patrat-two,
+        .circle-two {
+            /* right: 20px; */
+            top: -7%;
+            left: 22%;
+            z-index: 1;
+        }
+
+        .circle {
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="patrat"></div>
+        <div class="patrat patrat-two"></div>
+    </div>
+
+    <div class="container">
+        <div class="circle"></div>
+        <div class="circle circle-two"></div>
+    </div>
+</body>
+</html>
