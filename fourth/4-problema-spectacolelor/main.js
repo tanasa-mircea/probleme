@@ -12,7 +12,7 @@ let formSubmit = function(event) {
     for (let index = 0; index < showsList.length; index++) {
         let currentTimes = showsList[index],
             endTime = currentTimes[1].split(' '),
-            currentList = [currentTimes];
+            currentList = [index + 1];
 
         for (let j = 0; j < showsList.length; j++) {
             if (index === j) {
@@ -24,12 +24,12 @@ let formSubmit = function(event) {
             nextEndTime = nextTimes[1].split(' ');
             
             if (+endTime[0] < +nextStartTime[0]) {
-                currentList.push(nextTimes);
+                currentList.push(j + 1);
                 endTime = nextEndTime;
             }
 
             if (+endTime[0] === +nextStartTime[0] && +endTime[1] <= +nextStartTime[1]) {
-                currentList.push(nextTimes);
+                currentList.push(j + 1);
                 endTime = nextEndTime;
             }
         }
