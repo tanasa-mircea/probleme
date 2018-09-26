@@ -1,29 +1,33 @@
 let formSubmit = function(event) {
     event.preventDefault();
     let input = event.target[1].value,
-        inputVector = [0,1,2,3,4,5],
-        // inputVector = input.split(''),
+        inputVector = input.split(','),
         vectorLength = inputVector.length,
-        // numberOfPositions = event.target[0].value;
-        numberOfPositions = 2,
-        prevIndex = 0, temp
+        numberOfPositions = +event.target[0].value;
 
-    for (let index = 0; index < vectorLength; index++) {
-        debugger
-        if (index + numberOfPositions < vectorLength) {
-            temp = inputVector[index + numberOfPositions];
-            // inputVector[index + numberOfPositions] = inputVector[index];
-        } else {
-            temp = inputVector[index + numberOfPositions - vectorLength];
-            // inputVector[index + numberOfPositions - vectorLength] = inputVector[index];
+    for (let i = 0; i < numberOfPositions; i++) {
+        let temp,
+            prev;
+
+        for (let j = 0; j < vectorLength + 1; j++) {
+            if (j < vectorLength) {
+                temp = inputVector[j];
+            }
+
+            if (prev !== undefined) {
+                if (j === vectorLength) {
+                    inputVector[0] = prev;
+                } else {
+                    inputVector[j] = prev;
+                }
+            }
+
+            prev = temp;
         }
-        
-        // inputVector[index] = temp;
-        console.log('index ', index);
-        console.log('temp ', temp);
     }
 
     console.log(`Shifted sequence ${inputVector}`);
+
 };
 
 
