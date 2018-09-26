@@ -1,37 +1,13 @@
 let formSubmit = function(event) {
     event.preventDefault();
     let input = +event.target[0].value,
-        final = [];
-    
-    // Number of digits
+        final = [[]];
+
     for (let i = 0; i <= input; i++) {
+        for (let j = 0, len=final.length; j < len; j++) {
+            let newSubset = final[j].concat([i]);
 
-        // First digit
-        for (let j = 0; j <= input; j++) {
-
-            if (i === 0) {
-                final.push([j]);
-                continue;
-            }
-
-            // Sets for each digit
-            for (let m = 0; m <= input - j - i; m++) {
-                let subset = [j];
-                    k = j + 1 + m;
-
-                // Fill the rest of subset
-                while (subset.length < i + 1) {
-                    if (k > input) {
-                        subset.push(k - 1 - input)
-                    } else {
-                        subset.push(k);
-                    };
-
-                    k++;
-                }
-
-                final.push(subset);
-            }
+            final.push(newSubset);
         }
     }
 
