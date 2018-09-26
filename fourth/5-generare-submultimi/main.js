@@ -1,40 +1,41 @@
 let formSubmit = function(event) {
     event.preventDefault();
     let input = +event.target[0].value,
-        isDone = false,
-        digits = 1,
-        index = 0;
+        final = [];
+    
+    // Number of digits
+    for (let i = 0; i <= input; i++) {
 
-    while (!isDone) {
-        let group = [];
+        // First digit
+        for (let j = 0; j <= input; j++) {
 
-        group.push(index);
-
-        let j = 1;
-
-        while (j <= input && group.length < digits) {
-            if (j > index) {
-                group.push(j);     
+            if (i === 0) {
+                final.push([j]);
+                continue;
             }
- 
-            j++
-        }
 
-        if (group.length === digits) {
-            console.log(group);
-        }
+            // Sets for each digit
+            for (let m = 0; m <= input - j - i; m++) {
+                let subset = [j];
+                    k = j + 1 + m;
 
-        if (index === input) {
-            digits++;
-            index = 0;
-        } else {
-            index++
-        }
+                // Fill the rest of subset
+                while (subset.length < i + 1) {
+                    if (k > input) {
+                        subset.push(k - 1 - input)
+                    } else {
+                        subset.push(k);
+                    };
 
-        if (digits > input + 1) {
-            isDone = true;
+                    k++;
+                }
+
+                final.push(subset);
+            }
         }
     }
+
+    console.log('final ', final)
 };
 
 window.addEventListener('submit', formSubmit);
