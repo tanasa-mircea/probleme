@@ -1,4 +1,4 @@
-var bubblesDensity = 100,
+var bubblesDensity = 200,
     bubbles = [],
     sourceMaxDistance = 50,
     minBubbleSize = 5,
@@ -20,15 +20,14 @@ function contentLoadedHandler() {
     newElement.classList.add('bubble');
     
     for (let i = 0; i < bubblesDensity; i++) {
-        var node = newElement.cloneNode(),
+        let node = newElement.cloneNode(),
             distance = sourceMaxDistance * Math.sin(initIterator + (Math.random() * i % 4)),
             speed = (maxBubbleSpeed - minBubbleSpeed) * Math.cos(initIterator + (Math.random() * i % 4)),
             size = (maxBubbleSize - minBubbleSize) * Math.sin(initIterator + (Math.random() * i % 4));
         
         node.style.height = maxBubbleSize - Math.abs(size) + 'px';
         node.style.width = maxBubbleSize - Math.abs(size) + 'px';
-        node.style.top = mousePosition.y + 'px';
-        node.style.left = mousePosition.x + distance + 'px';
+        node.style.transform = `translate(${ mousePosition.x + distance }px, ${ mousePosition.y }px)`;
 
         bubbles.push({
             node: node,
@@ -47,20 +46,22 @@ function contentLoadedHandler() {
 
 function executeFrame() {
     for (let i = 0; i < bubbles.length; i++) {
-        let leftChange = 2 * Math.sin(frameIterator + i/4);
+        let leftChange = 2 * Math.sin(frameIterator + i/4),
+            translateX, translateY;
         
+        // The bubble it's outside the screen
         if (bubbles[i].top < 0) {
-            bubbles[i].node.style.left = mousePosition.x + bubbles[i].sourceDistance + 'px';
-
-            bubbles[i].node.style.top = mousePosition.y + 'px';
-            bubbles[i].top = mousePosition.y;
+            translateX = mousePosition.x + bubbles[i].sourceDistance;
+            translateY = mousePosition.y;
         } else {
-            // bubbles[i].node.style.left = mousePosition.x + bubbles[i].sourceDistance + leftChange + 'px';
-            bubbles[i].node.style.left = bubbles[i].node.offsetLeft + leftChange + 'px';
-            
-            bubbles[i].node.style.top = bubbles[i].top - bubbles[i].speed + 'px';
-            bubbles[i].top = bubbles[i].top - bubbles[i].speed;
+            translateX = bubbles[i].left + leftChange;
+            translateY = bubbles[i].top - bubbles[i].speed;
         }
+        
+        // Keep data in order to avoid reading from node
+        bubbles[i].left = translateX;
+        bubbles[i].top = translateY;
+        bubbles[i].node.style.transform = `translate(${ translateX }px, ${ translateY }px)`;
     }
 
     frameIterator += 0.05
