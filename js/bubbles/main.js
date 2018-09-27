@@ -21,10 +21,9 @@ function contentLoadedHandler() {
     
     for (let i = 0; i < bubblesDensity; i++) {
         var node = newElement.cloneNode(),
-            randomOffset = Math.random() * 0.5,
-            distance = sourceMaxDistance * Math.sin(initIterator + randomOffset),
-            speed = (maxBubbleSpeed - minBubbleSpeed) * Math.cos(initIterator + randomOffset),
-            size = (maxBubbleSize - minBubbleSize) * Math.sin(initIterator + randomOffset);
+            distance = sourceMaxDistance * Math.sin(initIterator + (Math.random() * i % 4)),
+            speed = (maxBubbleSpeed - minBubbleSpeed) * Math.cos(initIterator + (Math.random() * i % 4)),
+            size = (maxBubbleSize - minBubbleSize) * Math.sin(initIterator + (Math.random() * i % 4));
         
         node.style.height = maxBubbleSize - Math.abs(size) + 'px';
         node.style.width = maxBubbleSize - Math.abs(size) + 'px';
@@ -48,7 +47,7 @@ function contentLoadedHandler() {
 
 function executeFrame() {
     for (let i = 0; i < bubbles.length; i++) {
-        let leftChange = 2 * Math.sin(frameIterator);
+        let leftChange = 2 * Math.sin(frameIterator + i/4);
         
         if (bubbles[i].top < 0) {
             bubbles[i].node.style.left = mousePosition.x + bubbles[i].sourceDistance + 'px';
