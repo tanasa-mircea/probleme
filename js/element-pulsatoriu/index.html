@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="main.js"></script>
+    <style>
+        .container {
+            align-items: center;
+            display: flex;
+            height: 100vh;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .pulsating-element {
+            background-color: #d00;
+            border-radius: 50%;
+            height: 10vh;
+            width: 10vh;
+        }
+
+        .pulsating-element--animation {
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(2);
+            }
+        }
+    </style>
+</head>
+
+<body style="margin: 0;">
+    <!-- <div class="container">
+        <div class="pulsating-element pulsating-element--animation"></div>
+    </div> -->
+    <div class="container">
+        <div class="pulsating-element pulsating-element--js"></div>
+    </div>
+    
+</body>
+</html>
