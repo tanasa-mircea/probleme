@@ -10,7 +10,7 @@
         .container {
             align-items: center;
             display: flex;
-            height: 100vh;
+            height: 20vh;
             justify-content: center;
             width: 100%;
         }
@@ -23,7 +23,7 @@
         }
 
         .pulsating-element--animation {
-            animation: pulse 1s infinite alternate;
+            animation: pulse 1s infinite alternate linear;
         }
 
         @keyframes pulse {
@@ -38,9 +38,9 @@
 </head>
 
 <body style="margin: 0;">
-    <!-- <div class="container">
-        <div class="pulsating-element pulsating-element--animation"></div>
-    </div> -->
+    <div class="container">
+        <!-- <div class="pulsating-element pulsating-element--animation"></div> -->
+    </div>
     <div class="container">
         <div class="pulsating-element pulsating-element--js"></div>
     </div>
