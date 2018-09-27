@@ -23,7 +23,7 @@
         }
 
         .pulsating-element--animation {
-            animation: pulse 1s infinite alternate linear;
+            animation: pulse 2000ms infinite alternate linear;
         }
 
         @keyframes pulse {
@@ -38,9 +38,20 @@
 </head>
 
 <body style="margin: 0;">
+    <h4>CSS</h4>
     <div class="container">
-        <!-- <div class="pulsating-element pulsating-element--animation"></div> -->
+        <div class="pulsating-element pulsating-element--animation"></div>
     </div>
+    
+    <h4>JS</h4>
+    <form action="">
+        <label for="">Min Size</label>
+        <input class="controller" type="number" placeholder="Min Size" value="100">
+        <label for="">Max Size</label>
+        <input class="controller" type="number" placeholder="Max Size" value="200">
+        <label for="">Duration Size (ms)</label>
+        <input class="controller" type="number" placeholder="Duration" value="2000">
+    </form>
     <div class="container">
         <div class="pulsating-element pulsating-element--js"></div>
     </div>

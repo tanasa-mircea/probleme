@@ -1,36 +1,36 @@
-var count = 1,
-    isForward = true;
+var iteration = 0,
+    prevTime = 0;
 
 function contentLoadedHandler() {
     let element = document.querySelector('.pulsating-element--js'),
+        controllers = document.querySelectorAll('.controller'),
         animationConfig = {
             target: element,
-            currentPosition: element.offsetWidth,
-            minSize: 100,
-            maxSize: 200,
-            time: 1000,
-            step: 1
-        }
+            minSizeInput: controllers[0],
+            maxSizeInput: controllers[1],
+            durationInput: controllers[2]
+        };
+
+        element.style.height = animationConfig.minSize + 'px';
+        element.style.width = animationConfig.minSize + 'px';
 
     window.requestAnimationFrame(init.bind(animationConfig));
 };
 
-function init() {
-    let currentDiameter = this.currentPosition;
+function init(timestamp) {
+    let minSize = +this.minSizeInput.value,
+        difference = +this.maxSizeInput.value - minSize,
+        step = difference / 2 / +this.durationInput.value,
+        sin = difference / 2 * Math.sin(iteration);
     
-    if (isForward) {
-        this.target.style.width = currentDiameter + this.step + "px";
-        this.target.style.height = currentDiameter + this.step + "px";
-        this.currentPosition += this.step;
-        isForward = currentDiameter + this.step < this.maxSize; 
+    if (isFinite(step)) {
+        iteration += step;
     }
+    
+    this.target.style.width = minSize + difference / 2 + sin + 'px';
+    this.target.style.height = minSize + difference / 2 + sin + 'px';
 
-    if (!isForward) {
-        this.target.style.width = currentDiameter - this.step + "px";
-        this.target.style.height = currentDiameter - this.step + "px";
-        this.currentPosition -= this.step;
-        isForward = currentDiameter - this.step < this.minSize; 
-    }
+    prevTime = timestamp;
 
     window.requestAnimationFrame(init.bind(this));
 }
