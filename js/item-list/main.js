@@ -6,8 +6,6 @@ function contentLoadedHandler() {
         // newListItem = createListElement(listControl); 
     
     list.addEventListener('click', function(event) {
-        let newListItem = createListElement(listControl); 
-
         if (!event.target.matches('button')) {
             return;
         }
@@ -16,6 +14,7 @@ function contentLoadedHandler() {
             currentLi = event.target.parentNode.parentNode;
 
         if (action === 'add') {
+            let newListItem = createListElement(listControl); 
             list.insertBefore(newListItem.cloneNode(true), currentLi.nextSibling);
         }
 

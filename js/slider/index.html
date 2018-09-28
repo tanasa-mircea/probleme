@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Slider</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="main.js"></script>
+
+    <style>
+        .slider {
+            background-color: #bbb;
+            height: 100px;
+            position: relative;
+            width: 400px;
+        }
+
+        .slider-line,
+        .slider-knob {
+            left: 0;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .slider-line {
+            background-color: #000;
+            height: 5px;
+            width: 100%;
+        }
+        
+        .slider-knob {
+            background-color: #0ca;
+            border-radius: 50%;
+            height: 30px;
+            width: 30px;
+            transition: left linear .3s;
+        }
+    </style>
+</head>
+<body style="margin: 0;">
+    <div class="slider">
+        <div class="slider-line"></div>
+        <div class="slider-knob"></div>
+    </div>
+    
+</body>
+</html>
