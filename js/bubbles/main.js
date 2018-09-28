@@ -8,13 +8,12 @@ var bubblesDensity = 200,
     initIterator = 0,
     frameIterator = 0,
     mousePosition = {
-        x: 0,
-        y: 0
+        x: -50,
+        y: -50
     };
 
 function contentLoadedHandler() {
-    let config = {},
-        newElement = document.createElement('div'),
+    let newElement = document.createElement('div'),
         body = document.querySelector('body');
 
     newElement.classList.add('bubble');
@@ -41,7 +40,7 @@ function contentLoadedHandler() {
         initIterator += 0.05 + (Math.random() * 0.05)
     }
 
-    window.requestAnimationFrame(executeFrame.bind(config));
+    window.requestAnimationFrame(executeFrame);
 };
 
 function executeFrame() {
@@ -65,7 +64,7 @@ function executeFrame() {
     }
 
     frameIterator += 0.05
-    window.requestAnimationFrame(executeFrame.bind(this));
+    window.requestAnimationFrame(executeFrame);
 }
 
 function mouseMoveHandler(event) {
@@ -75,3 +74,4 @@ function mouseMoveHandler(event) {
 
 document.addEventListener("DOMContentLoaded", contentLoadedHandler);
 window.addEventListener("mousemove", mouseMoveHandler);
+window.addEventListener("mouseenter", mouseMoveHandler);
