@@ -1,38 +1,36 @@
-var msInSecond = 1e3,
-    msInMinute = 6e4,
-    msInHour = 36e5,
-    clock,
-    paddingBetweenHours = 20,
+var clock,
     clockMiddle = 100,
     textFontSize = 16,
-    secondsLine, minutesLine, hoursLine,
-    secondsLineRotation = 0, minutesLineRotation = 0, hoursLineRotation = 0,
-    secondStepAngle = 360 / 60,
-    minuteStepAngle = 360 / 60,
-    hourStepAngle = 360 / 12;
+    trackersConfig = [
+        {
+            name: 'Seconds',
+            marginOffset: 70,
+            strokeColor: '#000',
+            currentRotation: 0,
+            stepAngle: 360 / 60,
+            interval: 1000
+        }, {
+            name: 'Minutes',
+            marginOffset: 60,
+            strokeColor: '#c00',
+            currentRotation: 0,
+            stepAngle: 360 / 60,
+            interval: 60 * 1000
+        }, {
+            name: 'Hours',
+            marginOffset: 40,
+            strokeColor: '#0f0',
+            currentRotation: 0,
+            stepAngle: 360 / 12,
+            interval: 60 * 60 * 1000
+        }
+    ]
 
 function contentLoadedHandler() {
     clock = document.getElementById('clock');
     paintHours();
     paintTrakers();
-    
-    setInterval(function() {
-        secondsLineRotation += secondStepAngle;
-        secondsLine.style.transform = `rotate(${ secondsLineRotation }deg)`; 
-    }, msInSecond)
-
-    setInterval(function() {
-        minutesLineRotation += minuteStepAngle;
-        minutesLine.style.transform = `rotate(${ minutesLineRotation }deg)`; 
-    }, 10000)
-
-    setInterval(function() {
-        hoursLineRotation += hourStepAngle;
-        hoursLine.style.transform = `rotate(${ hoursLineRotation }deg)`; 
-    }, 20000)
 };
-
-
 
 function paintHours() {
     let hour = document.createElementNS("http://www.w3.org/2000/svg", 'text'),
@@ -44,50 +42,56 @@ function paintHours() {
         hour.setAttribute('x', clockMiddle + -clockMiddle * Math.sin(sinIterator));
         hour.setAttribute('y', clockMiddle + textFontSize + -clockMiddle * Math.cos(sinIterator));
         clock.appendChild(hour.cloneNode(true));
-
     }
 }
 
 function paintTrakers() {
     let trackerOrigin = clockMiddle + 8,
-        currentTime = new Date();
+        currentTime = new Date(),
+        untilZero = 0;
 
-    secondsLineRotation += secondsLineRotation + (secondStepAngle * currentTime.getSeconds())
-    minutesLineRotation += minutesLineRotation + (minuteStepAngle * currentTime.getMinutes());
-    hoursLineRotation += hoursLineRotation + (hourStepAngle * currentTime.getHours());
-   
-    secondsLine = document.createElementNS("http://www.w3.org/2000/svg", 'line')
-    secondsLine.setAttribute('x1', trackerOrigin)
-    secondsLine.setAttribute('y1', trackerOrigin)
-
-    secondsLine.setAttribute('x2', trackerOrigin)
-    secondsLine.setAttribute('y2', trackerOrigin - 70)
-    secondsLine.setAttribute('stroke', '#000')
-    secondsLine.style.transformOrigin = `${ trackerOrigin }px ${ trackerOrigin }px`;
-    secondsLine.style.transform = `rotate(${ secondsLineRotation }deg)`; 
-    clock.appendChild(secondsLine);
+    let line = document.createElementNS("http://www.w3.org/2000/svg", 'line')
+    line.setAttribute('x1', trackerOrigin)
+    line.setAttribute('y1', trackerOrigin)
+    line.setAttribute('x2', trackerOrigin)
+    line.style.transformOrigin = `${ trackerOrigin }px ${ trackerOrigin }px`;
+    var line2;
     
-    minutesLine = document.createElementNS("http://www.w3.org/2000/svg", 'line')
-    minutesLine.setAttribute('x1', trackerOrigin)
-    minutesLine.setAttribute('y1', trackerOrigin)
+    for (let index = 0; index < trackersConfig.length; index++) {
+        let currentTraker = trackersConfig[index],
+            rotation = currentTraker.currentRotation + currentTraker.stepAngle * currentTime[`get${currentTraker.name}`]();
 
-    minutesLine.setAttribute('x2', trackerOrigin)
-    minutesLine.setAttribute('y2', trackerOrigin - 50)
-    minutesLine.setAttribute('stroke', '#c00')
-    minutesLine.style.transformOrigin = `${ trackerOrigin }px ${ trackerOrigin }px`;
-    minutesLine.style.transform = `rotate(${ minutesLineRotation }deg)`; 
-    clock.appendChild(minutesLine);
-    
-    hoursLine = document.createElementNS("http://www.w3.org/2000/svg", 'line')
-    hoursLine.setAttribute('x1', trackerOrigin)
-    hoursLine.setAttribute('y1', trackerOrigin)
+        line.setAttribute('y2', trackerOrigin - currentTraker.marginOffset);
+        line.setAttribute('stroke', currentTraker.strokeColor);
+        line.style.transform = `rotate(${ rotation }deg)`;
+        line.id = `traker${ currentTraker.name }`;
+        lineClone = line.cloneNode(true);
+        clock.appendChild(lineClone);
 
-    hoursLine.setAttribute('x2', trackerOrigin)
-    hoursLine.setAttribute('y2', trackerOrigin - 30)
-    hoursLine.setAttribute('stroke', '#0c0')
-    hoursLine.style.transformOrigin = `${ trackerOrigin }px ${ trackerOrigin }px`;
-    hoursLine.style.transform = `rotate(${ hoursLineRotation }deg)`; 
-    clock.appendChild(hoursLine);
+        currentTraker.currentRotation = rotation;
+        currentTraker.node = lineClone;
+
+        if (currentTraker.name === 'Minutes') {
+            untilZero = (60 - currentTime.getSeconds()) * 1000;
+        }
+
+        if (currentTraker.name === 'Hours') {
+            untilZero = (60 - currentTime.getMinutes()) * 60 * 1000;
+        }
+
+        setTimeout(function() {
+            intervalHandler(currentTraker);
+
+            setInterval(function() {
+                intervalHandler(currentTraker);
+            }, currentTraker.interval)
+        }, untilZero)    
+    }
+}
+
+function intervalHandler(currentTraker) {
+    currentTraker.currentRotation =  currentTraker.currentRotation + currentTraker.stepAngle;
+    currentTraker.node.style.transform = `rotate(${ currentTraker.currentRotation }deg)`;
 }
 
 
