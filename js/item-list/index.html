@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="main.js"></script>
+    <style>
+        h2, h3 {
+            margin: 0;
+        }
+
+        ul {
+            width: 300px;
+        }
+
+        li {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        li > div:nth-child(1) {
+            width: 100%;
+        }
+
+        li > div:nth-child(2) {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <ul class="list">
+        <li>
+            <div>
+                <h2>item0</h2>
+                <h3>desc0</h3>
+            </div>
+
+            <div class="list-control">
+                <button data-action="remove">-</button>
+                <button data-action="add">+</button>
+            </div>
+        </li>
+    </ul>
+</body>
+</html>
