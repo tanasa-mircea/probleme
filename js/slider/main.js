@@ -1,7 +1,8 @@
 var min, max;
 
 function contentLoadedHandler() {
-    let sliderLine = document.querySelector('.slider-line'),
+    let slider = document.querySelector('.slider'),
+        sliderLine = document.querySelector('.slider-line'),
         sliderKnob = document.querySelector('.slider-knob'),
         minValueInput = document.getElementById('min-slider-input'),
         maxValueInput = document.getElementById('max-slider-input'),
@@ -37,7 +38,7 @@ function contentLoadedHandler() {
     }
 
     function moveKnob(event, target) {
-        let maxLeft = Math.min(event.x - sliderKnob.offsetWidth / 2, sliderLine.offsetLeft + sliderLine.offsetWidth),
+        let maxLeft = Math.min((event.x - slider.offsetLeft) - sliderKnob.offsetWidth / 2, sliderLine.offsetLeft + sliderLine.offsetWidth),
             minLeft = Math.max(maxLeft, 0),
             percentage = minLeft / sliderLine.offsetWidth * 100;
 
