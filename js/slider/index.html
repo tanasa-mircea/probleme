@@ -17,6 +17,7 @@
 
         .slider-line,
         .slider-knob {
+            cursor: pointer;
             left: 0;
             position: absolute;
             top: 50%;
@@ -42,6 +43,13 @@
         <div class="slider-line"></div>
         <div class="slider-knob"></div>
     </div>
+
+    <form action="">
+        <input id="min-slider-input" type="text" value="-400" placeholder="Min value">
+        <input id="max-slider-input" type="text" value="200" placeholder="Max value">
+        <button type="submit">Submit</button>
+    </form>
+    <p>Value: <span id="current-value-input"></span></p>
     
 </body>
 </html>

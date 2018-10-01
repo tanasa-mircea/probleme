@@ -1,9 +1,15 @@
+var min, max;
+
 function contentLoadedHandler() {
-    let slider = document.querySelector('.slider'),
-        sliderLine = document.querySelector('.slider-line'),
+    let sliderLine = document.querySelector('.slider-line'),
         sliderKnob = document.querySelector('.slider-knob'),
-        mouseDown,
-        min = -400, max = 200;
+        minValueInput = document.getElementById('min-slider-input'),
+        maxValueInput = document.getElementById('max-slider-input'),
+        currentValueInput = document.getElementById('current-value-input'),
+        mouseDown;
+        
+    min = +minValueInput.value;
+    max = +maxValueInput.value;
 
     sliderKnob.addEventListener('mousedown', function mouseDownHandler() {
         mouseDown = this;
@@ -22,7 +28,7 @@ function contentLoadedHandler() {
         }
     }
     
-    function mouseUpHandler(event) {
+    function mouseUpHandler() {
         if (mouseDown) {
             mouseDown = null;
             window.removeEventListener('mousemove', mouseMoveHandler);
@@ -33,12 +39,20 @@ function contentLoadedHandler() {
     function moveKnob(event, target) {
         let maxLeft = Math.min(event.x - sliderKnob.offsetWidth / 2, sliderLine.offsetLeft + sliderLine.offsetWidth),
             minLeft = Math.max(maxLeft, 0),
-            percentage = minLeft / sliderLine.offsetWidth  * 100;
+            percentage = minLeft / sliderLine.offsetWidth * 100;
 
-            target.style.left = `${ percentage - (sliderKnob.offsetWidth / 2 * 100 / sliderLine.offsetWidth) }%`;
+            target.style.left = `${ percentage }%`;
 
-            console.log('Current Value ', min + ((max - min) * percentage / 100))
+            currentValueInput.innerHTML = min + ((max - min) * percentage / 100);
     }
 }
 
+function submitForm(ev) {
+    ev.preventDefault();
+
+    min = +document.getElementById('min-slider-input').value; 
+    max = +document.getElementById('max-slider-input').value;
+}
+
 document.addEventListener("DOMContentLoaded", contentLoadedHandler);
+document.addEventListener("submit", submitForm);
