@@ -217,7 +217,12 @@ function clickHandler(event) {
         let action = event.target.dataset.action;
 
         if (action === 'reset') {
+            isPaused = true;
             shouldReset = true;
+            
+            setTimeout(function configUpdateTimeout() {
+                startGame();
+            }, 100)
         }
 
         if (action === 'pause') {
