@@ -35,14 +35,53 @@ function initPlayground() {
 function Figure(layoutId) {
     this.node = document.createElement('div');
     this.node.classList.add('figure');
+
+    let firstRow = buildRow(1, 0, 0),
+        secondRow = buildRow(1, 0, 0),
+        thirdRow = buildRow(1, 0, 0)
     
-    this.node.style.height = config.figureSide + 'px';
-    this.node.style.width = config.figureSide + 'px';
+    this.node.appendChild(firstRow);
+    this.node.appendChild(secondRow);
+    this.node.appendChild(thirdRow);
 
     this.positionX = Math.floor(config.columns / 2);
     this.positionY = 0;
 
     this.node.style.left = this.positionX * config.figureSide + 'px';
+
+    function buildRow(first, second, third) {
+        let row = document.createElement('div'),
+            filled = document.createElement('div'),
+            empty = document.createElement('div');
+        
+        row.classList.add('flex');
+        filled.classList.add('square');
+
+        filled.style.height = config.figureSide + 'px';
+        filled.style.width = config.figureSide + 'px';
+        empty.style.height = config.figureSide + 'px';
+        empty.style.width = config.figureSide + 'px';
+
+        if (first) {
+            row.appendChild(filled.cloneNode());
+        } else {
+            row.appendChild(empty.cloneNode());
+        }
+
+        if (second) {
+            row.appendChild(filled.cloneNode());
+        } else {
+            row.appendChild(empty.cloneNode());
+        }
+
+        if (third) {
+            row.appendChild(filled.cloneNode());
+        } else {
+            row.appendChild(empty.cloneNode());
+        }
+
+        return row;
+    }
 }
 
 Figure.prototype.move = function(direction) {
@@ -219,7 +258,7 @@ function clickHandler(event) {
         if (action === 'reset') {
             isPaused = true;
             shouldReset = true;
-            
+
             setTimeout(function configUpdateTimeout() {
                 startGame();
             }, 100)
@@ -250,12 +289,8 @@ function submitHandler(event) {
         setTimeout(function configUpdateTimeout() {
             initPlayground();
             startGame();
-        }, 100)
-
-        
+        }, 100) 
     }
-
-
 }
 
 document.addEventListener("DOMContentLoaded", contentLoadedHandler);
