@@ -1,4 +1,7 @@
-var min, max;
+var min,
+    max,
+    currentValueInput, 
+    percentage = 0;
 
 function contentLoadedHandler() {
     let slider = document.querySelector('.slider'),
@@ -6,9 +9,9 @@ function contentLoadedHandler() {
         sliderKnob = document.querySelector('.slider-knob'),
         minValueInput = document.getElementById('min-slider-input'),
         maxValueInput = document.getElementById('max-slider-input'),
-        currentValueInput = document.getElementById('current-value-input'),
         mouseDown;
         
+    currentValueInput = document.getElementById('current-value-input');
     min = +minValueInput.value;
     max = +maxValueInput.value;
 
@@ -39,12 +42,11 @@ function contentLoadedHandler() {
 
     function moveKnob(event, target) {
         let maxLeft = Math.min(event.x - slider.offsetLeft, sliderLine.offsetLeft + sliderLine.offsetWidth),
-            minLeft = Math.max(maxLeft, 0),
-            percentage = minLeft / sliderLine.offsetWidth * 100;
+            minLeft = Math.max(maxLeft, 0);
 
-            target.style.left = `${ percentage }%`;
-
-            currentValueInput.innerHTML = min + ((max - min) * percentage / 100);
+        percentage = minLeft / sliderLine.offsetWidth * 100;
+        target.style.left = `${ percentage }%`;
+        currentValueInput.innerHTML = min + ((max - min) * percentage / 100);
     }
 }
 
@@ -53,6 +55,7 @@ function submitForm(ev) {
 
     min = +document.getElementById('min-slider-input').value; 
     max = +document.getElementById('max-slider-input').value;
+    currentValueInput.innerHTML = min + ((max - min) * percentage / 100);
 }
 
 document.addEventListener("DOMContentLoaded", contentLoadedHandler);
