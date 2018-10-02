@@ -10,17 +10,19 @@
         .matrix {
             display: flex;
             flex-wrap: wrap;
-            position: relative;
             user-select: none;
+            position: relative;
+            margin-right: 30px;
         }
 
         .matrix__element {
             background-color:aquamarine;
-            /* position: absolute; */
         }
 
         .matrix__element.absolute {
             position: absolute;
+            pointer-events: none;
+            z-index: 100;
         }
 
         .matrix__element.dragged {
@@ -40,7 +42,6 @@
 
         .displayer {
             display: flex;
-            justify-content: space-between;
         }
     </style>
 </head>

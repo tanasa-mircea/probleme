@@ -26,13 +26,14 @@ function initMouseHandlers() {
 
     function mouseMoveHandler(event) {
         if (mouseDownClone) {
+            console.log('event ', event.target)
             var selectedElements = document.querySelectorAll('.matrix:not(.main-matrix) .matrix__element.dragged')
 
             for (let i = 0; i < selectedElements.length; i++) {
                 selectedElements[i].classList.remove('dragged');
             }
 
-            if (event.target.matches('.matrix:not(.main-matrix) .matrix__element')) {
+            if (event.target.matches('.matrix:not(.main-matrix) .matrix__element:not(.clone)')) {
                 event.target.classList.add('dragged');
             }
 
