@@ -1,9 +1,9 @@
 var config = {
-        columns: 5,
-        figureSide: 40,
-        rows: 15,
-        speed: 3 / 100
-    },
+    columns: 5,
+    figureSide: 40,
+    rows: 15,
+    speed: 3 / 100
+},
     currentAnimation,
     currentFigure,
     playground,
@@ -26,7 +26,7 @@ function initPlayground() {
     playground.style.height = config.rows * config.figureSide + 'px';
     playground.style.width = config.columns * config.figureSide + 'px';
     playgroundData.matrix = [];
-    
+
     for (let i = 0; i < config.columns; i++) {
         playgroundData.matrix[i] = [];
     }
@@ -35,28 +35,67 @@ function initPlayground() {
 function Figure(layoutId) {
     this.node = document.createElement('div');
     this.node.classList.add('figure');
-    
-    this.node.style.height = config.figureSide + 'px';
-    this.node.style.width = config.figureSide + 'px';
+
+    let firstRow = buildRow(1, 0, 0),
+        secondRow = buildRow(1, 0, 0),
+        thirdRow = buildRow(1, 0, 0)
+
+    this.node.appendChild(thirdRow);
+    this.node.appendChild(secondRow);
+    this.node.appendChild(firstRow);
 
     this.positionX = Math.floor(config.columns / 2);
     this.positionY = 0;
 
     this.node.style.left = this.positionX * config.figureSide + 'px';
+
+    function buildRow(first, second, third) {
+        let row = document.createElement('div'),
+            filled = document.createElement('div'),
+            empty = document.createElement('div');
+
+        row.classList.add('flex');
+        filled.classList.add('square');
+
+        filled.style.height = config.figureSide + 'px';
+        filled.style.width = config.figureSide + 'px';
+        empty.style.height = config.figureSide + 'px';
+        empty.style.width = config.figureSide + 'px';
+
+        if (first) {
+            row.appendChild(filled.cloneNode());
+        } else {
+            row.appendChild(empty.cloneNode());
+        }
+
+        if (second) {
+            row.appendChild(filled.cloneNode());
+        } else {
+            row.appendChild(empty.cloneNode());
+        }
+
+        if (third) {
+            row.appendChild(filled.cloneNode());
+        } else {
+            row.appendChild(empty.cloneNode());
+        }
+
+        return row;
+    }
 }
 
-Figure.prototype.move = function(direction) {
+Figure.prototype.move = function (direction) {
     let newPositionX = this.positionX + direction;
 
     if (newPositionX < 0 || newPositionX >= config.columns) {
         newPositionX = this.positionX;
-    } 
+    }
 
     if (playgroundData.matrix[newPositionX][config.rows - 1 - Math.floor(this.positionY)]) {
         return;
     }
 
-    this.node.style.left  = newPositionX * config.figureSide + 'px';
+    this.node.style.left = newPositionX * config.figureSide + 'px';
     this.positionX = newPositionX;
 }
 
@@ -67,7 +106,7 @@ function startGame() {
         while (playground.firstChild) {
             playground.removeChild(playground.firstChild);
         }
-    
+
         for (let i = 0; i < config.columns; i++) {
             playgroundData.matrix[i] = [];
         }
@@ -95,10 +134,19 @@ function frameHandler() {
     }
 
     let newPositionY = currentFigure.positionY + currentSpeed,
-        lastColumnElement = playgroundData.matrix[currentFigure.positionX][config.rows - 1 - Math.floor(currentFigure.positionY)];    
-        
+        lastColumnElement = playgroundData.matrix[currentFigure.positionX][config.rows - 1 - Math.floor(currentFigure.positionY)];
+
     if (newPositionY > (lastColumnElement ? lastColumnElement.positionY : config.rows)) {
-        findPlaceForFigure(currentFigure);
+
+        let rows = currentFigure.node.querySelectorAll('.flex');
+        for (let i = rows.length - 1; i >= 0; i--) {
+            let elements = currentFigure.node.querySelectorAll('.square')
+    
+            for (let j = 0; j < elements.length; j++) {
+                findPlaceForFigure(currentFigure, elements[j], currentFigure.positionX + j);                            
+            }
+        }
+
         currentFigure = null;
     } else {
         currentFigure.positionY = newPositionY;
@@ -108,42 +156,79 @@ function frameHandler() {
     currentAnimation = window.requestAnimationFrame(frameHandler);
 }
 
-function findPlaceForFigure(figure) {
-    let figureColumn = playgroundData.matrix[figure.positionX],
-        currentYIndex;
+function findPlaceForFigure(figure, node, positionX) {
+    let figureColumn = playgroundData.matrix[positionX],
+        currentYIndex,
         wasNotFound = true,
         isCompleted = true;
 
     for (let i = 0; i < config.rows; i++) {
         if (!figureColumn[i]) {
-            figure.node.style.top = (config.rows -1 - i) * config.figureSide + 'px';
+            figure.node.style.top = (config.rows - 1 - i) * config.figureSide + 'px';
             figure.positionY = config.rows - 1 - i;
             currentYIndex = i;
-            figureColumn[i] = figure;
-            wasNotFound = false;
+            figureColumn[i] = node;
+            // wasNotFound = false;
             break;
         }
     }
 
-    for (let i = 0; i < config.columns; i++) {
-        if (!playgroundData.matrix[i][currentYIndex]) {
-            isCompleted = false;
-        }
-    }
+    // for (let i = 0; i < config.columns; i++) {
+    //     if (!playgroundData.matrix[i][currentYIndex]) {
+    //         isCompleted = false;
+    //     }
+    // }
 
-    if (isCompleted) {
-        shiftMatrix(currentYIndex);
-        score++;
-        scoreElement.innerHTML = score;
-    }
+    // if (isCompleted) {
+    //     shiftMatrix(currentYIndex);
+    //     score++;
+    //     scoreElement.innerHTML = score;
+    // }
 
-    if (wasNotFound) {
-        console.log('score ', score);
-        isPaused = true;
-        shouldReset = true;
-        pauseGame();
-    }
+    // if (wasNotFound) {
+    //     console.log('score ', score);
+    //     isPaused = true;
+    //     shouldReset = true;
+    //     pauseGame();
+    // }
 }
+
+// function findPlaceForFigure(figure) {
+//     let figureColumn = playgroundData.matrix[figure.positionX],
+//         currentYIndex,
+//         wasNotFound = true,
+//         isCompleted = true;
+
+//     for (let i = 0; i < config.rows; i++) {
+//         if (!figureColumn[i]) {
+//             figure.node.style.top = (config.rows - 1 - i) * config.figureSide + 'px';
+//             figure.positionY = config.rows - 1 - i;
+//             currentYIndex = i;
+//             figureColumn[i] = figure;
+//             wasNotFound = false;
+//             break;
+//         }
+//     }
+
+//     for (let i = 0; i < config.columns; i++) {
+//         if (!playgroundData.matrix[i][currentYIndex]) {
+//             isCompleted = false;
+//         }
+//     }
+
+//     if (isCompleted) {
+//         shiftMatrix(currentYIndex);
+//         score++;
+//         scoreElement.innerHTML = score;
+//     }
+
+//     if (wasNotFound) {
+//         console.log('score ', score);
+//         isPaused = true;
+//         shouldReset = true;
+//         pauseGame();
+//     }
+// }
 
 function shiftMatrix(currentYIndex) {
     for (let i = 0; i < config.columns; i++) {
@@ -155,11 +240,11 @@ function shiftMatrix(currentYIndex) {
             };
 
             let figure = playgroundData.matrix[i][j];
-            
+
             figure.positionY++;
             figure.node.style.top = figure.positionY * config.figureSide + 'px';
         }
-        
+
     }
 
     for (let i = 0; i < config.columns; i++) {
@@ -187,14 +272,14 @@ function keydownHandler(event) {
     if (event.keyCode === 39) {
         currentFigure.move(1);
     }
-    
+
     if (event.keyCode === 37) {
         currentFigure.move(-1);
     }
 
     if (event.keyCode === 40) {
         currentSpeed = 1;
-    }   
+    }
 }
 
 function keyupHandler(event) {
@@ -219,7 +304,7 @@ function clickHandler(event) {
         if (action === 'reset') {
             isPaused = true;
             shouldReset = true;
-            
+
             setTimeout(function configUpdateTimeout() {
                 startGame();
             }, 100)
@@ -251,11 +336,7 @@ function submitHandler(event) {
             initPlayground();
             startGame();
         }, 100)
-
-        
     }
-
-
 }
 
 document.addEventListener("DOMContentLoaded", contentLoadedHandler);
