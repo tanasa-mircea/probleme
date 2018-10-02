@@ -10,8 +10,12 @@ function initMouseHandlers() {
             mouseDown = event.target;
             
             event.target.classList.add('dragged')
+
+            mouseDownClone.style.left = event.x - currentMatrix.offsetLeft - mouseDownClone.offsetWidth / 2 + 'px';
+            mouseDownClone.style.top = event.y - currentMatrix.offsetTop - mouseDownClone.offsetHeight / 2 + 'px';
             mouseDownClone.classList.add('absolute')
             mouseDownClone.classList.add('clone')
+            
             currentMatrix.appendChild(mouseDownClone);
         }
 
@@ -26,7 +30,6 @@ function initMouseHandlers() {
 
             for (let i = 0; i < selectedElements.length; i++) {
                 selectedElements[i].classList.remove('dragged');
-                
             }
 
             if (event.target.matches('.matrix:not(.main-matrix) .matrix__element')) {
@@ -45,7 +48,6 @@ function initMouseHandlers() {
                 mouseDown.classList.add('invisible');
                 mouseDownClone.classList.remove('absolute');
                 event.target.offsetParent.replaceChild(mouseDownClone, event.target);
-                console.log('mouseMove event ', event);
             } else {
                 currentMatrix.removeChild(mouseDownClone);
             }
