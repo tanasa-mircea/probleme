@@ -1,52 +1,90 @@
-function initMouseHandlers(elements) {
-    var mouseDown = false;
+function initMouseHandlers() {
+    var mouseDownClone = false,
+        mouseDown = null,
+        currentMatrix = null;
 
-    for (let i = 0; i < elements.length; i++) {
-        elements[i].addEventListener('mousedown', function circleElementHandler(event) {
-            mouseDown = this;
-        })       
-    }
+    window.addEventListener('mousedown', function circleElementHandler(event) {
+        if (event.target.matches('.main-matrix .matrix__element:not(.invisible)')) {
+            currentMatrix = event.target.offsetParent;
+            mouseDownClone = event.target.cloneNode(true);
+            mouseDown = event.target;
+            
+            event.target.classList.add('dragged')
+            mouseDownClone.classList.add('absolute')
+            mouseDownClone.classList.add('clone')
+            currentMatrix.appendChild(mouseDownClone);
+        }
 
-    window.addEventListener('mousemove', mouseMoveHandler);
-    window.addEventListener('mouseup', mouseUpHandler);
+        window.addEventListener('mousemove', mouseMoveHandler);
+        window.addEventListener('mouseup', mouseUpHandler);
+    })       
 
-    function mouseMoveHandler() {
-        if (mouseDown) {
-            mouseDown.style.left = event.x - mouseDown.offsetParent.offsetLeft - mouseDown.offsetWidth / 2 + 'px';
-            mouseDown.style.top = event.y - mouseDown.offsetParent.offsetTop - mouseDown.offsetHeight / 2 + 'px';
+
+    function mouseMoveHandler(event) {
+        if (mouseDownClone) {
+            var selectedElements = document.querySelectorAll('.matrix:not(.main-matrix) .matrix__element.dragged')
+
+            for (let i = 0; i < selectedElements.length; i++) {
+                selectedElements[i].classList.remove('dragged');
+                
+            }
+
+            if (event.target.matches('.matrix:not(.main-matrix) .matrix__element')) {
+                event.target.classList.add('dragged');
+            }
+
+            mouseDownClone.style.left = event.x - currentMatrix.offsetLeft - mouseDownClone.offsetWidth / 2 + 'px';
+            mouseDownClone.style.top = event.y - currentMatrix.offsetTop - mouseDownClone.offsetHeight / 2 + 'px';
         }
     }
     
-    function mouseUpHandler() {
-        mouseDown = null;
-        window.removeEventListener('mousemove', mouseMoveHandler);
-        window.removeEventListener('mouseup', mouseUpHandler);
+    function mouseUpHandler(event) {
+        if (mouseDownClone) {
+            if (event.target.matches('.matrix:not(.main-matrix) .matrix__element:not(.clone)')) {
+                event.target.classList.remove('dragged');
+                mouseDown.classList.add('invisible');
+                mouseDownClone.classList.remove('absolute');
+                event.target.offsetParent.replaceChild(mouseDownClone, event.target);
+                console.log('mouseMove event ', event);
+            } else {
+                currentMatrix.removeChild(mouseDownClone);
+            }
+
+            mouseDown.classList.remove('dragged');
+            mouseDownClone = null;
+            currentMatrix = null;
+
+
+            window.removeEventListener('mousemove', mouseMoveHandler);
+            window.removeEventListener('mouseup', mouseUpHandler);
+        } else {
+            if (event.target.matches('.matrix:not(.main-matrix) .matrix__element.clone')) {
+                let originalNode = document.querySelector(`.main-matrix [data-original=${event.target.dataset.original}]`);
+                originalNode.classList.remove('invisible');
+                event.target.offsetParent.replaceChild(plainMatrixElement.cloneNode(true), event.target);
+            }
+        }
+
     }
 }
 
 function fillMatrix(matrix, config, isMain) {
     for (let i = 0; i < config.rows; i++) {
         for (let j = 0; j < config.columns; j++) {
-            var matrixElement = document.createElement('div');
-            matrixElement.classList.add('matrix__element');
+            var matrixElement = plainMatrixElement.cloneNode(true);
             
             let positionX = j * config.width + j * config.marginX,
                 positionY = i * config.height + i * config.marginY;
 
-            matrixElement.classList.add('matrix__element--static');
-            matrixElement.style.height = `${config.height}px`;
-            matrixElement.style.width = `${config.width}px`;
-            matrixElement.style.marginRight = `${config.marginX}px`;
-            matrixElement.style.marginBottom = `${config.marginY}px`;
-
             if (isMain) {
+                matrixElement.dataset.original = `m-${i}-${j}`;
                 let span = document.createElement('span');
                 span.innerText = `${i}${j}`;
                 matrixElement.appendChild(span);
             }
 
 
-            matrix.appendChild(matrixElement.cloneNode(true));
+            matrix.appendChild(matrixElement);
         }
     }
 }
@@ -89,7 +127,6 @@ function contentLoadedHandler() {
     document.querySelector('body').appendChild(displayer);
 }
 
-// INIT
 var matrixConfig = {
         rows: 5,
         columns: 5,
@@ -98,9 +135,19 @@ var matrixConfig = {
         marginX: 3,
         marginY: 3,
     },
-    displayer = document.createElement('div');
+    displayer = document.createElement('div'),
+    plainMatrixElement = document.createElement('div');
+
+    
+plainMatrixElement.classList.add('matrix__element');
+plainMatrixElement.style.height = `${matrixConfig.height}px`;
+plainMatrixElement.style.width = `${matrixConfig.width}px`;
+plainMatrixElement.style.marginLeft = `${matrixConfig.marginX}px`;
+plainMatrixElement.style.marginBottom = `${matrixConfig.marginY}px`;
 
 displayer.classList.add('displayer');
 init();
+initMouseHandlers();
+
 
 document.addEventListener("DOMContentLoaded", contentLoadedHandler);

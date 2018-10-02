@@ -10,10 +10,26 @@
         .matrix {
             display: flex;
             flex-wrap: wrap;
+            position: relative;
         }
 
         .matrix__element {
             background-color:aquamarine;
+            /* position: absolute; */
+        }
+
+        .matrix__element.absolute {
+            position: absolute;
+        }
+
+        .matrix__element.dragged {
+            box-sizing: border-box;
+            border: 1px dashed darkblue;
+            opacity: .3;
+        }
+
+        .matrix__element.invisible {
+            opacity: 0;
         }
 
         .matrix__element span {
