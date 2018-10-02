@@ -38,7 +38,7 @@ function contentLoadedHandler() {
     }
 
     function moveKnob(event, target) {
-        let maxLeft = Math.min((event.x - slider.offsetLeft) - sliderKnob.offsetWidth / 2, sliderLine.offsetLeft + sliderLine.offsetWidth),
+        let maxLeft = Math.min(event.x - slider.offsetLeft, sliderLine.offsetLeft + sliderLine.offsetWidth),
             minLeft = Math.max(maxLeft, 0),
             percentage = minLeft / sliderLine.offsetWidth * 100;
 

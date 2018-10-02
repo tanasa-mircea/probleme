@@ -9,11 +9,12 @@
 
     <style>
         .slider {
-            background-color: #bbb;
+            background-color: #bad1fb;
             height: 100px;
             margin: 60px;
             position: relative;
             width: 400px;
+            user-select: none;
         }
 
         .slider-line,
@@ -22,20 +23,21 @@
             left: 0;
             position: absolute;
             top: 50%;
-            transform: translateY(-50%);
         }
 
         .slider-line {
-            background-color: #000;
+            background-color: #003448;
             height: 5px;
             width: 100%;
+            transform: translateY(-50%);
         }
         
         .slider-knob {
-            background-color: #0ca;
+            background-color: #1d4ca2;
             border-radius: 50%;
             height: 30px;
             width: 30px;
+            transform: translate(-50%, -50%);
         }
     </style>
 </head>
