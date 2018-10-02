@@ -32,62 +32,56 @@ function initPlayground() {
     }
 }
 
+function Square() {
+    this.positionX = 0;
+    this.positionY = 0;
+
+    this.node = document.createElement('div');
+    this.node.classList.add('square');
+    this.node.style.height = config.figureSide + 'px';
+    this.node.style.width = config.figureSide + 'px';
+}
+
 function Figure(layoutId) {
     this.node = document.createElement('div');
     this.node.classList.add('figure');
+    this.components = [];
+    this.maxPositionX = 0;
+    this.maxPositionY = 0;
 
-    let firstRow = buildRow(1, 0, 0),
-        secondRow = buildRow(1, 0, 0),
-        thirdRow = buildRow(1, 0, 0)
+    let layout = [[1, 1, 0], [1, 0, 0], [1, 0, 0]];
 
-    this.node.appendChild(thirdRow);
-    this.node.appendChild(secondRow);
-    this.node.appendChild(firstRow);
+    for (let i = 0; i < layout.length; i++) {
+        for (let j = 0; j < layout[i].length; j++) {
+            if (layout[i][j]) {
+                let newSquare = new Square();
+                newSquare.positionX = j;
+                newSquare.positionY = i;
+
+                if (j > this.maxPositionX) {
+                    this.maxPositionX = j;
+                }
+
+                if (i > this.maxPositionY) {
+                    this.maxPositionY = i;
+                }
+              
+                newSquare.node.style.top = newSquare.positionY * config.figureSide + 'px';
+                newSquare.node.style.left = (Math.floor(config.columns / 2) + newSquare.positionX) * config.figureSide + 'px';
+                this.node.appendChild(newSquare.node);
+                this.components.push(newSquare);
+            }
+        }
+    }
 
     this.positionX = Math.floor(config.columns / 2);
     this.positionY = 0;
-
-    this.node.style.left = this.positionX * config.figureSide + 'px';
-
-    function buildRow(first, second, third) {
-        let row = document.createElement('div'),
-            filled = document.createElement('div'),
-            empty = document.createElement('div');
-
-        row.classList.add('flex');
-        filled.classList.add('square');
-
-        filled.style.height = config.figureSide + 'px';
-        filled.style.width = config.figureSide + 'px';
-        empty.style.height = config.figureSide + 'px';
-        empty.style.width = config.figureSide + 'px';
-
-        if (first) {
-            row.appendChild(filled.cloneNode());
-        } else {
-            row.appendChild(empty.cloneNode());
-        }
-
-        if (second) {
-            row.appendChild(filled.cloneNode());
-        } else {
-            row.appendChild(empty.cloneNode());
-        }
-
-        if (third) {
-            row.appendChild(filled.cloneNode());
-        } else {
-            row.appendChild(empty.cloneNode());
-        }
-
-        return row;
-    }
 }
 
 Figure.prototype.move = function (direction) {
     let newPositionX = this.positionX + direction;
 
-    if (newPositionX < 0 || newPositionX >= config.columns) {
+    if (newPositionX < 0 || newPositionX >= config.columns - this.maxPositionX) {
         newPositionX = this.positionX;
     }
 
@@ -95,7 +89,10 @@ Figure.prototype.move = function (direction) {
         return;
     }
 
-    this.node.style.left = newPositionX * config.figureSide + 'px';
+    for (let i = 0; i < this.components.length; i++) {
+        this.components[i].node.style.left = (this.components[i].positionX + newPositionX) * config.figureSide + 'px';
+    }
+    
     this.positionX = newPositionX;
 }
 
@@ -134,19 +131,10 @@ function frameHandler() {
     }
 
     let newPositionY = currentFigure.positionY + currentSpeed,
-        lastColumnElement = playgroundData.matrix[currentFigure.positionX][config.rows - 1 - Math.floor(currentFigure.positionY)];
+        lastColumnElement = playgroundData.matrix[currentFigure.positionX][config.rows - currentFigure.maxPositionY - 1 - Math.floor(currentFigure.positionY)];
 
-    if (newPositionY > (lastColumnElement ? lastColumnElement.positionY : config.rows)) {
-
-        let rows = currentFigure.node.querySelectorAll('.flex');
-        for (let i = rows.length - 1; i >= 0; i--) {
-            let elements = currentFigure.node.querySelectorAll('.square')
-    
-            for (let j = 0; j < elements.length; j++) {
-                findPlaceForFigure(currentFigure, elements[j], currentFigure.positionX + j);                            
-            }
-        }
-
+    if (newPositionY + currentFigure.maxPositionY >= ((lastColumnElement && lastColumnElement.positionY) || config.rows)) {
+        findPlaceForFigure(currentFigure);
         currentFigure = null;
     } else {
         currentFigure.positionY = newPositionY;
@@ -156,79 +144,23 @@ function frameHandler() {
     currentAnimation = window.requestAnimationFrame(frameHandler);
 }
 
-function findPlaceForFigure(figure, node, positionX) {
-    let figureColumn = playgroundData.matrix[positionX],
-        currentYIndex,
-        wasNotFound = true,
-        isCompleted = true;
+function findPlaceForFigure(figure) {
+    let squares = figure.components;
 
-    for (let i = 0; i < config.rows; i++) {
-        if (!figureColumn[i]) {
-            figure.node.style.top = (config.rows - 1 - i) * config.figureSide + 'px';
-            figure.positionY = config.rows - 1 - i;
-            currentYIndex = i;
-            figureColumn[i] = node;
-            // wasNotFound = false;
-            break;
+    for (let i = squares.length - 1; i >= 0; i--) {
+        for (let j = 0; j < config.rows; j++) {
+            let currentColumn = playgroundData.matrix[figure.positionX + squares[i].positionX];
+
+            if (!currentColumn[j]) {
+                squares[i].positionY = config.rows -1 - j;
+                squares[i].node.style.top = (config.rows -1 - j) * config.figureSide + 'px';
+                currentColumn[j] = squares[i];
+                playground.appendChild(squares[i].node);
+                break;
+            }
         }
     }
-
-    // for (let i = 0; i < config.columns; i++) {
-    //     if (!playgroundData.matrix[i][currentYIndex]) {
-    //         isCompleted = false;
-    //     }
-    // }
-
-    // if (isCompleted) {
-    //     shiftMatrix(currentYIndex);
-    //     score++;
-    //     scoreElement.innerHTML = score;
-    // }
-
-    // if (wasNotFound) {
-    //     console.log('score ', score);
-    //     isPaused = true;
-    //     shouldReset = true;
-    //     pauseGame();
-    // }
 }
-
-// function findPlaceForFigure(figure) {
-//     let figureColumn = playgroundData.matrix[figure.positionX],
-//         currentYIndex,
-//         wasNotFound = true,
-//         isCompleted = true;
-
-//     for (let i = 0; i < config.rows; i++) {
-//         if (!figureColumn[i]) {
-//             figure.node.style.top = (config.rows - 1 - i) * config.figureSide + 'px';
-//             figure.positionY = config.rows - 1 - i;
-//             currentYIndex = i;
-//             figureColumn[i] = figure;
-//             wasNotFound = false;
-//             break;
-//         }
-//     }
-
-//     for (let i = 0; i < config.columns; i++) {
-//         if (!playgroundData.matrix[i][currentYIndex]) {
-//             isCompleted = false;
-//         }
-//     }
-
-//     if (isCompleted) {
-//         shiftMatrix(currentYIndex);
-//         score++;
-//         scoreElement.innerHTML = score;
-//     }
-
-//     if (wasNotFound) {
-//         console.log('score ', score);
-//         isPaused = true;
-//         shouldReset = true;
-//         pauseGame();
-//     }
-// }
 
 function shiftMatrix(currentYIndex) {
     for (let i = 0; i < config.columns; i++) {
