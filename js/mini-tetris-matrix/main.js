@@ -2,7 +2,7 @@ var config = {
         columns: 5,
         figureSide: 40,
         rows: 15,
-        speed: 5 / 100
+        speed: 10 / 100
     },
     currentAnimation,
     currentPosition = {
@@ -49,11 +49,18 @@ function initPlayground() {
             playgroundModel[i][j] = 0;
         }
     }
+
+    playgroundModel[currentPosition.y][currentPosition.x] = 1;
+    previousPosition = Object.assign({}, currentPosition);
+
+
+    // playgroundModel[currentPosition.y][currentPosition.x] = 1;
 }
 
 
 function startGame() {
     isPaused = false;
+    repaint();
     window.requestAnimationFrame(frameHandler);
 }
 
@@ -68,10 +75,16 @@ function frameHandler() {
             y: 0,
             roundedY: 0
         }
+
+        previousPosition = Object.assign({}, currentPosition);
+        playgroundModel[currentPosition.y][currentPosition.x] = 1;
+
+        repaint();
     }
-    
-    currentPosition.y += config.speed;
+
+    currentPosition.y += currentSpeed;
     nextPosition = playgroundModel[currentPosition.roundedY + 1] && playgroundModel[currentPosition.roundedY + 1][currentPosition.x];
+
 
     if (currentPosition.roundedY >= config.rows - 1 || nextPosition) {
         previousPosition = null;
@@ -83,12 +96,12 @@ function frameHandler() {
 
         playgroundModel[currentPosition.roundedY][currentPosition.x] = 1;
 
-        if (previousPosition && playgroundModel[previousPosition.roundedY - 1] ) {
+        if (previousPosition ) {
             playgroundModel[previousPosition.roundedY][previousPosition.x] = 0;
         }
         
-        checkIfLineCompleted();
         repaint();
+        checkIfLineCompleted();
         previousPosition = Object.assign({}, currentPosition);
     }
     
@@ -148,7 +161,7 @@ function keydownHandler(event) {
     }
 
     if (event.keyCode === 39) {
-        let itemOnRight = playgroundModel[currentPosition.roundedY][currentPosition.x + 1];
+        let itemOnRight = playgroundModel[currentPosition.roundedY + 1][currentPosition.x + 1];
 
         if (!itemOnRight) {
             currentPosition.x = Math.min(++currentPosition.x, config.columns - 1);
@@ -157,7 +170,7 @@ function keydownHandler(event) {
     }
     
     if (event.keyCode === 37) {
-        let itemOnLeft = playgroundModel[currentPosition.roundedY][currentPosition.x - 1];
+        let itemOnLeft = playgroundModel[currentPosition.roundedY + 1][currentPosition.x - 1];
 
         if (!itemOnLeft) {
             currentPosition.x = Math.max(--currentPosition.x, 0);
