@@ -10,9 +10,10 @@ function initMouseHandlers() {
             mouseDown = event.target;
             
             event.target.classList.add('dragged')
-
-            mouseDownClone.style.left = event.x - currentMatrix.offsetLeft - mouseDownClone.offsetWidth / 2 + 'px';
-            mouseDownClone.style.top = event.y - currentMatrix.offsetTop - mouseDownClone.offsetHeight / 2 + 'px';
+            mouseDownClone.style.left = event.x - currentMatrix.offsetLeft - 3 - event.offsetX + 'px';
+            mouseDownClone.style.top = event.y - currentMatrix.offsetTop - 1 - event.offsetY + 'px';
+            mouseDownClone.dataset.offsetX = event.offsetX;
+            mouseDownClone.dataset.offsetY = event.offsetY;
             mouseDownClone.classList.add('absolute')
             mouseDownClone.classList.add('clone')
             
@@ -35,8 +36,8 @@ function initMouseHandlers() {
                 event.target.classList.add('dragged');
             }
 
-            mouseDownClone.style.left = event.x - currentMatrix.offsetLeft - mouseDownClone.offsetWidth / 2 + 'px';
-            mouseDownClone.style.top = event.y - currentMatrix.offsetTop - mouseDownClone.offsetHeight / 2 + 'px';
+            mouseDownClone.style.left = event.x - currentMatrix.offsetLeft - mouseDownClone.dataset.offsetX + 'px';
+            mouseDownClone.style.top = event.y - currentMatrix.offsetTop - mouseDownClone.dataset.offsetY + 'px';
         }
     }
     
