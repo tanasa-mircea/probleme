@@ -40,10 +40,11 @@ function contentLoadedHandler() {
 
 function moveKnob(event, target) {
     let maxLeft = Math.min(event.x - slider.offsetLeft, sliderLine.offsetLeft + sliderLine.offsetWidth),
-        minLeft = Math.max(maxLeft, 0);
+        minLeft = Math.max(maxLeft, 0),
+        displayPercentage = Math.max(Math.min(event.x - slider.offsetLeft, sliderLine.offsetLeft + sliderLine.offsetWidth - sliderKnob.offsetWidth), 0) / sliderLine.offsetWidth * 100;
 
     percentage = minLeft / sliderLine.offsetWidth * 100;
-    target.style.left = `${ percentage }%`;
+    target.style.left = `${ displayPercentage }%`;
     currentValueInput.innerHTML = min + ((max - min) * percentage / 100);
 }
 
@@ -70,43 +71,69 @@ function submitForm(ev) {
 }
 
 function getAbsolute(newPercentage) {
-    percentage = newPercentage;
-    sliderKnob.style.left = `${ percentage }%`;
-    currentValueInput.innerHTML = min + ((max - min) * percentage / 100);
-
-    return min + ((max - min) * percentage / 100);
+    return min + ((max - min) * newPercentage / 100);
 }
 
 function getPercentage(absolute) {
     let newPercentage =  (absolute + Math.abs(min)) * 100 / (Math.abs(max) + Math.abs(min))
-    percentage = newPercentage;
-    sliderKnob.style.left = `${ percentage }%`;
-    currentValueInput.innerHTML = absolute;
 
     return newPercentage;
+}
+
+function setAbsolute(absoluteValue) {
+    let minValue = Math.max(absoluteValue, min),
+        knobPercentage = sliderKnob.offsetWidth * 100 / sliderLine.offsetWidth,
+        maxValue = Math.min(minValue, max),
+        newPercentage = (maxValue + Math.abs(min)) * 100 / (Math.abs(max) + Math.abs(min)),
+        displayMaxValue = Math.min(minValue, max - (knobPercentage * (max - min) / 100)),
+        displayPercentage = (displayMaxValue + Math.abs(min)) * 100 / (Math.abs(max) + Math.abs(min));
+
+    percentage = newPercentage;
+    sliderKnob.style.left = `${ displayPercentage }%`;
+    currentValueInput.innerHTML = min + ((max - min) * newPercentage / 100);
+}
+
+function setPercentage(percentageValue) {
+    let minValue = Math.max(percentageValue, 0),
+        knobPercentage = sliderKnob.offsetWidth * 100 / sliderLine.offsetWidth,
+        maxValue = Math.min(100, minValue),
+        displayMaxPercentage = Math.min(100 - knobPercentage, minValue);
+
+    percentage = maxValue;
+    sliderKnob.style.left = `${ displayMaxPercentage }%`;
+    currentValueInput.innerHTML = min + ((max - min) * maxValue / 100);
 }
 
 function setterFormSubmitHandler(ev) {
     ev.preventDefault();
 
-    let percentage = ev.target[0].value,
-        absolute = ev.target[1].value,
-        result;
+    let percentageValue = ev.target[0].value,
+        absoluteValue = ev.target[1].value;
     
-    if (percentage) {
-        result = getAbsolute(+percentage);
-        console.log('result getAbsolute', percentage, result)
+    if (percentageValue) {
+        setPercentage(+percentageValue);
     }
 
-    if (absolute) {
-        result = getPercentage(+absolute);
-        console.log('result getPercentage ', absolute, result)
+    if (absoluteValue) {
+        setAbsolute(+absoluteValue)
     }
 }
 
 function getterFormSubmitHandler(ev) {
     ev.preventDefault();
 
+    let percentageValue = ev.target[0].value,
+        absoluteValue = ev.target[1].value;
+
+    if (absoluteValue) {
+        result = getPercentage(+absoluteValue) + '%';
+    }
+
+    if (percentageValue) {
+        result = getAbsolute(+percentageValue)
+    }
+
+    console.log('result ', result)
 }
 
 document.addEventListener("DOMContentLoaded", contentLoadedHandler);
