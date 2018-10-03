@@ -47,11 +47,30 @@
         <div class="slider-knob"></div>
     </div>
 
-    <form action="">
+    <form id="valueForm">
         <input id="min-slider-input" type="text" value="-400" placeholder="Min value">
         <input id="max-slider-input" type="text" value="200" placeholder="Max value">
         <button type="submit">Submit</button>
     </form>
+
+    <form id="setterForm">
+        <h3 style="margin-bottom: 0;">Setter</h3>
+        <label for="">Percentage</label>
+        <input type="text" placeholder="Percentage">
+        <label for="">Absolute</label>
+        <input type="text" placeholder="Absolute">
+        <button type="submit">Submit</button>
+    </form>
+
+    <form id="getterForm">
+        <h3 style="margin-bottom: 0;">Getter</h3>
+        <label for="">Percentage</label>
+        <input type="text" placeholder="Percentage">
+        <label for="">Absolute</label>
+        <input type="text" placeholder="Absolute">
+        <button type="submit">Submit</button>
+    </form>
+
     <p>Value: <span id="current-value-input"></span></p>
     
 </body>
