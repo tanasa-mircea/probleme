@@ -26,14 +26,12 @@ function initMouseHandlers() {
 
     function mouseMoveHandler(event) {
         if (mouseDownClone) {
-            console.log('event ', event.target)
-            var selectedElements = document.querySelectorAll('.matrix:not(.main-matrix) .matrix__element.dragged')
-
-            for (let i = 0; i < selectedElements.length; i++) {
-                selectedElements[i].classList.remove('dragged');
+            if (secondMatrixSelected && event.target !== secondMatrixSelected) {
+                secondMatrixSelected.classList.remove('dragged');
             }
 
             if (event.target.matches('.matrix:not(.main-matrix) .matrix__element:not(.clone)')) {
+                secondMatrixSelected = event.target;
                 event.target.classList.add('dragged');
             }
 
@@ -139,7 +137,8 @@ var matrixConfig = {
         marginY: 3,
     },
     displayer = document.createElement('div'),
-    plainMatrixElement = document.createElement('div');
+    plainMatrixElement = document.createElement('div'),
+    secondMatrixSelected;
 
     
 plainMatrixElement.classList.add('matrix__element');
