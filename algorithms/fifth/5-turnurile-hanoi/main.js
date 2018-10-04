@@ -29,18 +29,18 @@ function startMove(positionIndex) {
     if (!firstIterationEnded && nextIndex === 0) {
         debugger
         dataMatrix[positionIndex].unshift(newDisk)
-        startMove(0);
+        return startMove(0);
     }
     
     if (newDisk && tryMoveDisk(newDisk, positionIndex, nextIndex)) {
         if (!firstIterationEnded && dataMatrix[0].length === 0) {
             firstIterationEnded = true;
-            startMove(2);
+            return startMove(2);
         };
 
-        startMove(positionIndex);
+        return startMove(positionIndex);
     } else {
-        startMove(nextIndex);
+        return startMove(nextIndex);
     }
 };
 
