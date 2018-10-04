@@ -2,7 +2,7 @@ var config = {
         columns: 5,
         figureSide: 40,
         rows: 15,
-        speed: 10 / 100
+        speed: 5 / 100
     },
     currentAnimation,
     currentPosition = {
@@ -60,6 +60,15 @@ function initPlayground() {
 
 function startGame() {
     isPaused = false;
+
+    if (shouldReset) {
+        for (let i = 0; i < config.rows; i++) {
+            for (let j = 0; j < config.columns; j++) {
+                playgroundModel[i][j] = 0;
+            }        
+        }
+    }
+
     repaint();
     window.requestAnimationFrame(frameHandler);
 }
@@ -78,25 +87,28 @@ function frameHandler() {
 
         previousPosition = Object.assign({}, currentPosition);
         playgroundModel[currentPosition.y][currentPosition.x] = 1;
-
-        repaint();
     }
 
     currentPosition.y += currentSpeed;
     nextPosition = playgroundModel[currentPosition.roundedY + 1] && playgroundModel[currentPosition.roundedY + 1][currentPosition.x];
 
+    if (currentPosition.roundedY === 0 && nextPosition) {
+        shouldReset = true;
+        repaint();
+        return;
+    }
 
     if (currentPosition.roundedY >= config.rows - 1 || nextPosition) {
         previousPosition = null;
         currentPosition = null;
     }
 
-    if (currentPosition && currentPosition.roundedY < Math.floor(currentPosition.y)) {
+    if (currentPosition) {
         currentPosition.roundedY = Math.floor(currentPosition.y);
 
         playgroundModel[currentPosition.roundedY][currentPosition.x] = 1;
 
-        if (previousPosition ) {
+        if (previousPosition && (previousPosition.roundedY !== currentPosition.roundedY || previousPosition.x !== currentPosition.x) ) {
             playgroundModel[previousPosition.roundedY][previousPosition.x] = 0;
         }
         
@@ -143,14 +155,6 @@ function checkIfLineCompleted() {
     }
 }
 
-function pauseGame() {
-    if (!currentAnimation) {
-        return;
-    }
-
-    window.cancelAnimationFrame(currentAnimation);
-}
-
 function keydownHandler(event) {
     if (!currentPosition) {
         return;
@@ -161,7 +165,7 @@ function keydownHandler(event) {
     }
 
     if (event.keyCode === 39) {
-        let itemOnRight = playgroundModel[currentPosition.roundedY + 1][currentPosition.x + 1];
+        let itemOnRight = playgroundModel[currentPosition.roundedY + 1] && playgroundModel[currentPosition.roundedY + 1][currentPosition.x + 1];
 
         if (!itemOnRight) {
             currentPosition.x = Math.min(++currentPosition.x, config.columns - 1);
@@ -170,7 +174,7 @@ function keydownHandler(event) {
     }
     
     if (event.keyCode === 37) {
-        let itemOnLeft = playgroundModel[currentPosition.roundedY + 1][currentPosition.x - 1];
+        let itemOnLeft = playgroundModel[currentPosition.roundedY + 1] && playgroundModel[currentPosition.roundedY + 1][currentPosition.x - 1];
 
         if (!itemOnLeft) {
             currentPosition.x = Math.max(--currentPosition.x, 0);
@@ -203,6 +207,7 @@ function clickHandler(event) {
         if (action === 'reset') {
             isPaused = true;
             shouldReset = true;
+            currentPosition = null;
             
             setTimeout(function configUpdateTimeout() {
                 startGame();
@@ -213,7 +218,7 @@ function clickHandler(event) {
             isPaused = true;
         }
 
-        if (action === 'start' && !currentAnimation) {
+        if (action === 'start' && isPaused) {
             startGame();
         }
     }
@@ -230,16 +235,9 @@ function submitHandler(event) {
         config.columns = +event.target[1].value;
         config.figureSide = +event.target[2].value;
 
-
-        setTimeout(function configUpdateTimeout() {
-            initPlayground();
-            startGame();
-        }, 100)
-
-        
+        initPlayground();
+        startGame();    
     }
-
-
 }
 
 document.addEventListener("DOMContentLoaded", contentLoadedHandler);

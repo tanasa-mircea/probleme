@@ -10,8 +10,8 @@ function initMouseHandlers() {
             mouseDown = event.target;
             
             event.target.classList.add('dragged')
-            mouseDownClone.style.left = event.x - currentMatrix.offsetLeft - 4 - event.offsetX + 'px';
-            mouseDownClone.style.top = event.y - currentMatrix.offsetTop - 1 - event.offsetY + 'px';
+            mouseDownClone.style.left = event.x - currentMatrix.offsetLeft - fixedOffsetX - event.offsetX + 'px';
+            mouseDownClone.style.top = event.y - currentMatrix.offsetTop - fixedOffsetY - event.offsetY + 'px';
             mouseDownClone.dataset.offsetX = event.offsetX;
             mouseDownClone.dataset.offsetY = event.offsetY;
             mouseDownClone.classList.add('absolute')
@@ -36,8 +36,8 @@ function initMouseHandlers() {
                 event.target.classList.add('dragged');
             }
 
-            mouseDownClone.style.left = event.x - currentMatrix.offsetLeft - 4 -mouseDownClone.dataset.offsetX + 'px';
-            mouseDownClone.style.top = event.y - currentMatrix.offsetTop - 1 - mouseDownClone.dataset.offsetY + 'px';
+            mouseDownClone.style.left = event.x - currentMatrix.offsetLeft - fixedOffsetX - mouseDownClone.dataset.offsetX + 'px';
+            mouseDownClone.style.top = event.y - currentMatrix.offsetTop - fixedOffsetY - mouseDownClone.dataset.offsetY + 'px';
         }
     }
     
@@ -139,7 +139,9 @@ var matrixConfig = {
     },
     displayer = document.createElement('div'),
     plainMatrixElement = document.createElement('div'),
-    secondMatrixSelected;
+    secondMatrixSelected,
+    fixedOffsetX = 1,
+    fixedOffsetY = 1;
 
     
 plainMatrixElement.classList.add('matrix__element');

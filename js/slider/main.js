@@ -4,7 +4,8 @@ var min,
     percentage = 0,
     slider, sliderLine, sliderKnob,
     minValueInput, maxValueInput,
-    mouseDown;
+    mouseDown,
+    valueForm, setterForm, getterForm;
 
 function contentLoadedHandler() {
     slider = document.querySelector('.slider');
@@ -12,6 +13,9 @@ function contentLoadedHandler() {
     sliderKnob = document.querySelector('.slider-knob');
     minValueInput = document.getElementById('min-slider-input');
     maxValueInput = document.getElementById('max-slider-input');
+    valueForm = document.getElementById('valueForm');
+    setterForm = document.getElementById('setterForm');
+    getterForm = document.getElementById('getterForm');
     mouseDown;
     
     currentValueInput = document.getElementById('current-value-input');
@@ -28,10 +32,6 @@ function contentLoadedHandler() {
     sliderLine.addEventListener('click', function sliderLineClick(event) {
         moveKnob(event, sliderKnob);
     })
-
-    let valueForm = document.getElementById('valueForm'),
-    setterForm = document.getElementById('setterForm'),
-    getterForm = document.getElementById('getterForm')
 
     valueForm.addEventListener("submit", submitForm);
     setterForm.addEventListener("submit", setterFormSubmitHandler);
