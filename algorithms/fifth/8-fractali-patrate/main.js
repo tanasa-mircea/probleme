@@ -2,6 +2,8 @@ let wrapperElement, newNumber, squareSide;
 let squareElement = document.createElement('div');
 squareElement.classList.add('square');
 
+let iterationsNumber = 3;
+
 function contentLoadedHandler() {
     wrapperElement = document.getElementById('wrapper');
     generateFractal(1);
@@ -11,7 +13,7 @@ function generateFractal(number) {
     paintSquares(0, number, 0, 0);
 
     newNumber = number * 4;
-    if (newNumber < 100) {
+    if (newNumber <= Math.pow(4, iterationsNumber)) {
         return generateFractal(newNumber)
     } else {
         return false;
