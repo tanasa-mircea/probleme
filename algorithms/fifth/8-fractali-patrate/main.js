@@ -29,14 +29,22 @@ function paintSquares(count, number, index, rowCount) {
     }
 
     let topIndex = Math.floor(count / (number / 2)),
-        translateOffset = (600 / number) * 100 / 600;
+        squareSide = (600 / Math.sqrt(number)) * 100 / 600;
 
-    console.log(`rowCount ${ rowCount }, index ${ index }, count ${ count }, topIndex ${ topIndex }, number ${ number }, translateOffset ${ translateOffset }`);
+    console.log(`rowCount ${ rowCount }, index ${ index }, count ${ count }, topIndex ${ topIndex }, number ${ number }`);
 
-    squareElement.style.height = 600 / number + 'px';
-    squareElement.style.width = 600 / number + 'px';
-    squareElement.style.left = middleLeft + index * (middleLeft / number) + (index * 5) + '%';
-    squareElement.style.top = middleLeft + rowCount  * (middleLeft / number) + (topIndex * 5) +  '%';
+    squareElement.style.height = 600 / Math.sqrt(number) + 'px';
+    squareElement.style.width = 600 / Math.sqrt(number) + 'px';
+    
+    if (number === 1) {
+        squareElement.style.left = '50%';
+        squareElement.style.top = '50%';
+        squareElement.style.transform = 'translate(-50%, -50%)';
+    } else {
+        squareElement.style.left = squareSide / 2 +  index * squareSide  + '%';
+        squareElement.style.top = squareSide / 2 + rowCount  * squareSide  +  '%';
+    }
+
     wrapperElement.appendChild(squareElement.cloneNode());
 
     return paintSquares(++count, number, ++index, rowCount);
