@@ -38,17 +38,17 @@ function startMove(positionIndex) {
         paintDiskShift(newDisk);
     }
         
-    if (!firstIterationEnded && nextIndex === 0) {
-        dataMatrix[positionIndex].unshift(newDisk)
-        paintDiskToNewPosition(newDisk, positionIndex, number);
-        return startMove(0);
-    }
+    // if (!firstIterationEnded && nextIndex === 0) {
+    //     dataMatrix[positionIndex].unshift(newDisk)
+    //     paintDiskToNewPosition(newDisk, positionIndex, number);
+    //     return startMove(0);
+    // }
     
     if (newDisk && tryMoveDisk(newDisk, positionIndex, nextIndex)) {
-        if (!firstIterationEnded && dataMatrix[0].length === 0) {
-            firstIterationEnded = true;
-            return startMove(2);
-        };
+        // if (!firstIterationEnded && dataMatrix[0].length === 0) {
+        //     firstIterationEnded = true;
+        //     return startMove(2);
+        // };
 
         return startMove(positionIndex);
     } else {
@@ -67,13 +67,13 @@ function getNextIndex(currentIndex) {
 function tryMoveDisk(disk, currentIndex, nextIndex) {
     if (nextIndex === currentIndex) {
         dataMatrix[currentIndex].unshift(disk);
-        paintDiskToNewPosition(disk, nextIndex, number);
+        paintDiskToNewPosition(disk, nextIndex, dataMatrix[currentIndex].length - 1);
         return false;
     }
 
     if (disk < (dataMatrix[nextIndex][0] || number + 1)) {
         dataMatrix[nextIndex].unshift(disk);
-        paintDiskToNewPosition(disk, nextIndex, number);
+        paintDiskToNewPosition(disk, nextIndex, dataMatrix[nextIndex].length - 1);
         return true;
     } else {
         return tryMoveDisk(disk, currentIndex, getNextIndex(nextIndex))
@@ -90,7 +90,7 @@ function initFirstPosition(index, number, positionVector) {
     disksVector.push(diskClone);
 
     diskClone.style.width = `${ index * 5 }%`;
-    diskClone.style.left = `${ 0 * 33 + 16.5}%`;
+    diskClone.style.left = `${ 0 * 33.3 + 16.5}%`;
     diskClone.style.bottom = `${(number - index) * diskHeight + 5}px`;
 
     wrapperElement.appendChild(diskClone);
@@ -103,11 +103,11 @@ function paintDiskShift(index) {
     currentDisk.style.bottom = `${ positionHeight + 2 * diskHeight}px`;
 }
 
-function paintDiskToNewPosition(index, nextIndex, number) {
+function paintDiskToNewPosition(index, nextIndex, dataIndex) {
     debugger
     let currentDisk = disksVector[index - 1];
-    currentDisk.style.left = `${ nextIndex * 33 + 16.5}%`;
-    currentDisk.style.bottom = `${(number - index) * diskHeight + 5}px`;
+    currentDisk.style.left = `${ nextIndex * 33.3 + 16.5}%`;
+    currentDisk.style.bottom = `${ dataIndex * diskHeight + 5}px`;
 }
 
 window.addEventListener('submit', formSubmit);
