@@ -30,7 +30,7 @@ function startMove(positionIndex) {
     if (dataMatrix[1].length === number) {
         return;
     }
-  
+    
     let newDisk = dataMatrix[positionIndex].shift(),
         nextIndex = getNextIndex(positionIndex);
 
@@ -40,7 +40,7 @@ function startMove(positionIndex) {
         
     if (!firstIterationEnded && nextIndex === 0) {
         dataMatrix[positionIndex].unshift(newDisk)
-        paintDiskToNewPosition(newDisk, nextIndex, number);
+        paintDiskToNewPosition(newDisk, positionIndex, number);
         return startMove(0);
     }
     
@@ -68,14 +68,12 @@ function tryMoveDisk(disk, currentIndex, nextIndex) {
     if (nextIndex === currentIndex) {
         dataMatrix[currentIndex].unshift(disk);
         paintDiskToNewPosition(disk, nextIndex, number);
-        debugger
         return false;
     }
 
     if (disk < (dataMatrix[nextIndex][0] || number + 1)) {
         dataMatrix[nextIndex].unshift(disk);
         paintDiskToNewPosition(disk, nextIndex, number);
-        debugger
         return true;
     } else {
         return tryMoveDisk(disk, currentIndex, getNextIndex(nextIndex))
@@ -100,6 +98,7 @@ function initFirstPosition(index, number, positionVector) {
 };
 
 function paintDiskShift(index) {
+    debugger
     let currentDisk = disksVector[index - 1];
     currentDisk.style.bottom = `${ positionHeight + 2 * diskHeight}px`;
 }
@@ -110,9 +109,6 @@ function paintDiskToNewPosition(index, nextIndex, number) {
     currentDisk.style.left = `${ nextIndex * 33 + 16.5}%`;
     currentDisk.style.bottom = `${(number - index) * diskHeight + 5}px`;
 }
-
-
-
 
 window.addEventListener('submit', formSubmit);
 window.addEventListener("DOMContentLoaded", contentLoadedHandler);
