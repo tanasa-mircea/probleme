@@ -1,4 +1,4 @@
-let wrapperElement, newNumber, newIndex, middleLeft = 20;
+let wrapperElement, newNumber, squareSide;
 let squareElement = document.createElement('div');
 squareElement.classList.add('square');
 
@@ -28,19 +28,17 @@ function paintSquares(count, number, index, rowCount) {
         rowCount++;
     }
 
-    let topIndex = Math.floor(count / (number / 2)),
-        squareSide = (600 / Math.sqrt(number)) * 100 / 600;
-
-    console.log(`rowCount ${ rowCount }, index ${ index }, count ${ count }, topIndex ${ topIndex }, number ${ number }`);
-
+    squareSide = (600 / Math.sqrt(number)) * 100 / 600;
     squareElement.style.height = 600 / Math.sqrt(number) + 'px';
     squareElement.style.width = 600 / Math.sqrt(number) + 'px';
     
     if (number === 1) {
         squareElement.style.left = '50%';
         squareElement.style.top = '50%';
+        squareElement.style.borderWidth = '10px';
         squareElement.style.transform = 'translate(-50%, -50%)';
     } else {
+        squareElement.style.borderWidth = `${10 - Math.sqrt(number)}px`;
         squareElement.style.left = squareSide / 2 +  index * squareSide  + '%';
         squareElement.style.top = squareSide / 2 + rowCount  * squareSide  +  '%';
     }
