@@ -37,23 +37,16 @@ function startMove(positionIndex) {
     if (newDisk) {
         paintDiskShift(newDisk);
     }
-        
-    // if (!firstIterationEnded && nextIndex === 0) {
-    //     dataMatrix[positionIndex].unshift(newDisk)
-    //     paintDiskToNewPosition(newDisk, positionIndex, number);
-    //     return startMove(0);
-    // }
     
-    if (newDisk && tryMoveDisk(newDisk, positionIndex, nextIndex)) {
-        // if (!firstIterationEnded && dataMatrix[0].length === 0) {
-        //     firstIterationEnded = true;
-        //     return startMove(2);
-        // };
+    setTimeout(function() {
 
-        return startMove(positionIndex);
-    } else {
-        return startMove(nextIndex);
-    }
+        if (newDisk && tryMoveDisk(newDisk, positionIndex, nextIndex)) {
+            return startMove(positionIndex);
+        } else {
+            return startMove(nextIndex);
+        }
+    }, 300)
+        
 };
 
 function getNextIndex(currentIndex) {
