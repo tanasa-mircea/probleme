@@ -22,56 +22,29 @@ function formSubmit(event) {
     
     dataMatrix = [[], [], []];
     dataMatrix[0] = initFirstPosition(1, number, dataMatrix[0]);
-    startMove(0);
-    console.log('dataMatrix final ', dataMatrix);
+
+    moveDisks(number, 0, 2, 1);
 };
 
-function startMove(positionIndex) {
-    if (dataMatrix[1].length === number) {
-        return;
-    }
-    
-    let newDisk = dataMatrix[positionIndex].shift(),
-        nextIndex = getNextIndex(positionIndex);
+function moveDisks(disc, sourcePosition, auxPosition, destinationPosition) {
+    if (disc > 0) {     
+        moveDisks(disc - 1, sourcePosition, destinationPosition, auxPosition);
 
-    if (newDisk) {
-        paintDiskShift(newDisk);
-    }
-    
-    setTimeout(function() {
+        var slicedDisk = dataMatrix[sourcePosition].shift();
+        dataMatrix[destinationPosition].unshift(slicedDisk);
 
-        if (newDisk && tryMoveDisk(newDisk, positionIndex, nextIndex)) {
-            return startMove(positionIndex);
-        } else {
-            return startMove(nextIndex);
-        }
-    }, 300)
+        paintDiskShift(disc - 1);
+        debugger;
         
-};
-
-function getNextIndex(currentIndex) {
-    if (currentIndex + 1 > 2) {
-        return 0;
-    } else {
-        return currentIndex + 1;
+        
+        paintDiskToNewPosition(disc - 1, destinationPosition, dataMatrix[destinationPosition].length - 1);
+        debugger;
+        
+        console.log("Move disc " + (disc - 1) + " from " + sourcePosition + " to " + destinationPosition + ' slicedDisk ' + slicedDisk);
+        moveDisks(disc - 1, auxPosition, sourcePosition, destinationPosition);
     }
 }
 
-function tryMoveDisk(disk, currentIndex, nextIndex) {
-    if (nextIndex === currentIndex) {
-        dataMatrix[currentIndex].unshift(disk);
-        paintDiskToNewPosition(disk, nextIndex, dataMatrix[currentIndex].length - 1);
-        return false;
-    }
-
-    if (disk < (dataMatrix[nextIndex][0] || number + 1)) {
-        dataMatrix[nextIndex].unshift(disk);
-        paintDiskToNewPosition(disk, nextIndex, dataMatrix[nextIndex].length - 1);
-        return true;
-    } else {
-        return tryMoveDisk(disk, currentIndex, getNextIndex(nextIndex))
-    }    
-}
 
 function initFirstPosition(index, number, positionVector) {
     if (index > number) {
@@ -91,14 +64,12 @@ function initFirstPosition(index, number, positionVector) {
 };
 
 function paintDiskShift(index) {
-    debugger
-    let currentDisk = disksVector[index - 1];
+    let currentDisk = disksVector[index];
     currentDisk.style.bottom = `${ positionHeight + 2 * diskHeight}px`;
 }
 
 function paintDiskToNewPosition(index, nextIndex, dataIndex) {
-    debugger
-    let currentDisk = disksVector[index - 1];
+    let currentDisk = disksVector[index];
     currentDisk.style.left = `${ nextIndex * 33.3 + 16.5}%`;
     currentDisk.style.bottom = `${ dataIndex * diskHeight + 5}px`;
 }
