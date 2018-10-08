@@ -41,7 +41,7 @@ function formSubmit(event) {
   branchModel.angleAccumulator = angle;
 
   // generateTree(levelIndex, 2, 25, treeData);
-  generateTree(levelIndex, 3, 25, treeData);
+  generateTree(levelIndex, 2, 25, treeData);
 };
 
 function generateTree(index, maxLength, angle, prevParents) {
@@ -62,13 +62,12 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
   branchX = prevParents[index].originX;
   branchY = prevParents[index].originY;
 
-  debugger
-
   branchElement.style.left = branchX + 'px';
   branchElement.style.top = branchY + 'px';
 
   let leftBranch = branchElement.cloneNode(),
-      rightBranch = branchElement.cloneNode();
+      rightBranch = branchElement.cloneNode(),
+      rightAngle, leftAngle;
 
   leftBranch.style.height = prevParents[index].height + 'px';
   rightBranch.style.height = prevParents[index].height + 'px';
@@ -76,22 +75,32 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
   if (index < prevParents.length / 2) {
       leftBranch.style.transform = `rotate(${ -angle + prevParents[index].angleAccumulator }deg)`;
       rightBranch.style.transform = `rotate(${ angle + prevParents[index].angleAccumulator }deg)`;
+
+      leftAngle = -angle + prevParents[index].angleAccumulator;
+      rightAngle = angle + prevParents[index].angleAccumulator;
   } else {
       leftBranch.style.transform = `rotate(${ -angle - prevParents[index].angleAccumulator }deg)`;
       rightBranch.style.transform = `rotate(${ angle - prevParents[index].angleAccumulator }deg)`;
+
+      leftAngle = -angle - prevParents[index].angleAccumulator;
+      rightAngle = angle - prevParents[index].angleAccumulator;
   }
 
   treeElement.appendChild(leftBranch);
   treeElement.appendChild(rightBranch);
 
-  branchModel.angleAccumulator += angle;
-  branchModel.height = branchModel.height * 0.8;
-  branchModel.originX = branchX + prevParents[index].height * Math.sin(toRadians(angle));
-  branchModel.originY = branchY - prevParents[index].height * Math.cos(toRadians(angle));
+  branchModel.angleAccumulator = prevParents[index].angleAccumulator + angle;
+  branchModel.height = prevParents[index].height;
+  // branchModel.height = prevParents[index].height * 0.7;
+
+  debugger
+  branchModel.originX = branchX + prevParents[index].height * Math.sin(toRadians(rightAngle));
+  branchModel.originY = branchY - branchModel.height * Math.cos(toRadians(rightAngle));
   prevParents[index].branches.push(Object.assign({}, branchModel));
 
-  branchModel.originX = branchX - prevParents[index].height * Math.sin(toRadians(angle));
-  branchModel.originY = branchY - prevParents[index].height * Math.cos(toRadians(angle));
+
+  branchModel.originX = branchX - prevParents[index].height * Math.sin(toRadians(leftAngle));
+  branchModel.originY = branchY - branchModel.height * Math.cos(toRadians(leftAngle));
   prevParents[index].branches.push(Object.assign({}, branchModel));
 
   nextParents.push(prevParents[index].branches[0]);
