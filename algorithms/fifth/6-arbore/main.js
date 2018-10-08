@@ -1,84 +1,108 @@
-let treeElement, treeData, length, angle, index, previous, levelIndex = 0;
+let treeElement, trunkElement, treeData, length, angle = 25,
+    index, levelIndex = 0;
+let branchX, branchY, branchAngle;
 let branchElement = document.createElement('div');
 let config = {
     branchLength: 100,
     branchDistance: 50
-}
+};
+let branchModel = {
+  originX: 0,
+  originY: 0,
+  height: config.branchLength,
+  angleAccumulator: angle,
+  branches: []
+};
 branchElement.classList.add('branch');
 
-
 function contentLoadedHandler() {
-    treeElement = document.getElementById('tree');
+  trunkElement = document.createElement('div');
+  trunkElement.classList.add('trunk');
+
+  treeElement = document.getElementById('tree');
+  formSubmit()
 }
 
 function formSubmit(event) {
-    event.preventDefault();
-    length = +event.target[0].value;
-    angle = +event.target[1].value; 
-    
-    treeData = [[]];
+  // event.preventDefault();
+  // length = +event.target[0].value;
+  // angle = +event.target[1].value;
 
-    // generateTree(levelIndex, 3, 25, treeData);
-    // generateTree(levelIndex, length, angle, treeData);
-    generateTree(levelIndex, length, 25, treeData);
+  trunkElement.style.height = config.branchLength + 'px';
+  treeElement.appendChild(trunkElement);
+
+  treeData = [{
+      originX: trunkElement.offsetLeft,
+      originY: trunkElement.offsetTop - trunkElement.offsetHeight,
+      height: config.branchLength,
+      angleAccumulator: 0,
+      branches: []
+  }];
+  branchModel.angleAccumulator = angle;
+
+  // generateTree(levelIndex, 2, 25, treeData);
+  generateTree(levelIndex, 3, 25, treeData);
 };
 
 function generateTree(index, maxLength, angle, prevParents) {
-    if (index >= maxLength) {
-        return true;
-    }
+  if (index >= maxLength) {
+      return true;
+  }
 
-    branchElement.style.height = config.branchLength + 'px';    
-    let nextParents = fillBranches(prevParents, 0, [], index, angle);
-    config.branchLength = config.branchLength * .75;
-    config.branchDistance = config.branchDistance * .75;
-    return generateTree(++index, maxLength, angle, nextParents)
+  let nextParents = fillBranches(prevParents, 0, [], index, angle);
+  return generateTree(++index, maxLength, angle, nextParents);
 }
 
 function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
-    if (index >= prevParents.length) {
-        return nextParents;
-    }
+  if (index >= prevParents.length) {
+      return nextParents;
+  }
 
-    prevParents[index].push([]);
-    prevParents[index].push([]);
+  // Set position
+  branchX = prevParents[index].originX;
+  branchY = prevParents[index].originY;
 
-    nextParents.push(prevParents[index][0]);
-    nextParents.push(prevParents[index][1]);
-   
-    let rotationLeftBranch,
-        rotationRightBranch,
-        left;
-    
-    
-    if (index < prevParents.length / 2) {
-        rotationLeftBranch = -angle + 5 * levelIndex;
-        rotationRightBranch = angle + 5 * levelIndex;
-        left = 50 - (levelIndex * (config.branchDistance * 100 / treeElement.offsetWidth)) * angle / 10 - (index * config.branchDistance);
-    } else {
-        rotationLeftBranch = -angle - 5 * levelIndex;
-        rotationRightBranch = angle - 5 * levelIndex;
-        left = 50 + (levelIndex * (config.branchDistance * 100 / treeElement.offsetWidth)) * angle / 10 + ((prevParents.length - 1 - index) * config.branchDistance) ;
-    };
+  debugger
 
-    branchElement.style.top = levelIndex * config.branchLength + 'px';
-    console.log('left ', left)
-    branchElement.style.left = left + '%';
-    // branchElement.style.left = index * 200  + config.branchDistance + 'px';
+  branchElement.style.left = branchX + 'px';
+  branchElement.style.top = branchY + 'px';
 
-    let firstBranch = branchElement.cloneNode(),
-    secondBranch = branchElement.cloneNode();
-    
-        
-    firstBranch.style.transform = `rotate(${ rotationLeftBranch }deg) translateY(-1px)`;
-    secondBranch.style.transform = `rotate(${ rotationRightBranch }deg) translateY(-1px)`;
+  let leftBranch = branchElement.cloneNode(),
+      rightBranch = branchElement.cloneNode();
 
-    treeElement.appendChild(firstBranch);
-    treeElement.appendChild(secondBranch);
+  leftBranch.style.height = prevParents[index].height + 'px';
+  rightBranch.style.height = prevParents[index].height + 'px';
 
-    return fillBranches(prevParents, ++index, nextParents, levelIndex, angle);
+  if (index < prevParents.length / 2) {
+      leftBranch.style.transform = `rotate(${ -angle + prevParents[index].angleAccumulator }deg)`;
+      rightBranch.style.transform = `rotate(${ angle + prevParents[index].angleAccumulator }deg)`;
+  } else {
+      leftBranch.style.transform = `rotate(${ -angle - prevParents[index].angleAccumulator }deg)`;
+      rightBranch.style.transform = `rotate(${ angle - prevParents[index].angleAccumulator }deg)`;
+  }
+
+  treeElement.appendChild(leftBranch);
+  treeElement.appendChild(rightBranch);
+
+  branchModel.angleAccumulator += angle;
+  branchModel.height = branchModel.height * 0.8;
+  branchModel.originX = branchX + prevParents[index].height * Math.sin(toRadians(angle));
+  branchModel.originY = branchY - prevParents[index].height * Math.cos(toRadians(angle));
+  prevParents[index].branches.push(Object.assign({}, branchModel));
+
+  branchModel.originX = branchX - prevParents[index].height * Math.sin(toRadians(angle));
+  branchModel.originY = branchY - prevParents[index].height * Math.cos(toRadians(angle));
+  prevParents[index].branches.push(Object.assign({}, branchModel));
+
+  nextParents.push(prevParents[index].branches[0]);
+  nextParents.push(prevParents[index].branches[1]);
+
+  return fillBranches(prevParents, ++index, nextParents, levelIndex, angle);
 }
 
+function toRadians(degrees) {
+  return degrees * Math.PI / 180;
+}
 
 window.addEventListener('submit', formSubmit);
 window.addEventListener("DOMContentLoaded", contentLoadedHandler);
