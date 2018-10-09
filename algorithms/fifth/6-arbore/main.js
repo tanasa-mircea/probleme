@@ -5,7 +5,7 @@ let branchElement = document.createElement('div');
 let config = {
     branchLength: 100,
     branchDistance: 50,
-    branchScale: 1
+    branchScale: .8
 };
 let branchModel = {
   originX: 0,
@@ -28,7 +28,7 @@ function formSubmit(event) {
   length = +event.target[0].value;
   angle = +event.target[1].value;
 
-  treeElement.style.height = config.branchLength * (length + 2) + 'px';
+  treeElement.style.height =  '90vh';
   trunkElement.style.height = config.branchLength + 'px';
   trunkElement.style.left = treeElement.offsetWidth / 2 + 'px';
 
@@ -49,13 +49,27 @@ function formSubmit(event) {
   generateTree(levelIndex, length, angle, treeData);
 };
 
+function animateBranches(index, branches) {
+  if (index >= branches.length) {
+    return;
+  }
+
+  branches[index].node.style.height = branches[index].prevHeight + 'px';
+
+  return animateBranches(++index, branches);
+}
+
 function generateTree(index, maxLength, angle, prevParents) {
   if (index >= maxLength) {
       return true;
   }
 
   let nextParents = fillBranches(prevParents, 0, [], index, angle);
-  return generateTree(++index, maxLength, angle, nextParents);
+
+  setTimeout(() => {
+    animateBranches(0, nextParents);
+    return generateTree(++index, maxLength, angle, nextParents);
+  }, 200);
 }
 
 function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
@@ -74,8 +88,10 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
       rightBranch = branchElement.cloneNode(),
       rightAngle, leftAngle;
 
-  leftBranch.style.height = prevParents[index].height + 'px';
-  rightBranch.style.height = prevParents[index].height + 'px';
+  leftBranch.style.height = 0 + 'px';
+  rightBranch.style.height = 0 + 'px';
+  // leftBranch.style.height = prevParents[index].height + 'px';
+  // rightBranch.style.height = prevParents[index].height + 'px';
 
   leftAngle = prevParents[index].angle - angle;
   rightAngle = prevParents[index].angle + angle;
@@ -86,17 +102,20 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
   treeElement.appendChild(leftBranch);
   treeElement.appendChild(rightBranch);
 
+  branchModel.prevHeight = prevParents[index].height;
   branchModel.height = Math.floor(prevParents[index].height * config.branchScale);
 
   branchModel.angle = leftAngle;
   branchModel.originX = branchX + prevParents[index].height * Math.sin(toRadians(branchModel.angle));
   branchModel.originY = branchY - branchModel.height * Math.cos(toRadians(branchModel.angle));
+  branchModel.node = leftBranch;
   prevParents[index].branches.push(Object.assign({}, branchModel));
   nextParents.push(Object.assign({}, branchModel));
 
   branchModel.angle = rightAngle;
   branchModel.originX = branchX + prevParents[index].height * Math.sin(toRadians(branchModel.angle));
   branchModel.originY = branchY - branchModel.height * Math.cos(toRadians(branchModel.angle));
+  branchModel.node = rightBranch;
   prevParents[index].branches.push(Object.assign({}, branchModel));
   nextParents.push(Object.assign({}, branchModel));
 
