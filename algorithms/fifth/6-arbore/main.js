@@ -16,24 +16,24 @@ let branchModel = {
 };
 branchElement.classList.add('branch');
 branchElement.style.transition = `height ${ config.transitionTime }ms`;
-var debugPoint;
+// var debugPoint;
 
 function contentLoadedHandler() {
   trunkElement = document.createElement('div');
   trunkElement.classList.add('trunk');
   treeElement = document.getElementById('tree');
 
-  a = document.createElement('div');
-  a.classList.add('debugPoint');
-  document.body.appendChild(a);
-  debugPoint = document.getElementsByClassName('debugPoint')[0];
+  // a = document.createElement('div');
+  // a.classList.add('debugPoint');
+  // document.body.appendChild(a);
+  // debugPoint = document.getElementsByClassName('debugPoint')[0];
 
 }
 
 function formSubmit(event) {
   event.preventDefault();
-  length = 6;//+event.target[0].value;
-  angle = 45;//+event.target[1].value;
+  length = +event.target[0].value;
+  angle = +event.target[1].value;
   config.branchLength = +event.target[2].value;
   config.branchScale = +event.target[3].value;
 
@@ -52,7 +52,7 @@ function formSubmit(event) {
 
   treeData = [{
     originX: trunkElement.offsetLeft,
-    originY: trunkElement.offsetTop - trunkElement.offsetHeight,
+    originY: trunkElement.offsetTop,
     height: config.branchLength,
     angle: 0,
     branches: []
@@ -61,16 +61,6 @@ function formSubmit(event) {
   generateTree(levelIndex, length, angle, treeData);
 };
 
-// function animateBranches(index, branches) {
-//   if (index >= branches.length) {
-//     return;
-//   }
-
-//   branches[index].node.style.height = branches[index].prevHeight + 'px';
-
-//   return animateBranches(++index, branches);
-// }
-
 function generateTree(index, maxLength, angle, prevParents) {
   if (index >= maxLength) {
       return true;
@@ -78,10 +68,7 @@ function generateTree(index, maxLength, angle, prevParents) {
 
   let nextParents = fillBranches(prevParents, 0, [], index, angle);
 
-  setTimeout(() => {
-    //animateBranches(0, nextParents);
-    return generateTree(++index, maxLength, angle, nextParents);
-  }, config.transitionTime);
+  return generateTree(++index, maxLength, angle, nextParents);
 }
 
 function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
@@ -92,14 +79,14 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
   // Set position
   branchX = prevParents[index].originX;
   branchY = prevParents[index].originY;
-  var point = debugPoint.cloneNode();
-  treeElement.appendChild(point);
+  // var point = debugPoint.cloneNode();
+  // treeElement.appendChild(point);
 
   // Common styling and options
   branchElement.style.left = (branchX - 1.5) + 'px';
   branchElement.style.top = branchY + 'px';
-  point.style.left = (branchX - 2.5) + 'px';
-  point.style.top = (branchY - 2.5)+ 'px';
+  // point.style.left = (branchX - 2.5) + 'px';
+  // point.style.top = (branchY - 2.5)+ 'px';
 
   branchModel.prevHeight = prevParents[index].height;
   branchModel.height = Math.floor(prevParents[index].height * config.branchScale);
@@ -107,10 +94,6 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
   let leftBranch = branchElement.cloneNode(),
       rightBranch = branchElement.cloneNode(),
       rightAngle, leftAngle;
-
-
-  // TODO: Delete
-  let distanceToPoint = branchModel.height / Math.cos(toRadians(angle));
 
   // Left Branch Options
   leftBranch.style.height =  prevParents[index].height + 'px';
@@ -129,7 +112,6 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
 // Right Branch Options
   rightBranch.style.height =  prevParents[index].height + 'px';
   rightBranch.style.marginTop =  (-1 * prevParents[index].height) + 'px';
-  //rightBranch.style.height = 0 + 'px';
   rightAngle = prevParents[index].angle + angle;
   rightBranch.style.transform = `rotate(${ rightAngle }deg)`;
   treeElement.appendChild(rightBranch);
