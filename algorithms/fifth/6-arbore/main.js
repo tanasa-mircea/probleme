@@ -1,10 +1,11 @@
-let treeElement, trunkElement, treeData, length, angle = 25,
+let treeElement, trunkElement, treeData, length, angle,
     index, levelIndex = 0;
 let branchX, branchY, branchAngle;
 let branchElement = document.createElement('div');
 let config = {
     branchLength: 100,
-    branchDistance: 50
+    branchDistance: 50,
+    branchScale: 1
 };
 let branchModel = {
   originX: 0,
@@ -20,13 +21,12 @@ function contentLoadedHandler() {
   trunkElement.classList.add('trunk');
 
   treeElement = document.getElementById('tree');
-  formSubmit()
 }
 
 function formSubmit(event) {
-  // event.preventDefault();
-  // length = +event.target[0].value;
-  // angle = +event.target[1].value;
+  event.preventDefault();
+  length = +event.target[0].value;
+  angle = +event.target[1].value;
 
   trunkElement.style.height = config.branchLength + 'px';
 
@@ -44,8 +44,7 @@ function formSubmit(event) {
     branches: []
   }];
 
-  // generateTree(levelIndex, length, angle, treeData);
-  generateTree(levelIndex, 7, 25, treeData);
+  generateTree(levelIndex, length, angle, treeData);
 };
 
 function generateTree(index, maxLength, angle, prevParents) {
@@ -85,7 +84,7 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
   treeElement.appendChild(leftBranch);
   treeElement.appendChild(rightBranch);
 
-  branchModel.height = Math.floor(prevParents[index].height * 0.85);
+  branchModel.height = Math.floor(prevParents[index].height * config.branchScale);
 
   branchModel.angle = leftAngle;
   branchModel.originX = branchX + prevParents[index].height * Math.sin(toRadians(branchModel.angle));
