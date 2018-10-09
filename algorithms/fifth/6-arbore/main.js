@@ -29,6 +29,7 @@ function formSubmit(event) {
   angle = +event.target[1].value;
 
   trunkElement.style.height = config.branchLength + 'px';
+  trunkElement.style.left = treeElement.offsetWidth / 2 + 'px';
 
   while (treeElement.firstChild) {
     treeElement.removeChild(treeElement.firstChild);
