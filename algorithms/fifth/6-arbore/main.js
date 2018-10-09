@@ -90,8 +90,8 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
 
   // debugger
   branchModel.angle = leftAngle;
-  branchModel.originX = branchX - Math.abs(prevParents[index].height * Math.sin(toRadians(leftAngle)));
-  branchModel.originY = branchY - branchModel.height * Math.cos(toRadians(leftAngle));
+  branchModel.originX = branchX + prevParents[index].height * Math.sin(toRadians(branchModel.angle));
+  branchModel.originY = branchY - branchModel.height * Math.cos(toRadians(branchModel.angle));
   prevParents[index].branches.push(Object.assign({}, branchModel));
   nextParents.push(Object.assign({}, branchModel));
 
