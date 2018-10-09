@@ -58,7 +58,30 @@ function formSubmit(event) {
     branches: []
   }];
 
-  generateTree(levelIndex, length, angle, treeData);
+  // setInterval(() => {
+  //   while (treeElement.firstChild) {
+  //     treeElement.removeChild(treeElement.firstChild);
+  //   };
+
+  //   treeElement.appendChild(trunkElement);
+
+  //   angle = angle + 3;
+
+  //   generateTree(levelIndex, length, angle, treeData);
+  // }, 300);
+
+  window.requestAnimationFrame(function test() {
+    while (treeElement.firstChild) {
+      treeElement.removeChild(treeElement.firstChild);
+    };
+
+    treeElement.appendChild(trunkElement);
+
+    angle = angle + 3;
+
+    generateTree(levelIndex, length, angle, treeData);
+    window.requestAnimationFrame(test);
+  })
 };
 
 function generateTree(index, maxLength, angle, prevParents) {
@@ -107,6 +130,7 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
   branchModel.originY = branchY - branchModel.prevHeight * Math.sin(toRadians(90 - branchModel.angle));
   branchModel.node = leftBranch;
 
+  prevParents[index].branches.push(Object.assign({}, branchModel));
   nextParents.push(Object.assign({}, branchModel));
 
 // Right Branch Options
@@ -121,7 +145,9 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
   branchModel.originY = branchY - branchModel.prevHeight * Math.sin(toRadians(90 - branchModel.angle));
   branchModel.node = rightBranch;
 
+  prevParents[index].branches.push(Object.assign({}, branchModel));
   nextParents.push(Object.assign({}, branchModel));
+
 
   return fillBranches(prevParents, ++index, nextParents, levelIndex, angle);
 }
