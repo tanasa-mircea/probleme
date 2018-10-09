@@ -4,31 +4,36 @@ let branchX, branchY, branchAngle;
 let branchElement = document.createElement('div');
 let config = {
     branchLength: 100,
-    branchDistance: 50,
-    branchScale: .8
+    branchScale: .8,
+    transitionTime: 200
 };
 let branchModel = {
   originX: 0,
   originY: 0,
-  height: config.branchLength,
-  angle: angle,
+  height: 0,
+  angle: 0,
   branches: []
 };
 branchElement.classList.add('branch');
+branchElement.style.transition = `height ${ config.transitionTime }ms`;
 
 function contentLoadedHandler() {
   trunkElement = document.createElement('div');
   trunkElement.classList.add('trunk');
-
   treeElement = document.getElementById('tree');
 }
 
 function formSubmit(event) {
   event.preventDefault();
   length = +event.target[0].value;
-  angle = +event.target[1].value;
+  angle = +event.target[1].value / 2;
+  config.branchLength = +event.target[2].value;
+  config.branchScale = +event.target[3].value;
 
-  treeElement.style.height =  '90vh';
+  branchModel.height = config.branchLength;
+  branchModel.angle = angle;
+
+  treeElement.style.height = '90vh';
   trunkElement.style.height = config.branchLength + 'px';
   trunkElement.style.left = treeElement.offsetWidth / 2 + 'px';
 
@@ -69,7 +74,7 @@ function generateTree(index, maxLength, angle, prevParents) {
   setTimeout(() => {
     animateBranches(0, nextParents);
     return generateTree(++index, maxLength, angle, nextParents);
-  }, 200);
+  }, config.transitionTime);
 }
 
 function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
@@ -81,42 +86,45 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
   branchX = prevParents[index].originX;
   branchY = prevParents[index].originY;
 
+  // Common styling and options
   branchElement.style.left = branchX + 'px';
   branchElement.style.top = branchY + 'px';
+
+  branchModel.prevHeight = prevParents[index].height;
+  branchModel.height = Math.floor(prevParents[index].height * config.branchScale);
 
   let leftBranch = branchElement.cloneNode(),
       rightBranch = branchElement.cloneNode(),
       rightAngle, leftAngle;
 
+
+  let distanceToPoint = branchModel.height / Math.cos(toRadians(angle));
+  console.log(`distanceToPoint ${ distanceToPoint }`);
+
+  // Left Branch Options
   leftBranch.style.height = 0 + 'px';
-  rightBranch.style.height = 0 + 'px';
-  // leftBranch.style.height = prevParents[index].height + 'px';
-  // rightBranch.style.height = prevParents[index].height + 'px';
-
   leftAngle = prevParents[index].angle - angle;
-  rightAngle = prevParents[index].angle + angle;
-
   leftBranch.style.transform = `rotate(${ leftAngle }deg)`;
-  rightBranch.style.transform = `rotate(${ rightAngle }deg)`;
-
   treeElement.appendChild(leftBranch);
-  treeElement.appendChild(rightBranch);
-
-  branchModel.prevHeight = prevParents[index].height;
-  branchModel.height = Math.floor(prevParents[index].height * config.branchScale);
 
   branchModel.angle = leftAngle;
-  branchModel.originX = branchX + prevParents[index].height * Math.sin(toRadians(branchModel.angle));
-  branchModel.originY = branchY - branchModel.height * Math.cos(toRadians(branchModel.angle));
+  branchModel.originX = branchX + prevParents[index].height * Math.cos(toRadians(90 - branchModel.angle));
+  branchModel.originY = branchY - branchModel.height * Math.sin(toRadians(90 - branchModel.angle));
   branchModel.node = leftBranch;
-  prevParents[index].branches.push(Object.assign({}, branchModel));
+
   nextParents.push(Object.assign({}, branchModel));
 
+// Right Branch Options
+  rightBranch.style.height = 0 + 'px';
+  rightAngle = prevParents[index].angle + angle;
+  rightBranch.style.transform = `rotate(${ rightAngle }deg)`;
+  treeElement.appendChild(rightBranch);
+
   branchModel.angle = rightAngle;
-  branchModel.originX = branchX + prevParents[index].height * Math.sin(toRadians(branchModel.angle));
-  branchModel.originY = branchY - branchModel.height * Math.cos(toRadians(branchModel.angle));
+  branchModel.originX = branchX + prevParents[index].height * Math.cos(toRadians(90 - branchModel.angle));
+  branchModel.originY = branchY - branchModel.height * Math.sin(toRadians(90 - branchModel.angle));
   branchModel.node = rightBranch;
-  prevParents[index].branches.push(Object.assign({}, branchModel));
+
   nextParents.push(Object.assign({}, branchModel));
 
   return fillBranches(prevParents, ++index, nextParents, levelIndex, angle);
