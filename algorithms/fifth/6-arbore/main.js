@@ -58,18 +58,6 @@ function formSubmit(event) {
     branches: []
   }];
 
-  // setInterval(() => {
-  //   while (treeElement.firstChild) {
-  //     treeElement.removeChild(treeElement.firstChild);
-  //   };
-
-  //   treeElement.appendChild(trunkElement);
-
-  //   angle = angle + 3;
-
-  //   generateTree(levelIndex, length, angle, treeData);
-  // }, 300);
-
   window.requestAnimationFrame(function test() {
     while (treeElement.firstChild) {
       treeElement.removeChild(treeElement.firstChild);
