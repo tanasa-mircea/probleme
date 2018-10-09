@@ -13,7 +13,7 @@
             background-color: black;
             width: 3px;
             position: absolute;
-            transform-origin: bottom;
+            transform-origin: bottom center;
         }
 
         .trunk {
@@ -32,6 +32,13 @@
         .branch.right {
             transform: rotate(30deg);
         }
+
+        .debugPoint {
+            background: red;
+            position: absolute;
+            height: 5px;
+            width: 5px;
+        }
     </style>
 </head>
 
@@ -40,11 +47,11 @@
         <label for="">Depth</label>
         <input type="text" placeholder="Depth" value="5">
         <label for="">Angle</label>
-        <input type="text" placeholder="Angle" value="70">
+        <input type="text" placeholder="Angle" value="35">
         <label for="">Length</label>
         <input type="text" placeholder="Length" value="100">
         <label for="">Length Scale</label>
-        <input type="text" placeholder="Length Scale" value="0.8">
+        <input type="text" placeholder="Length Scale" value="0.75">
         <button>Submit</button>
     </form>
 
