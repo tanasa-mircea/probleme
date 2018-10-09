@@ -7,14 +7,16 @@ let iterationsNumber = 3;
 function contentLoadedHandler() {
     wrapperElement = document.getElementById('wrapper');
     generateFractal(1);
-} 
+}
 
 function generateFractal(number) {
     paintSquares(0, number, 0, 0);
 
     newNumber = number * 4;
     if (newNumber <= Math.pow(4, iterationsNumber)) {
-        return generateFractal(newNumber)
+        setTimeout(() => {
+            return generateFractal(newNumber)
+        }, 300)
     } else {
         return false;
     }
@@ -33,7 +35,7 @@ function paintSquares(count, number, index, rowCount) {
     squareSide = (600 / Math.sqrt(number)) * 100 / 600;
     squareElement.style.height = 600 / Math.sqrt(number) + 'px';
     squareElement.style.width = 600 / Math.sqrt(number) + 'px';
-    
+
     if (number === 1) {
         squareElement.style.left = '50%';
         squareElement.style.top = '50%';
