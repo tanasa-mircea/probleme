@@ -28,6 +28,7 @@ function formSubmit(event) {
   length = +event.target[0].value;
   angle = +event.target[1].value;
 
+  treeElement.style.height = config.branchLength * (length + 2) + 'px';
   trunkElement.style.height = config.branchLength + 'px';
   trunkElement.style.left = treeElement.offsetWidth / 2 + 'px';
 
