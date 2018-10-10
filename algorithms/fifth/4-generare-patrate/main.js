@@ -14,39 +14,21 @@ function formSubmit(event) {
     while (resultElement.firstChild) {
         resultElement.removeChild(resultElement.firstChild);
     }
-    
+
     dataMatrix = generateMatrix(1, number, []);
-    dataMatrix = fillMatrix(number - 2, dataMatrix);
-    console.log('dataMatrix ', dataMatrix);   
 };
 
-function paintRow(row, index) {
-    if (index > row.length) {
-        resultElement.appendChild(breakElement.cloneNode())
-        return;
-    }
-
-    resultElement.appendChild(plainSquare.cloneNode());
-    return paintRow(row, ++index)
-}
-
-function fillMatrix(index, dataMatrix) {
-    if (index < 0) {
-        return dataMatrix
-    };
-
-    currentRow = dataMatrix[index];
-    dataMatrix.push(currentRow);
-    paintRow(currentRow, 1);
-    return fillMatrix(--index, dataMatrix);
-}
-
 function generateMatrix(index, number, matrix) {
-    if (index > number) {
+    if (index > number * 2 - 1) {
         return matrix;
     }
 
-    matrix.push(generateRow(index, []))
+    if (index > number) {
+        matrix.push(generateRow(number - index % number, []))
+    } else {
+        matrix.push(generateRow(index, []))
+    }
+
     return generateMatrix(++index, number, matrix);
 }
 
@@ -54,7 +36,7 @@ function generateRow(howMany, accumulator) {
     if (accumulator.length >= howMany) {
         resultElement.appendChild(breakElement.cloneNode())
         return accumulator;
-    } 
+    }
 
     accumulator.push(1);
     resultElement.appendChild(plainSquare.cloneNode());
