@@ -39,7 +39,6 @@ function executeAnimation(index, animationsQueue) {
         return false;
     }
 
-
     setTimeout(function() {
         currentAnimation = animationsQueue[index];
         currentAnimation.function.apply(this, currentAnimation.params);
@@ -55,13 +54,11 @@ function moveDisks(disc, sourcePosition, auxPosition, destinationPosition) {
         var slicedDisk = dataMatrix[sourcePosition].shift();
         dataMatrix[destinationPosition].unshift(slicedDisk);
 
-        // paintDiskShift(disc - 1);
         animationsQueue.push({
             function: paintDiskShift,
             params: [disc - 1]
         });
 
-        // paintDiskToNewPosition(disc - 1, destinationPosition, dataMatrix[destinationPosition].length - 1);
         animationsQueue.push({
             function: paintDiskToNewPosition,
             params: [disc - 1, destinationPosition, dataMatrix[destinationPosition].length - 1]
