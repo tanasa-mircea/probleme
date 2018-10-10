@@ -13,6 +13,10 @@
             position: absolute;
             transition: transform .5s;
             transform: translate(-50%, -50%) scale(0);
+            /* animation-name: breathe; */
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+            animation-direction: alternate;
         }
 
         #wrapper {
@@ -20,6 +24,15 @@
             width: 800px;
             position: relative;
             border: 1px solid black;
+        }
+
+        @keyframes breathe {
+            from {
+                transform: translate(-50%, -50%) scale(1.5);
+            }
+            to {
+                transform: translate(-50%, -50%) scale(.8);
+            }
         }
     </style>
 </head>

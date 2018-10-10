@@ -45,13 +45,18 @@ function paintSquares(count, number, index, rowCount) {
         squareElement.style.left = squareSide / 2 +  index * squareSide  + '%';
         squareElement.style.top = squareSide / 2 + rowCount  * squareSide  +  '%';
     }
-    let clone = squareElement.cloneNode();
+    let clone = squareElement.cloneNode(),
+        animDuration = 500 + Math.random() * 1000;
 
     wrapperElement.appendChild(clone);
 
-    setTimeout(() => {
+    setTimeout(function() {
         clone.style.transform = 'translate(-50%, -50%) scale(1)';
-    }, 500 + Math.random() * 1000);
+        setTimeout(function() {
+            clone.style.animationDuration = animDuration * 2 + 'ms';
+            clone.style.animationName = 'breathe';
+        }, 300);
+    }, animDuration);
 
     return paintSquares(++count, number, ++index, rowCount);
 }
