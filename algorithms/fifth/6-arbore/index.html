@@ -10,10 +10,14 @@
     <style>
         .branch,
         .trunk {
-            background-color: black;
+            background-color: #5f453c;
             width: 3px;
             position: absolute;
             transform-origin: bottom center;
+        }
+
+        .branch.leaf {
+            background-color: #8bc34a;
         }
 
         .trunk {
@@ -23,14 +27,6 @@
         #tree {
             position: relative;
             width: 100%;
-        }
-
-        .branch.left {
-            transform: rotate(130deg);
-        }
-
-        .branch.right {
-            transform: rotate(30deg);
         }
 
         .debugPoint {
@@ -52,6 +48,12 @@
         <input type="text" placeholder="Length" value="150">
         <label for="">Length Scale</label>
         <input type="text" placeholder="Length Scale" value="0.75">
+        <label for="">Leaf Levels</label>
+        <input type="text" placeholder="Leaf Levels" value="2">
+        <label for="">Width</label>
+        <input type="text" placeholder="Width" value="10">
+        <label for="">Width Scale</label>
+        <input type="text" placeholder="Width Scale" value="0.85">
         <button>Submit</button>
     </form>
 

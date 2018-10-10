@@ -1,10 +1,12 @@
-let treeElement, trunkElement, treeData, length, angle,
+let treeElement, trunkElement, treeData, length, angle, leafLevels,
     index, levelIndex = 0;
 let branchX, branchY, branchAngle;
 let branchElement = document.createElement('div');
 let config = {
     branchLength: 100,
     branchScale: .8,
+    branchWidth: 3,
+    branchWidthScale: 1,
     transitionTime: 200
 };
 let branchModel = {
@@ -12,6 +14,7 @@ let branchModel = {
   originY: 0,
   height: 0,
   angle: 0,
+  level: 0,
   branches: []
 };
 branchElement.classList.add('branch');
@@ -36,12 +39,17 @@ function formSubmit(event) {
   angle = +event.target[1].value;
   config.branchLength = +event.target[2].value;
   config.branchScale = +event.target[3].value;
+  leafLevels = +event.target[4].value;
+  config.branchWidth = +event.target[5].value;
+  config.branchWidthScale = +event.target[6].value;
 
   branchModel.height = config.branchLength;
+  branchModel.width = config.branchWidth;
   branchModel.angle = angle;
 
   treeElement.style.height = '90vh';
   trunkElement.style.height = config.branchLength + 'px';
+  trunkElement.style.width = config.branchWidth + 'px';
   trunkElement.style.left = treeElement.offsetWidth / 2 + 'px';
 
   while (treeElement.firstChild) {
@@ -54,7 +62,9 @@ function formSubmit(event) {
     originX: trunkElement.offsetLeft,
     originY: trunkElement.offsetTop,
     height: config.branchLength,
+    width: config.branchWidth,
     angle: 0,
+    level: 0,
     branches: []
   }];
 
@@ -68,8 +78,9 @@ function formSubmit(event) {
     angle = angle + 3;
 
     generateTree(levelIndex, length, angle, treeData);
-    window.requestAnimationFrame(test);
-  })
+
+    // window.requestAnimationFrame(test);
+  });
 };
 
 function generateTree(index, maxLength, angle, prevParents) {
@@ -96,18 +107,28 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
   // Common styling and options
   branchElement.style.left = (branchX - 1.5) + 'px';
   branchElement.style.top = branchY + 'px';
+  branchModel.level = levelIndex + 1;
+
   // point.style.left = (branchX - 2.5) + 'px';
   // point.style.top = (branchY - 2.5)+ 'px';
 
   branchModel.prevHeight = prevParents[index].height;
   branchModel.height = Math.floor(prevParents[index].height * config.branchScale);
+  branchModel.width = Math.floor(prevParents[index].width * config.branchWidthScale);
+  branchModel.branches = [];
 
   let leftBranch = branchElement.cloneNode(),
       rightBranch = branchElement.cloneNode(),
       rightAngle, leftAngle;
 
+  if (levelIndex + 1 > length - leafLevels) {
+    leftBranch.classList.add('leaf');
+    rightBranch.classList.add('leaf');
+  }
+
   // Left Branch Options
   leftBranch.style.height =  prevParents[index].height + 'px';
+  leftBranch.style.width =  prevParents[index].width + 'px';
   leftBranch.style.marginTop =  (-1 * prevParents[index].height) + 'px';
   leftAngle = prevParents[index].angle - angle;
   leftBranch.style.transform = `rotate(${ leftAngle }deg)`;
@@ -118,11 +139,12 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
   branchModel.originY = branchY - branchModel.prevHeight * Math.sin(toRadians(90 - branchModel.angle));
   branchModel.node = leftBranch;
 
-  prevParents[index].branches.push(Object.assign({}, branchModel));
+  prevParents[index].branches[0] = (Object.assign({}, branchModel));
   nextParents.push(Object.assign({}, branchModel));
 
 // Right Branch Options
   rightBranch.style.height =  prevParents[index].height + 'px';
+  rightBranch.style.width =  prevParents[index].width + 'px';
   rightBranch.style.marginTop =  (-1 * prevParents[index].height) + 'px';
   rightAngle = prevParents[index].angle + angle;
   rightBranch.style.transform = `rotate(${ rightAngle }deg)`;
@@ -133,7 +155,7 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
   branchModel.originY = branchY - branchModel.prevHeight * Math.sin(toRadians(90 - branchModel.angle));
   branchModel.node = rightBranch;
 
-  prevParents[index].branches.push(Object.assign({}, branchModel));
+  prevParents[index].branches[1] = (Object.assign({}, branchModel));
   nextParents.push(Object.assign({}, branchModel));
 
 
