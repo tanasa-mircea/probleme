@@ -6,9 +6,12 @@ function contentLoadedHandler() {
 
 function formSubmit(event) {
     event.preventDefault();
-    vector = event.target[0].value.split(',').map(n => +n);
-    number = +event.target[1].value; 
-    
+    vector = event.target[0].value
+                .split(',')
+                .map(n => +n)
+                .sort();
+
+    number = +event.target[1].value;
     result = binarySearch(vector, number);
     resultElement.innerHTML = result;
 };
@@ -18,7 +21,7 @@ function binarySearch(vector, number) {
         newVector;
 
     if (vector[vectorMiddle] === number) {
-        return true;
+        return vectorMiddle;
     }
 
     if (number < vector[vectorMiddle]) {
@@ -30,14 +33,14 @@ function binarySearch(vector, number) {
     }
 
     if (newVector.length === 0) {
-        return false;
+        return -1;
     }
 
     if (newVector.length === 1 && newVector[0] !== number) {
-        return false;
+        return -1;
     }
 
-    return binarySearch(newVector, number)
+    return binarySearch(newVector, number);
 }
 
 
