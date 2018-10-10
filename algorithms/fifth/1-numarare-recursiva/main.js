@@ -8,7 +8,7 @@ function formSubmit(event) {
     event.preventDefault();
     input = event.target[0].value;
     inputVector = input.split(',').map(n => +n);
-    searchedNumber = +event.target[1].value;  
+    searchedNumber = +event.target[1].value;
 
     count = recursiveCount(inputVector, searchedNumber, 0, 0);
     resultElement.innerHTML = count;
@@ -20,9 +20,9 @@ function recursiveCount(vector, number, accumulator, index) {
     }
 
     if (index > vector.length) {
-        return accumulator
+        return accumulator;
     } else {
-        return recursiveCount(vector, number, accumulator, ++index)
+        return recursiveCount(vector, number, accumulator, ++index);
     }
 }
 

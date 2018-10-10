@@ -8,7 +8,6 @@ function formSubmit(event) {
     event.preventDefault();
     length = +event.target[0].value;
 
-
     subsets = recursiveGeneration(length, [generateFirstValue(length)], 1);
     console.log('subsets', subsets)
 };
@@ -20,12 +19,12 @@ function generateFirstValue(length) {
         firstValue.push(0);
     }
 
-    return firstValue
+    return firstValue;
 }
 
 function recursiveGeneration(length, accumulator, index) {
     let newSubset = binaryAdd(accumulator[index - 1]);
-    
+
     if (newSubset.length > length) {
         return accumulator;
     } else {
@@ -48,7 +47,7 @@ function binaryAdd(vectorParam) {
             isDone = true;
         }
     }
-    
+
     return vector;
 }
 
