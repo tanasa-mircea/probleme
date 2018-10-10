@@ -44,7 +44,7 @@ function formSubmit(event) {
   config.branchWidthScale = +event.target[6].value;
 
   branchModel.height = config.branchLength;
-  branchModel.width = config.branchWidth;
+  branchModel.width = config.branchWidth * config.branchWidthScale;
   branchModel.angle = angle;
 
   treeElement.style.height = '90vh';
@@ -62,7 +62,7 @@ function formSubmit(event) {
     originX: trunkElement.offsetLeft,
     originY: trunkElement.offsetTop,
     height: config.branchLength,
-    width: config.branchWidth,
+    width: config.branchWidth * config.branchWidthScale,
     angle: 0,
     level: 0,
     branches: []
@@ -128,7 +128,7 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
 
   // Left Branch Options
   leftBranch.style.height =  prevParents[index].height + 'px';
-  leftBranch.style.width =  prevParents[index].width + 'px';
+  leftBranch.style.width =  Math.max(prevParents[index].width, 1) + 'px';
   leftBranch.style.marginTop =  (-1 * prevParents[index].height) + 'px';
   leftAngle = prevParents[index].angle - angle;
   leftBranch.style.transform = `rotate(${ leftAngle }deg)`;
@@ -144,7 +144,7 @@ function fillBranches(prevParents, index, nextParents, levelIndex, angle) {
 
 // Right Branch Options
   rightBranch.style.height =  prevParents[index].height + 'px';
-  rightBranch.style.width =  prevParents[index].width + 'px';
+  rightBranch.style.width =  Math.max(prevParents[index].width, 1) + 'px';
   rightBranch.style.marginTop =  (-1 * prevParents[index].height) + 'px';
   rightAngle = prevParents[index].angle + angle;
   rightBranch.style.transform = `rotate(${ rightAngle }deg)`;

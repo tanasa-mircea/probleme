@@ -64,7 +64,6 @@ function moveDisks(disc, sourcePosition, auxPosition, destinationPosition) {
             params: [disc - 1, destinationPosition, dataMatrix[destinationPosition].length - 1]
         });
 
-        console.log("Move disc " + (disc - 1) + " from " + sourcePosition + " to " + destinationPosition );
         moveDisks(disc - 1, auxPosition, sourcePosition, destinationPosition);
     }
 }
@@ -78,8 +77,8 @@ function initFirstPosition(index, number, positionVector) {
     positionVector.push(index);
     disksVector.push(diskClone);
 
-    diskClone.style.width = `${ index * 5 }%`;
-    diskClone.style.left = `${ 0 * 33.3 + 16.5}%`;
+    diskClone.style.width = `${ index * 2 }%`;
+    diskClone.style.left = `${ 0 * 33.333 + 16.5}%`;
     diskClone.style.bottom = `${(number - index) * diskHeight + 5}px`;
 
     wrapperElement.appendChild(diskClone);
@@ -93,7 +92,7 @@ function paintDiskShift(index) {
 
 function paintDiskToNewPosition(index, nextIndex, dataIndex) {
     let currentDisk = disksVector[index];
-    currentDisk.style.left = `${ nextIndex * 33.3 + 16.5}%`;
+    currentDisk.style.left = `${ nextIndex * 33.333 + 16.5}%`;
     currentDisk.style.bottom = `${ dataIndex * diskHeight + 5}px`;
 }
 
