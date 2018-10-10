@@ -24,9 +24,9 @@ function generateMatrix(index, number, matrix) {
     }
 
     if (index > number) {
-        matrix.push(generateRow(number - index % number, []))
+        matrix.push(generateRow(number - index % number, []));
     } else {
-        matrix.push(generateRow(index, []))
+        matrix.push(generateRow(index, []));
     }
 
     return generateMatrix(++index, number, matrix);
@@ -34,7 +34,7 @@ function generateMatrix(index, number, matrix) {
 
 function generateRow(howMany, accumulator) {
     if (accumulator.length >= howMany) {
-        resultElement.appendChild(breakElement.cloneNode())
+        resultElement.appendChild(breakElement.cloneNode());
         return accumulator;
     }
 
