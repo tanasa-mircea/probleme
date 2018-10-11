@@ -40,9 +40,9 @@ function mixin(receiver, supplier) {
 }
 
 // Event Manager
-function EventTarget() {}
-EventTarget.prototype = {
-    constructor: EventTarget,
+function CustomEventTarget() {}
+CustomEventTarget.prototype = {
+    constructor: CustomEventTarget,
 
     addListener: function(type, listener) {
         // create an array if it doesn't exist
@@ -204,7 +204,9 @@ function Slider(min, max) {
     this.node.appendChild(this.displayer.node);
 };
 
-mixin(Slider.prototype, EventTarget.prototype);
+debugger;
+mixin(Slider.prototype, new CustomEventTarget());
+//mixin(Slider.prototype, CustomEventTarget.prototype);
 
 Slider.prototype.constructor = Slider;
 
