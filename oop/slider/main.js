@@ -89,7 +89,6 @@ EventTarget.prototype = {
 // Displayer used to display and update currentValue
 function Displayer(initialValue, parent) {
     this.node = displayerElement.cloneNode();
-    this.valueNode = valueElement.cloneNode();
     this.configFormNode = configFormElement.cloneNode(true);
     this.configFormAbsNode = configFormAbsElement.cloneNode(true);
 
@@ -97,10 +96,9 @@ function Displayer(initialValue, parent) {
     this.configFormNode.classList.remove('hidden');
     this.configFormAbsNode.classList.remove('hidden');
 
-    this.valueNode.innerHTML = 'Value: ' + initialValue;
+    this.configFormAbsNode[0].value = initialValue;
     this.parent = parent;
 
-    this.node.appendChild(this.valueNode);
     this.node.appendChild(this.configFormNode);
     this.node.appendChild(this.configFormAbsNode);
 
@@ -117,14 +115,9 @@ function Displayer(initialValue, parent) {
     }.bind(this));
 
     this.parent.addListener('positionChange', function displayerPositionChangeHandler(event) {
-        this.updateValue(event.newValue);
         this.updatePercentageForm(event.newPercentage);
         this.updateAbsoluteForm(event.newValue);
     }.bind(this));
-};
-
-Displayer.prototype.updateValue = function updateValue(newVal) {
-    this.valueNode.innerHTML = 'Value: ' + newVal;
 };
 
 Displayer.prototype.updatePercentageForm = function updateValue(newVal) {
