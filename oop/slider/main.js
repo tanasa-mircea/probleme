@@ -1,11 +1,11 @@
 var configFormElement, configFormAbsElement;
+
+// Mock elements
 var lineElement = document.createElement('div');
 lineElement.classList.add('slider-line');
 
-var displayerElement = document.createElement('div'),
-    valueElement = document.createElement('div');
+var displayerElement = document.createElement('div');
 displayerElement.classList.add('displayer');
-valueElement.classList.add('value');
 
 var knobElement = document.createElement('div');
 knobElement.classList.add('slider-knob');
@@ -216,7 +216,7 @@ Slider.prototype.getPercentageByPosition = function getPercentageByPosition(even
 };
 
 Slider.prototype.getDisplayPercentageByPosition = function getDisplayPercentageByPosition(eventX) {
-    var maxLeft = Math.min(eventX - this.node.offsetLeft, this.line.node.offsetLeft + this.line.node.offsetWidth - this.knob.node.offsetWidth),
+    var maxLeft = Math.min(eventX - this.node.offsetLeft - this.knob.node.offsetWidth / 2, this.line.node.offsetLeft + this.line.node.offsetWidth - this.knob.node.offsetWidth),
         minLeft = Math.max(maxLeft, 0);
 
     return minLeft / this.line.node.offsetWidth * 100;
