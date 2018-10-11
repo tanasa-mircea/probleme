@@ -46,9 +46,24 @@
             top: 50%;
             transform: translate(100%, -50%);
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body style="margin: 0;">
+    <form class="config-form hidden">
+        <label>Percentage</label>
+        <input type="text" value="0">
+        <button type="submit">Submit</button>
+    </form>
+
+    <form class="config-form-abs hidden">
+        <label>Absolute</label>
+        <input type="text" value="0">
+        <button type="submit">Submit</button>
+    </form>
     <div id="wrapper"></div>
 </body>
 </html>

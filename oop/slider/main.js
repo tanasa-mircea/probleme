@@ -1,8 +1,11 @@
+var configFormElement, configFormAbsElement;
 var lineElement = document.createElement('div');
 lineElement.classList.add('slider-line');
 
-var displayerElement = document.createElement('div');
+var displayerElement = document.createElement('div'),
+    valueElement = document.createElement('div');
 displayerElement.classList.add('displayer');
+valueElement.classList.add('value');
 
 var knobElement = document.createElement('div');
 knobElement.classList.add('slider-knob');
@@ -10,10 +13,35 @@ knobElement.classList.add('slider-knob');
 var sliderElement = document.createElement('div');
 sliderElement.classList.add('slider');
 
+document.addEventListener("DOMContentLoaded", contentLoadedHandler);
+
+// Initialize Sliders
+function contentLoadedHandler() {
+    wrapperElement = document.getElementById('wrapper');
+    configFormElement = document.getElementsByClassName('config-form')[0];
+    configFormAbsElement = document.getElementsByClassName('config-form-abs')[0];
+
+    var sliderOne = new Slider(-400, 200);
+    wrapperElement.appendChild(sliderOne.node);
+    var sliderTwo = new Slider(0, 300);
+    wrapperElement.appendChild(sliderTwo.node);
+    var sliderThree = new Slider(200, 950);
+    wrapperElement.appendChild(sliderThree.node);
+}
+
+// Mixin function
+function mixin(receiver, supplier) {
+    Object.keys(supplier).forEach(function(property) {
+        var descriptor = Object.getOwnPropertyDescriptor(supplier, property);
+        Object.defineProperty(receiver, property, descriptor);
+    });
+
+    return receiver;
+}
+
 // Event Manager
 function EventTarget() {}
 EventTarget.prototype = {
-
     constructor: EventTarget,
 
     addListener: function(type, listener) {
@@ -61,18 +89,51 @@ EventTarget.prototype = {
 // Displayer used to display and update currentValue
 function Displayer(initialValue, parent) {
     this.node = displayerElement.cloneNode();
-    this.node.innerHTML = 'Value: ' + initialValue;
+    this.valueNode = valueElement.cloneNode();
+    this.configFormNode = configFormElement.cloneNode(true);
+    this.configFormAbsNode = configFormAbsElement.cloneNode(true);
+
+    // Only the original forms should be hidden
+    this.configFormNode.classList.remove('hidden');
+    this.configFormAbsNode.classList.remove('hidden');
+
+    this.valueNode.innerHTML = 'Value: ' + initialValue;
     this.parent = parent;
+
+    this.node.appendChild(this.valueNode);
+    this.node.appendChild(this.configFormNode);
+    this.node.appendChild(this.configFormAbsNode);
+
+    this.configFormNode.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        this.parent.setPercentage(Number(event.target[0].value));
+    }.bind(this));
+
+    this.configFormAbsNode.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        this.parent.setAbsolute(Number(event.target[0].value));
+    }.bind(this));
 
     this.parent.addListener('positionChange', function displayerPositionChangeHandler(event) {
         this.updateValue(event.newValue);
+        this.updatePercentageForm(event.newPercentage);
+        this.updateAbsoluteForm(event.newValue);
     }.bind(this));
 };
 
 Displayer.prototype.updateValue = function updateValue(newVal) {
-    this.node.innerHTML = 'Value: ' + newVal;
+    this.valueNode.innerHTML = 'Value: ' + newVal;
 };
 
+Displayer.prototype.updatePercentageForm = function updateValue(newVal) {
+    this.configFormNode[0].value = newVal;
+};
+
+Displayer.prototype.updateAbsoluteForm = function updateValue(newVal) {
+    this.configFormAbsNode[0].value = newVal;
+};
 
 // Line used as layout reference for knob and click handler
 function Line(parent) {
@@ -84,7 +145,8 @@ function Line(parent) {
 
         this.parent.fire({
             type: 'positionChange',
-            newPercentage: this.parent.getDisplayPercentageByPosition(event.x),
+            newDisplayPercentage: this.parent.getDisplayPercentageByPosition(event.x),
+            newPercentage: percentage,
             newValue: this.parent.getAbsoluteByPercentage(percentage)
         });
     }.bind(this));
@@ -97,7 +159,7 @@ function Knob(parent) {
     this.isMouseDown = false;
 
     this.parent.addListener('positionChange', function knobPositionChangeHandler(event) {
-        this.move(event.newPercentage);
+        this.move(event.newDisplayPercentage);
     }.bind(this));
 
     this.node.addEventListener('mousedown', function(event) {
@@ -114,7 +176,8 @@ Knob.prototype.mouseMoveHandler = function mouseMoveHandler(event) {
 
         this.parent.fire({
             type: 'positionChange',
-            newPercentage: this.parent.getDisplayPercentageByPosition(event.x),
+            newDisplayPercentage: this.parent.getDisplayPercentageByPosition(event.x),
+            newPercentage: percentage,
             newValue: this.parent.getAbsoluteByPercentage(percentage)
         });
     }
@@ -172,52 +235,30 @@ Slider.prototype.getAbsoluteByPercentage = function getAbsoluteByPercentage(perc
 
 Slider.prototype.setAbsolute = function setAbsolute(absoluteValue) {
     let minValue = Math.max(absoluteValue, this.min),
-        knobPercentage = sliderKnob.offsetWidth * 100 / sliderLine.offsetWidth,
+        knobPercentage = this.knob.node.offsetWidth * 100 / this.line.node.offsetWidth,
         maxValue = Math.min(minValue, this.max),
         newPercentage = (maxValue + Math.abs(this.min)) * 100 / (Math.abs(this.max) + Math.abs(this.min)),
         displayMaxValue = Math.min(minValue, this.max - (knobPercentage * (this.max - this.min) / 100)),
-        displayPercentage = (displayMaxValue + Math.abs(this.min)) * 100 / (Math.abs(max) + Math.abs(this.min));
+        displayPercentage = (displayMaxValue + Math.abs(this.min)) * 100 / (Math.abs(this.max) + Math.abs(this.min));
 
     this.fire({
         type: 'positionChange',
-        newPercentage: displayPercentage,
-        newValue: displayMaxValue
+        newDisplayPercentage: displayPercentage,
+        newPercentage: newPercentage,
+        newValue: maxValue
     });
 };
 
 Slider.prototype.setPercentage = function setPercentage(percentageValue) {
     let minValue = Math.max(percentageValue, 0),
-        knobPercentage = sliderKnob.offsetWidth * 100 / sliderLine.offsetWidth,
+        knobPercentage = this.knob.node.offsetWidth * 100 / this.line.node.offsetWidth,
         maxValue = Math.min(100, minValue),
         displayMaxPercentage = Math.min(100 - knobPercentage, minValue);
 
     this.fire({
         type: 'positionChange',
-        newPercentage: displayMaxPercentage,
-        newValue: maxValue
+        newDisplayPercentage: displayMaxPercentage,
+        newPercentage: maxValue,
+        newValue: this.getAbsoluteByPercentage(maxValue)
     });
 };
-
-// Initialize Sliders
-function contentLoadedHandler() {
-    wrapperElement = document.getElementById('wrapper');
-
-    var sliderOne = new Slider(-400, 200);
-    wrapperElement.appendChild(sliderOne.node);
-    var sliderTwo = new Slider(0, 300);
-    wrapperElement.appendChild(sliderTwo.node);
-    var sliderThree = new Slider(200, 950);
-    wrapperElement.appendChild(sliderThree.node);
-}
-
-// Mixin function
-function mixin(receiver, supplier) {
-    Object.keys(supplier).forEach(function(property) {
-        var descriptor = Object.getOwnPropertyDescriptor(supplier, property);
-        Object.defineProperty(receiver, property, descriptor);
-    });
-
-    return receiver;
-}
-
-document.addEventListener("DOMContentLoaded", contentLoadedHandler);
