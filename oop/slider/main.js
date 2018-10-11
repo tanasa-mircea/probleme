@@ -1,11 +1,14 @@
-var min,
-    max,
-    currentValueInput,
-    percentage = 0,
-    slider, sliderLine, sliderKnob,
-    minValueInput, maxValueInput,
-    mouseDown,
-    valueForm, setterForm, getterForm;
+var lineElement = document.createElement('div');
+lineElement.classList.add('slider-line');
+
+var displayerElement = document.createElement('div');
+displayerElement.classList.add('displayer');
+
+var knobElement = document.createElement('div');
+knobElement.classList.add('slider-knob');
+
+var sliderElement = document.createElement('div');
+sliderElement.classList.add('slider');
 
 // Event Manager
 function EventTarget() {}
@@ -14,13 +17,12 @@ EventTarget.prototype = {
     constructor: EventTarget,
 
     addListener: function(type, listener) {
-
         // create an array if it doesn't exist
         if (!this.hasOwnProperty("_listeners")) {
             this._listeners = [];
         }
 
-        if (typeof this._listeners[type] == "undefined"){
+        if (typeof this._listeners[type] == "undefined") {
             this._listeners[type] = [];
         }
 
@@ -28,26 +30,26 @@ EventTarget.prototype = {
     },
 
     fire: function(event) {
-        if (!event.target){
+        if (!event.target) {
             event.target = this;
         }
 
-        if (!event.type){ // falsy
+        if (!event.type) {
             throw new Error("Event object missing 'type' property.");
         }
 
-        if (this._listeners && this._listeners[event.type] instanceof Array){
+        if (this._listeners && this._listeners[event.type] instanceof Array) {
             var listeners = this._listeners[event.type];
-            for (var i=0, len=listeners.length; i < len; i++){
+            for (var i=0, len=listeners.length; i < len; i++) {
                 listeners[i].call(this, event);
             }
         }
     },
     removeListener: function(type, listener){
-        if (this._listeners && this._listeners[type] instanceof Array){
+        if (this._listeners && this._listeners[type] instanceof Array) {
             var listeners = this._listeners[type];
-            for (var i=0, len=listeners.length; i < len; i++){
-                if (listeners[i] === listener){
+            for (var i=0, len=listeners.length; i < len; i++) {
+                if (listeners[i] === listener) {
                     listeners.splice(i, 1);
                     break;
                 }
@@ -57,77 +59,45 @@ EventTarget.prototype = {
 };
 
 // Displayer used to display and update currentValue
-var displayerElement = document.createElement('div');
-displayerElement.classList.add('displayer');
-
-function Displayer(initialValue) {
+function Displayer(initialValue, parent) {
     this.node = displayerElement.cloneNode();
     this.node.innerHTML = 'Value: ' + initialValue;
+    this.parent = parent;
 
-    this.addListener('positionChange', function displayerPositionChangeHandler(event) {
-        this.updateValue(event.newPercentage);
+    this.parent.addListener('positionChange', function displayerPositionChangeHandler(event) {
+        this.updateValue(event.newValue);
     }.bind(this));
 };
+
 Displayer.prototype.updateValue = function updateValue(newVal) {
     this.node.innerHTML = 'Value: ' + newVal;
 };
 
+
 // Line used as layout reference for knob and click handler
-var lineElement = document.createElement('div');
-lineElement.classList.add('slider-line');
-
-function Line() {
+function Line(parent) {
     this.node = lineElement.cloneNode();
-};
-
-// Knob used to show the percentage
-var knobElement = document.createElement('div');
-knobElement.classList.add('slider-knob');
-
-function Knob() {
-    this.node = knobElement.cloneNode();
-
-    this.addListener('positionChange', function knobPositionChangeHandler(event) {
-        this.move(event.newPercentage);
-    }.bind(this));
-};
-Knob.prototype.move = function(percentage) {
-    this.node.style.left = percentage + '%';
-};
-
-// Slider
-var sliderElement = document.createElement('div');
-sliderElement.classList.add('slider');
-
-function Slider(min, max) {
-    this.node = sliderElement.cloneNode();
-    this.min = min;
-    this.max = max;
-
-    this.line = new Line();
-    this.knob = new Knob();
-    this.displayer = new Displayer(this.min);
-
-    this.percentage = 0;
-    this.isMouseDown = false;
-
-    this.node.appendChild(this.line.node);
-    this.node.appendChild(this.knob.node);
-    this.node.appendChild(this.displayer.node);
+    this.parent = parent;
 
     this.node.addEventListener('click', function(event) {
-        let maxLeft = Math.min(event.x - this.node.offsetLeft, this.line.node.offsetLeft + this.line.node.offsetWidth),
-            minLeft = Math.max(maxLeft, 0),
-            displayPercentage = Math.max(Math.min(event.x - this.node.offsetLeft, this.line.node.offsetLeft + this.line.node.offsetWidth - this.knob.node.offsetWidth), 0) / this.line.node.offsetWidth * 100;
+        var percentage = this.parent.getPercentageByPosition(event.x);
 
-        percentage = minLeft / this.line.node.offsetWidth * 100;
-        var newVal = this.min + ((this.max - this.min) * this.percentage / 100);
-
-        this.fire({
+        this.parent.fire({
             type: 'positionChange',
-            newPercentage: percentage,
-            newVal: newVal
+            newPercentage: this.parent.getDisplayPercentageByPosition(event.x),
+            newValue: this.parent.getAbsoluteByPercentage(percentage)
         });
+    }.bind(this));
+};
+
+// Knob used to show the percentage and handle dragging
+function Knob(parent) {
+    this.node = knobElement.cloneNode();
+    this.parent = parent;
+    this.isMouseDown = false;
+
+    this.parent.addListener('positionChange', function knobPositionChangeHandler(event) {
+        this.move(event.newPercentage);
     }.bind(this));
 
     this.node.addEventListener('mousedown', function(event) {
@@ -138,55 +108,81 @@ function Slider(min, max) {
     }.bind(this));
 };
 
-
-Slider.prototype = Object.create(EventTarget.prototype);
-Slider.prototype.constructor = Slider;
-
-Slider.prototype.mouseMoveHandler = function mouseMoveHandler() {
+Knob.prototype.mouseMoveHandler = function mouseMoveHandler(event) {
     if (this.isMouseDown) {
-        let maxLeft = Math.min(event.x - this.node.offsetLeft, this.line.node.offsetLeft + this.line.node.offsetWidth),
-        minLeft = Math.max(maxLeft, 0),
-        displayPercentage = Math.max(Math.min(event.x - this.node.offsetLeft, this.line.node.offsetLeft + this.line.node.offsetWidth - this.knob.node.offsetWidth), 0) / this.line.node.offsetWidth * 100;
+        var percentage = this.parent.getPercentageByPosition(event.x);
 
-        percentage = minLeft / this.line.node.offsetWidth * 100;
-        var newVal = this.min + ((this.max - this.min) * percentage / 100);
-
-        this.displayer.updateValue(newVal);
-        this.knob.move(displayPercentage);
+        this.parent.fire({
+            type: 'positionChange',
+            newPercentage: this.parent.getDisplayPercentageByPosition(event.x),
+            newValue: this.parent.getAbsoluteByPercentage(percentage)
+        });
     }
 };
 
-Slider.prototype.mouseUpHandler = function mouseUpHandler() {
+Knob.prototype.mouseUpHandler = function mouseUpHandler() {
     if (this.isMouseDown) {
         this.isMouseDown = false;
 
-        // TODO: fix this
         window.removeEventListener('mousemove', this.mouseMoveHandler.bind(this));
         window.removeEventListener('mouseup', this.mouseUpHandler.bind(this));
     }
 };
 
-Slider.prototype.getAbsolute = function getAbsolute(newPercentage) {
-    return min + ((max - min) * newPercentage / 100);
+Knob.prototype.move = function(percentage) {
+    this.node.style.left = percentage + '%';
 };
 
-Slider.prototype.getPercentage = function getPercentage(absolute) {
-    let newPercentage =  (absolute + Math.abs(min)) * 100 / (Math.abs(max) + Math.abs(min));
+// Slider - The main component
+function Slider(min, max) {
+    this.node = sliderElement.cloneNode();
+    this.min = min;
+    this.max = max;
 
-    return newPercentage;
+    this.line = new Line(this);
+    this.knob = new Knob(this);
+    this.displayer = new Displayer(this.min, this);
+
+    this.node.appendChild(this.line.node);
+    this.node.appendChild(this.knob.node);
+    this.node.appendChild(this.displayer.node);
+};
+
+mixin(Slider.prototype, EventTarget.prototype);
+
+Slider.prototype.constructor = Slider;
+
+Slider.prototype.getPercentageByPosition = function getPercentageByPosition(eventX) {
+    var maxLeft = Math.min(eventX - this.node.offsetLeft, this.line.node.offsetLeft + this.line.node.offsetWidth);
+    var minLeft = Math.max(maxLeft, 0);
+
+    return minLeft / this.line.node.offsetWidth * 100;
+};
+
+Slider.prototype.getDisplayPercentageByPosition = function getDisplayPercentageByPosition(eventX) {
+    var maxLeft = Math.min(eventX - this.node.offsetLeft, this.line.node.offsetLeft + this.line.node.offsetWidth - this.knob.node.offsetWidth),
+        minLeft = Math.max(maxLeft, 0);
+
+    return minLeft / this.line.node.offsetWidth * 100;
+};
+
+Slider.prototype.getAbsoluteByPercentage = function getAbsoluteByPercentage(percentage) {
+    return this.min + ((this.max - this.min) * percentage / 100);
 };
 
 Slider.prototype.setAbsolute = function setAbsolute(absoluteValue) {
-    let minValue = Math.max(absoluteValue, min),
+    let minValue = Math.max(absoluteValue, this.min),
         knobPercentage = sliderKnob.offsetWidth * 100 / sliderLine.offsetWidth,
-        maxValue = Math.min(minValue, max),
-        newPercentage = (maxValue + Math.abs(min)) * 100 / (Math.abs(max) + Math.abs(min)),
-        displayMaxValue = Math.min(minValue, max - (knobPercentage * (max - min) / 100)),
-        displayPercentage = (displayMaxValue + Math.abs(min)) * 100 / (Math.abs(max) + Math.abs(min));
+        maxValue = Math.min(minValue, this.max),
+        newPercentage = (maxValue + Math.abs(this.min)) * 100 / (Math.abs(this.max) + Math.abs(this.min)),
+        displayMaxValue = Math.min(minValue, this.max - (knobPercentage * (this.max - this.min) / 100)),
+        displayPercentage = (displayMaxValue + Math.abs(this.min)) * 100 / (Math.abs(max) + Math.abs(this.min));
 
-    percentage = newPercentage;
-    sliderKnob.style.left = `${ displayPercentage }%`;
-    currentValueInput.innerHTML = min + ((max - min) * newPercentage / 100);
+    this.fire({
+        type: 'positionChange',
+        newPercentage: displayPercentage,
+        newValue: displayMaxValue
+    });
 };
 
 Slider.prototype.setPercentage = function setPercentage(percentageValue) {
@@ -195,53 +191,31 @@ Slider.prototype.setPercentage = function setPercentage(percentageValue) {
         maxValue = Math.min(100, minValue),
         displayMaxPercentage = Math.min(100 - knobPercentage, minValue);
 
-    percentage = maxValue;
-    sliderKnob.style.left = `${ displayMaxPercentage }%`;
-    currentValueInput.innerHTML = min + ((max - min) * maxValue / 100);
+    this.fire({
+        type: 'positionChange',
+        newPercentage: displayMaxPercentage,
+        newValue: maxValue
+    });
 };
 
-// Get initial min/max values and initialize Sliders
+// Initialize Sliders
 function contentLoadedHandler() {
     wrapperElement = document.getElementById('wrapper');
-    valueForm = document.getElementById('valueForm');
 
-    min = Number(valueForm[0].value);
-    max = Number(valueForm[1].value);
-
-    var sliderOne = new Slider(min, max);
+    var sliderOne = new Slider(-400, 200);
     wrapperElement.appendChild(sliderOne.node);
-    var sliderTwo = new Slider(min, max);
+    var sliderTwo = new Slider(0, 300);
     wrapperElement.appendChild(sliderTwo.node);
-    var sliderThree = new Slider(min, max);
+    var sliderThree = new Slider(200, 950);
     wrapperElement.appendChild(sliderThree.node);
-
-    valueForm.addEventListener("submit", submitForm);
-}
-
-// Min and max form submit
-function submitForm(ev) {
-    ev.preventDefault();
-
-    min = Number(ev.target[0].value);
-    max = Number(ev.target[1].value);
 }
 
 // Mixin function
 function mixin(receiver, supplier) {
-    if (Object.getOwnPropertyDescriptor) {
-        Object.keys(supplier).forEach(function(property) {
-            var descriptor = Object.getOwnPropertyDescriptor(supplier, property);
-            Object.defineProperty(receiver, property, descriptor);
-        });
-
-    } else {
-
-        for (var property in supplier) {
-            if (supplier.hasOwnProperty(property)) {
-                receiver[property] = supplier[property];
-            }
-        }
-    }
+    Object.keys(supplier).forEach(function(property) {
+        var descriptor = Object.getOwnPropertyDescriptor(supplier, property);
+        Object.defineProperty(receiver, property, descriptor);
+    });
 
     return receiver;
 }
