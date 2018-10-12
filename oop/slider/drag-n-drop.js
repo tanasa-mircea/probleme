@@ -11,7 +11,8 @@ DragNDrop.prototype.mouseDownHandler = function mouseDownHandler(event) {
 
     this.fire({
         type: 'dragNDropStart',
-        x: event.x
+        x: event.x,
+        y: event.y
     });
 
     window.addEventListener('mousemove', this.mouseMoveRef);
@@ -22,7 +23,8 @@ DragNDrop.prototype.mouseMoveHandler = function mouseMoveHandler(event) {
     if (this.isMouseDown) {
         this.fire({
             type: 'dragNDropMove',
-            x: event.x
+            x: event.x,
+            y: event.y
         });
     }
 };
@@ -33,7 +35,8 @@ DragNDrop.prototype.mouseUpHandler = function mouseUpHandler(event) {
 
         this.fire({
             type: 'dragNDropEnd',
-            x: event.x
+            x: event.x,
+            y: event.y
         });
 
         window.removeEventListener('mousemove', this.mouseMoveRef);
