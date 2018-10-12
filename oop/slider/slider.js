@@ -13,32 +13,13 @@ function Slider(min, max) {
   this.node.appendChild(this.knob.node);
   this.node.appendChild(this.displayer.node);
 
-  this.knob.addListener('positionChange', function knobPositionChangeHandler(event) {
-      this.move(event.newDisplayPercentage);
-  });
-
   this.knob.addListener('dragNDropMove', function knobPositionChangeHandler(event) {
       var percentage = this.getPercentageByPosition(event.x);
 
-      this.knob.fire({
-          type: 'positionChange',
-          newDisplayPercentage: this.getDisplayPercentageByPosition(event.x),
-          newPercentage: percentage,
-          newValue: this.getAbsoluteByPercentage(percentage)
-      });
-
-      this.displayer.fire({
-          type: 'positionChange',
-          newDisplayPercentage: this.getDisplayPercentageByPosition(event.x),
-          newPercentage: percentage,
-          newValue: this.getAbsoluteByPercentage(percentage)
-      });
+      this.knob.move(this.getDisplayPercentageByPosition(event.x));
+      this.displayer.updatePercentageForm(percentage);
+      this.displayer.updateAbsoluteForm(this.getAbsoluteByPercentage(percentage));
   }.bind(this));
-
-  this.displayer.addListener('positionChange', function displayerPositionChangeHandler(event) {
-      this.updatePercentageForm(event.newPercentage);
-      this.updateAbsoluteForm(event.newValue);
-  });
 
   this.displayer.addListener('percentageFormSubmit', function displayerPositionChangeHandler(event) {
       this.setPercentage(event.newValue);
@@ -51,19 +32,9 @@ function Slider(min, max) {
   this.line.addListener('lineClick', function(event) {
       var percentage = this.getPercentageByPosition(event.x);
 
-      this.knob.fire({
-          type: 'positionChange',
-          newDisplayPercentage: this.getDisplayPercentageByPosition(event.x),
-          newPercentage: percentage,
-          newValue: this.getAbsoluteByPercentage(percentage)
-      });
-
-      this.displayer.fire({
-          type: 'positionChange',
-          newDisplayPercentage: this.getDisplayPercentageByPosition(event.x),
-          newPercentage: percentage,
-          newValue: this.getAbsoluteByPercentage(percentage)
-      });
+      this.knob.move(this.getDisplayPercentageByPosition(event.x));
+      this.displayer.updatePercentageForm(percentage);
+      this.displayer.updateAbsoluteForm(this.getAbsoluteByPercentage(percentage));
   }.bind(this));
 };
 
@@ -97,19 +68,9 @@ Slider.prototype.setAbsolute = function setAbsolute(absoluteValue) {
       displayMaxValue = Math.min(minValue, this.max - (knobPercentage * (this.max - this.min) / 100)),
       displayPercentage = (displayMaxValue + Math.abs(this.min)) * 100 / (Math.abs(this.max) + Math.abs(this.min));
 
-  this.knob.fire({
-      type: 'positionChange',
-      newDisplayPercentage: displayPercentage,
-      newPercentage: newPercentage,
-      newValue: maxValue
-  });
-
-  this.displayer.fire({
-      type: 'positionChange',
-      newDisplayPercentage: displayPercentage,
-      newPercentage: newPercentage,
-      newValue: maxValue
-  });
+    this.knob.move(displayPercentage);
+    this.displayer.updatePercentageForm(newPercentage);
+    this.displayer.updateAbsoluteForm(maxValue);
 };
 
 Slider.prototype.setPercentage = function setPercentage(percentageValue) {
@@ -118,17 +79,7 @@ Slider.prototype.setPercentage = function setPercentage(percentageValue) {
       maxValue = Math.min(100, minValue),
       displayMaxPercentage = Math.min(100 - knobPercentage, minValue);
 
-  this.knob.fire({
-      type: 'positionChange',
-      newDisplayPercentage: displayMaxPercentage,
-      newPercentage: maxValue,
-      newValue: this.getAbsoluteByPercentage(maxValue)
-  });
-
-  this.displayer.fire({
-      type: 'positionChange',
-      newDisplayPercentage: displayMaxPercentage,
-      newPercentage: maxValue,
-      newValue: this.getAbsoluteByPercentage(maxValue)
-  });
+    this.knob.move(displayMaxPercentage);
+    this.displayer.updatePercentageForm(maxValue);
+    this.displayer.updateAbsoluteForm(maxValue);
 };
