@@ -204,9 +204,7 @@ function Slider(min, max) {
     this.node.appendChild(this.displayer.node);
 };
 
-debugger;
-mixin(Slider.prototype, new CustomEventTarget());
-//mixin(Slider.prototype, CustomEventTarget.prototype);
+mixin(Slider.prototype, CustomEventTarget.prototype);
 
 Slider.prototype.constructor = Slider;
 
