@@ -131,10 +131,11 @@ Object.assign(PaintScreen.prototype, {
       for (let j = 0; j < this.config.columns; j++) {
         newState.push({
           item: matrixData[index][j],
-          prevValue: matrixData[index][j].value,
+          prevValue: matrixData[index][j].state,
           nextValue: 0
         });
-        matrixData[index][j].value = 0;
+
+        matrixData[index][j].disable();
       }
     }
 
