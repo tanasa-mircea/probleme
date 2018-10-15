@@ -1,46 +1,47 @@
 function DragNDrop() {}
 
-DragNDrop.prototype.initDragNDrop = function initDragNDrop(element) {
-    element.addEventListener('mousedown', this.mouseDownHandler.bind(this));
-};
+DragNDrop.prototype = {
+    initDragNDrop: function initDragNDrop(element) {
+        element.addEventListener('mousedown', this.mouseDownHandler.bind(this));
+    },
 
-DragNDrop.prototype.mouseDownHandler = function mouseDownHandler(event) {
-    this.isMouseDown = true;
-    this.mouseMoveRef = this.mouseMoveHandler.bind(this);
-    this.mouseUpRef = this.mouseUpHandler.bind(this);
+    mouseDownOverride: function() {
+        throw new Error("this must be overriden in the child Object [mouseDownOverride]");
+    },
 
-    this.fire({
-        type: 'dragNDropStart',
-        x: event.x,
-        y: event.y
-    });
+    mouseMoveOverride: function() {
+        throw new Error("this must be overriden in the child Object [mouseMoveOverride]");
+    },
 
-    window.addEventListener('mousemove', this.mouseMoveRef);
-    window.addEventListener('mouseup', this.mouseUpRef);
-};
+    mouseUpOverride: function() {
+        throw new Error("this must be overriden in the child Object [mouseUpOverride]");
+    },
 
-DragNDrop.prototype.mouseMoveHandler = function mouseMoveHandler(event) {
-    if (this.isMouseDown) {
-        this.fire({
-            type: 'dragNDropMove',
-            x: event.x,
-            y: event.y
-        });
+    mouseDownHandler: function mouseDownHandler(event) {
+        this.isMouseDown = true;
+        this.mouseMoveRef = this.mouseMoveHandler.bind(this);
+        this.mouseUpRef = this.mouseUpHandler.bind(this);
+
+        this.mouseDownOverride(event);
+
+        window.addEventListener('mousemove', this.mouseMoveRef);
+        window.addEventListener('mouseup', this.mouseUpRef);
+    },
+
+    mouseMoveHandler: function mouseMoveHandler(event) {
+        if (this.isMouseDown) {
+            this.mouseMoveOverride(event);
+        }
+    },
+
+    mouseUpHandler: function mouseUpHandler(event) {
+        if (this.isMouseDown) {
+            this.isMouseDown = false;
+
+            this.mouseUpOverride(event);
+
+            window.removeEventListener('mousemove', this.mouseMoveRef);
+            window.removeEventListener('mouseup', this.mouseUpRef);
+        }
     }
 };
-
-DragNDrop.prototype.mouseUpHandler = function mouseUpHandler(event) {
-    if (this.isMouseDown) {
-        this.isMouseDown = false;
-
-        this.fire({
-            type: 'dragNDropEnd',
-            x: event.x,
-            y: event.y
-        });
-
-        window.removeEventListener('mousemove', this.mouseMoveRef);
-        window.removeEventListener('mouseup', this.mouseUpRef);
-    }
-};
-mixin(DragNDrop.prototype, CustomEventTarget.prototype);

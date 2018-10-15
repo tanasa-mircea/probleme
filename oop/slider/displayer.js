@@ -13,29 +13,34 @@ function Displayer(initialValue) {
   this.node.appendChild(this.configFormNode);
   this.node.appendChild(this.configFormAbsNode);
 
-  this.configFormNode.addEventListener('submit', function(event) {
-      event.preventDefault();
-      this.fire({
-          type: 'percentageFormSubmit',
-          newValue: Number(event.target[0].value)
-      });
-  }.bind(this));
+  this.percentageSubmitRef = function percentageSubmitRef(event) {
+    event.preventDefault();
+    this.fire({
+        type: 'percentageFormSubmit',
+        newValue: Number(event.target[0].value)
+    });
+  }.bind(this);
 
-  this.configFormAbsNode.addEventListener('submit', function(event) {
-      event.preventDefault();
-      this.fire({
-          type: 'absoluteFormSubmit',
-          newValue: Number(event.target[0].value)
-      });
-  }.bind(this));
+  this.absoluteSubmitRef = function absoluteSubmitRef(event) {
+    event.preventDefault();
+    this.fire({
+        type: 'absoluteFormSubmit',
+        newValue: Number(event.target[0].value)
+    });
+  }.bind(this);
+
+  this.configFormNode.addEventListener('submit', this.percentageSubmitRef);
+  this.configFormAbsNode.addEventListener('submit', this.absoluteSubmitRef);
 };
 
 mixin(Displayer.prototype, CustomEventTarget.prototype);
 
-Displayer.prototype.updatePercentageForm = function updateValue(newVal) {
-  this.configFormNode[0].value = newVal;
-};
+Object.assign(Displayer.prototype, {
+    updatePercentageForm: function updatePercentageForm(newVal) {
+        this.configFormNode[0].value = newVal;
+    },
 
-Displayer.prototype.updateAbsoluteForm = function updateValue(newVal) {
-  this.configFormAbsNode[0].value = newVal;
-};
+    updateAbsoluteForm: function updateAbsoluteForm(newVal) {
+        this.configFormAbsNode[0].value = newVal;
+    }
+});

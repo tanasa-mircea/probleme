@@ -7,6 +7,33 @@ function Knob() {
 mixin(Knob.prototype, CustomEventTarget.prototype);
 mixin(Knob.prototype, DragNDrop.prototype);
 
-Knob.prototype.move = function(percentage) {
-    this.node.style.left = percentage + '%';
-};
+Object.assign(Knob.prototype, {
+    move: function(percentage) {
+        this.node.style.left = percentage + '%';
+    },
+
+    mouseDownOverride: function(event) {
+        this.fire({
+            type: 'dragNDropStart',
+            x: event.x,
+            y: event.y
+        });
+    },
+
+    mouseMoveOverride: function(event) {
+        this.fire({
+            type: 'dragNDropMove',
+            x: event.x,
+            y: event.y
+        });
+    },
+
+    mouseUpOverride: function(event) {
+        this.fire({
+            type: 'dragNDropEnd',
+            x: event.x,
+            y: event.y
+        });
+    }
+});
+
