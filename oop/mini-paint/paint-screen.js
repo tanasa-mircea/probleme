@@ -197,7 +197,7 @@ function fillMatrix(matrix, config, prevPaint) {
     for (let j = 0; j < config.columns; j++) {
         var newPixel = new Pixel(config.height, config.width);
 
-        if (prevPaint && prevPaint[i][j].value) {
+        if (prevPaint && prevPaint[i][j].state) {
            newPixel.enable();
         };
 
