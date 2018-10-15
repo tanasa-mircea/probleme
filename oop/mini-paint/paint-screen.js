@@ -1,9 +1,10 @@
-function PaintScreen(rows, columns, elementHeight, elementWidth) {
+function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
   this.config = {
     rows: rows,
     columns: columns,
     height: elementHeight,
-    width: elementWidth
+    width: elementWidth,
+    radius: radius
   };
 
   localStoragePaint = JSON.parse(localStorage.getItem('paint'));
@@ -40,162 +41,168 @@ function PaintScreen(rows, columns, elementHeight, elementWidth) {
   this.pencilTool.addListener('toolChange', this.pencilToolChange.bind(this));
   this.eraserTool.addListener('toolChange', this.eraserToolChange.bind(this));
 
-  this.addListener('dragNDropStart', this.matrixMoveHandler.bind(this));
-  this.addListener('dragNDropMove', this.matrixMoveHandler.bind(this));
-  this.addListener('dragNDropEnd', this.matrixEndHandler.bind(this));
+  this.mouseDownOverride = this.matrixMoveHandler.bind(this);
+  this.mouseMoveOverride = this.matrixMoveHandler.bind(this);
+  this.mouseUpOverride = this.matrixEndHandler.bind(this);
 };
 
 mixin(PaintScreen.prototype, CustomEventTarget.prototype);
 mixin(PaintScreen.prototype, DragNDrop.prototype);
 
-// TOOLS LOGIC
-PaintScreen.prototype.pencilToolChange = function pencilToolChange(event) {
-  this.toolValue = 1;
-};
+Object.assign(PaintScreen.prototype, {
+  // TOOLS LOGIC
+  pencilToolChange: function pencilToolChange(event) {
+    this.toolValue = 1;
+  },
 
-PaintScreen.prototype.eraserToolChange = function eraserToolChange(event) {
-  this.toolValue = 0;
-};
+  eraserToolChange: function eraserToolChange(event) {
+    this.toolValue = 0;
+  },
 
-// BUTTONS LOGIC
-PaintScreen.prototype.undoButtonHandler = function undoButtonHandler() {
-  if (this.undoStateManager.isEmpty()) {
-    return;
-  };
+  // BUTTONS LOGIc
 
-  var state = this.undoStateManager.pop();
+  undoButtonHandler: function undoButtonHandler() {
+    if (this.undoStateManager.isEmpty()) {
+      return;
+    };
 
-  if (this.undoStateManager.isEmpty()) {
-    this.undoButton.disable();
-  }
+    var state = this.undoStateManager.pop();
 
-  for (let index = 0; index < state.length; index++) {
-    state[index].item.value = state[index].prevValue;
-    state[index].prevValue = state[index].nextValue;
-    state[index].nextValue = state[index].item.value;
-  }
-
-  this.redoStateManager.push(state);
-
-  if (this.redoButton.isDisabled()) {
-    this.redoButton.enable();
-  }
-
-  localStorage.setItem('paint', JSON.stringify(this.matrix.data));
-};
-
-PaintScreen.prototype.redoButtonHandler = function redoButtonHandler() {
-  if (this.redoStateManager.isEmpty()) {
-    return;
-  }
-
-  var state = this.redoStateManager.pop();
-
-  if (this.redoStateManager.isEmpty()) {
-    this.redoButton.disable();
-  }
-
-  for (let index = 0; index < state.length; index++) {
-    state[index].item.value = state[index].prevValue;
-    state[index].prevValue = state[index].nextValue;
-    state[index].nextValue = state[index].item.value;
-  }
-
-  this.undoStateManager.push(state);
-
-  if (this.undoButton.isDisabled()) {
-    this.undoButton.enable();
-  }
-
-  localStorage.setItem('paint', JSON.stringify(this.matrix.data));
-};
-
-PaintScreen.prototype.clearButtonHandler = function clearButtonHandler() {
-  var matrixData = paintScreenOne.matrix.data,
-      newState = [];
-
-  for (let index = 0; index < this.config.rows; index++) {
-    for (let j = 0; j < this.config.columns; j++) {
-      newState.push({
-        item: matrixData[index][j],
-        prevValue: matrixData[index][j].value,
-        nextValue: 0
-      });
-      matrixData[index][j].value = 0;
+    if (this.undoStateManager.isEmpty()) {
+      this.undoButton.disable();
     }
-  }
 
-  this.undoStateManager.push(newState);
+    for (let index = 0; index < state.length; index++) {
+      if (state[index].prevValue) {
+        state[index].item.enable();
+      } else {
+        state[index].item.disable();
+      }
 
-  if (this.undoButton.isDisabled()) {
-    this.undoButton.enable();
-  }
+      state[index].prevValue = state[index].nextValue;
+      state[index].nextValue = state[index].item.state;
+    }
 
-  localStorage.setItem('paint', JSON.stringify(this.matrix.data));
-};
+    this.redoStateManager.push(state);
 
-// MATRIX LOGIC
-PaintScreen.prototype.matrixMoveHandler = function matrixMoveHandler(event) {
-  var row = Math.ceil(event.y * this.config.rows / (this.config.rows * this.config.height));
-  var column = Math.ceil(event.x * this.config.columns / (this.config.columns * this.config.width));
+    if (this.redoButton.isDisabled()) {
+      this.redoButton.enable();
+    }
 
-  if (!this.matrix.data[row - 1]) {
-    return;
-  }
+    localStorage.setItem('paint', JSON.stringify(this.matrix.data));
+  },
 
-  var current = this.matrix.data[row - 1][column - 1];
-  console.log('matix ', row - 1, column - 1);
+  redoButtonHandler: function redoButtonHandler() {
+    if (this.redoStateManager.isEmpty()) {
+      return;
+    }
 
-  if (current && !(this.currentAction.length && this.currentAction[this.currentAction.length - 1].item === current)) {
-    this.currentAction.push({
-      item: current,
-      prevValue: current.value,
-      nextValue: this.toolValue
-    });
+    var state = this.redoStateManager.pop();
 
-    current.value = this.toolValue;
-  }
-};
+    if (this.redoStateManager.isEmpty()) {
+      this.redoButton.disable();
+    }
 
-PaintScreen.prototype.matrixEndHandler = function matrixEndHandler() {
-  if (this.currentAction.length > 0) {
-    this.undoStateManager.push(this.currentAction);
+    for (let index = 0; index < state.length; index++) {
+      if (state[index].prevValue) {
+        state[index].item.enable();
+      } else {
+        state[index].item.disable();
+      }
+
+      state[index].prevValue = state[index].nextValue;
+      state[index].nextValue = state[index].item.state;
+    }
+
+    this.undoStateManager.push(state);
 
     if (this.undoButton.isDisabled()) {
       this.undoButton.enable();
     }
+
+    localStorage.setItem('paint', JSON.stringify(this.matrix.data));
+  },
+
+  clearButtonHandler: function clearButtonHandler() {
+    var matrixData = paintScreenOne.matrix.data,
+        newState = [];
+
+    for (let index = 0; index < this.config.rows; index++) {
+      for (let j = 0; j < this.config.columns; j++) {
+        newState.push({
+          item: matrixData[index][j],
+          prevValue: matrixData[index][j].value,
+          nextValue: 0
+        });
+        matrixData[index][j].value = 0;
+      }
+    }
+
+    this.undoStateManager.push(newState);
+
+    if (this.undoButton.isDisabled()) {
+      this.undoButton.enable();
+    }
+
+    localStorage.setItem('paint', JSON.stringify(this.matrix.data));
+  },
+
+  // MATRIX LOGIC
+
+  matrixMoveHandler: function matrixMoveHandler(event) {
+    var row = Math.ceil(event.y * this.config.rows / (this.config.rows * this.config.height));
+    var column = Math.ceil(event.x * this.config.columns / (this.config.columns * this.config.width));
+
+    if (!this.matrix.data[row - 1]) {
+      return;
+    }
+
+    var current = this.matrix.data[row - 1][column - 1];
+
+    if (current && !(this.currentAction.length && this.currentAction[this.currentAction.length - 1].item === current)) {
+      this.currentAction.push({
+        item: current,
+        prevValue: current.state,
+        nextValue: this.toolValue
+      });
+
+      if (this.toolValue) {
+        current.enable();
+      } else {
+        current.disable();
+      }
+    }
+  },
+
+  matrixEndHandler: function matrixEndHandler() {
+    if (this.currentAction.length > 0) {
+      this.undoStateManager.push(this.currentAction);
+
+      if (this.undoButton.isDisabled()) {
+        this.undoButton.enable();
+      }
+    }
+
+    localStorage.setItem('paint', JSON.stringify(this.matrix.data));
+
+    this.currentAction = [];
   }
+});
 
-  localStorage.setItem('paint', JSON.stringify(this.matrix.data));
-
-  this.currentAction = [];
-};
-
-// CREATE MATRIX LOGIC
 function fillMatrix(matrix, config, prevPaint) {
-  var matrixElement = document.createElement('div');
-  matrixElement.classList.add('matrix__element');
-  matrixElement.style.height = `${config.height}px`;
-  matrixElement.style.width = `${config.width}px`;
-
   var matrixData = [];
 
   for (let i = 0; i < config.rows; i++) {
     matrixData[i] = [];
     for (let j = 0; j < config.columns; j++) {
-        var nodeClone = matrixElement.cloneNode(),
-            elementData = {
-              node: nodeClone
-            };
+        var newPixel = new Pixel(config.height, config.width);
 
-          if (prevPaint) {
-            elementData.value = prevPaint[i][j].value;
-          } else {
-            elementData.value = 0;
-          }
+        if (prevPaint && prevPaint[i][j].value) {
+           newPixel.enable();
+        };
 
-          matrixData[i].push(elementData);
-          matrix.appendChild(nodeClone);
+        matrixData[i].push(newPixel);
+        matrix.appendChild(newPixel.element);
       }
   }
 

@@ -7,17 +7,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     .matrix {
+      background-color: white;
       display: flex;
       flex-wrap: wrap;
       border: 1px solid black;
       user-select: none;
     }
 
-    .matrix__element {
+    .pixel {
       background-color: white;
     }
 
-    .matrix__element.active {
+    .pixel.active {
       background-color: black;
     }
   </style>
@@ -29,8 +30,9 @@
 
   <script src="../slider/mixin.js"></script>
   <script src="../slider/custom-event-target.js"></script>
-  <script src="../slider/drag-n-drop.js"></script>
+  <script src="./mouse-actions.js"></script>
   <script src="../stiva/stiva.js"></script>
+  <script src="./pixel.js"></script>
   <script src="./button.js"></script>
   <script src="./tool.js"></script>
   <script src="./paint-screen.js"></script>
