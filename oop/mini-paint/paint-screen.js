@@ -9,6 +9,7 @@ function PaintScreen(rows, columns, elementHeight, elementWidth) {
   this.matrix = draw(this.config);
   this.initDragNDrop(this.matrix.node);
   this.currentAction = [];
+  this.toolValue = 1;
 
   this.undoStateManager = new Stiva();
   this.redoStateManager = new Stiva();
@@ -16,6 +17,12 @@ function PaintScreen(rows, columns, elementHeight, elementWidth) {
   this.undoButton = new Button('Undo');
   this.redoButton = new Button('Redo');
   this.clearButton = new Button('Clear');
+
+  this.pencilTool = new Tool('Pencil', 'pencil', true);
+  this.eraserTool = new Tool('Eraser', 'eraser', false);
+
+  this.matrix.node.appendChild(this.pencilTool.element);
+  this.matrix.node.appendChild(this.eraserTool.element);
 
   this.matrix.node.appendChild(this.undoButton.element);
   this.matrix.node.appendChild(this.redoButton.element);
@@ -25,6 +32,9 @@ function PaintScreen(rows, columns, elementHeight, elementWidth) {
   this.redoButton.addListener('customButtonClick', this.redoButtonHandler.bind(this));
   this.clearButton.addListener('customButtonClick', this.clearButtonHandler.bind(this));
 
+  this.pencilTool.addListener('toolChange', this.pencilToolChange.bind(this));
+  this.eraserTool.addListener('toolChange', this.eraserToolChange.bind(this));
+
   this.addListener('dragNDropStart', this.matrixMoveHandler.bind(this));
   this.addListener('dragNDropMove', this.matrixMoveHandler.bind(this));
   this.addListener('dragNDropEnd', this.matrixEndHandler.bind(this));
@@ -32,6 +42,14 @@ function PaintScreen(rows, columns, elementHeight, elementWidth) {
 
 mixin(PaintScreen.prototype, CustomEventTarget.prototype);
 mixin(PaintScreen.prototype, DragNDrop.prototype);
+
+PaintScreen.prototype.pencilToolChange = function pencilToolChange(event) {
+  this.toolValue = 1;
+};
+
+PaintScreen.prototype.eraserToolChange = function eraserToolChange(event) {
+  this.toolValue = 0;
+};
 
 PaintScreen.prototype.undoButtonHandler = function undoButtonHandler() {
   if (this.undoStateManager.isEmpty()) {
@@ -91,15 +109,15 @@ PaintScreen.prototype.matrixMoveHandler = function matrixMoveHandler(event) {
   }
 
   var current = this.matrix.data[row - 1][column - 1];
-  if (current) {
 
+  if (current && !(this.currentAction.length && this.currentAction[this.currentAction.length - 1].item === current)) {
     this.currentAction.push({
       item: current,
-      prevValue: 0,
-      nextValue: 1
+      prevValue: current.value,
+      nextValue: this.toolValue
     });
 
-    current.value = 1;
+    current.value = this.toolValue;
   }
 };
 
