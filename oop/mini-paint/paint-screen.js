@@ -23,8 +23,8 @@ function PaintScreen(rows, columns, elementHeight, elementWidth) {
   this.undoButton.disable();
   this.redoButton.disable();
 
-  this.pencilTool = new Tool('Pencil', 'pencil', true);
-  this.eraserTool = new Tool('Eraser', 'eraser', false);
+  this.pencilTool = new Tool('Pencil', true);
+  this.eraserTool = new Tool('Eraser', false);
 
   this.matrix.node.appendChild(this.pencilTool.element);
   this.matrix.node.appendChild(this.eraserTool.element);
@@ -48,6 +48,7 @@ function PaintScreen(rows, columns, elementHeight, elementWidth) {
 mixin(PaintScreen.prototype, CustomEventTarget.prototype);
 mixin(PaintScreen.prototype, DragNDrop.prototype);
 
+// TOOLS LOGIC
 PaintScreen.prototype.pencilToolChange = function pencilToolChange(event) {
   this.toolValue = 1;
 };
@@ -56,6 +57,7 @@ PaintScreen.prototype.eraserToolChange = function eraserToolChange(event) {
   this.toolValue = 0;
 };
 
+// BUTTONS LOGIC
 PaintScreen.prototype.undoButtonHandler = function undoButtonHandler() {
   if (this.undoStateManager.isEmpty()) {
     return;
@@ -132,14 +134,17 @@ PaintScreen.prototype.clearButtonHandler = function clearButtonHandler() {
   localStorage.setItem('paint', JSON.stringify(this.matrix.data));
 };
 
+// MATRIX LOGIC
 PaintScreen.prototype.matrixMoveHandler = function matrixMoveHandler(event) {
   var row = Math.ceil(event.y * this.config.rows / (this.config.rows * this.config.height));
   var column = Math.ceil(event.x * this.config.columns / (this.config.columns * this.config.width));
+
   if (!this.matrix.data[row - 1]) {
     return;
   }
 
   var current = this.matrix.data[row - 1][column - 1];
+  console.log('matix ', row - 1, column - 1);
 
   if (current && !(this.currentAction.length && this.currentAction[this.currentAction.length - 1].item === current)) {
     this.currentAction.push({
@@ -166,6 +171,7 @@ PaintScreen.prototype.matrixEndHandler = function matrixEndHandler() {
   this.currentAction = [];
 };
 
+// CREATE MATRIX LOGIC
 function fillMatrix(matrix, config, prevPaint) {
   var matrixElement = document.createElement('div');
   matrixElement.classList.add('matrix__element');

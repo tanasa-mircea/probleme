@@ -4,11 +4,10 @@ var toolElement = document.createElement('input'),
 toolElement.type = 'radio';
 toolElement.name = 'matrixTool';
 
-function Tool(text, value, checked) {
+function Tool(text, checked) {
   this.element = toolElementLabel.cloneNode();
   this.element.innerHTML = text;
   this.inputElement = toolElement.cloneNode();
-  this.inputElement.value = value;
 
   if (checked) {
     this.inputElement.checked = true;
