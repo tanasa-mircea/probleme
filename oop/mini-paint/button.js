@@ -12,3 +12,15 @@ function Button(text) {
 };
 
 mixin(Button.prototype, CustomEventTarget.prototype);
+
+Button.prototype.disable = function disable() {
+  this.element.disabled = true;
+};
+
+Button.prototype.enable = function enable() {
+  this.element.disabled = false;
+};
+
+Button.prototype.isDisabled = function isDisabled() {
+  return this.element.disabled;
+};

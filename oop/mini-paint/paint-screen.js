@@ -20,6 +20,9 @@ function PaintScreen(rows, columns, elementHeight, elementWidth) {
   this.redoButton = new Button('Redo');
   this.clearButton = new Button('Clear');
 
+  this.undoButton.disable();
+  this.redoButton.disable();
+
   this.pencilTool = new Tool('Pencil', 'pencil', true);
   this.eraserTool = new Tool('Eraser', 'eraser', false);
 
@@ -60,6 +63,10 @@ PaintScreen.prototype.undoButtonHandler = function undoButtonHandler() {
 
   var state = this.undoStateManager.pop();
 
+  if (this.undoStateManager.isEmpty()) {
+    this.undoButton.disable();
+  }
+
   for (let index = 0; index < state.length; index++) {
     state[index].item.value = state[index].prevValue;
     state[index].prevValue = state[index].nextValue;
@@ -67,6 +74,11 @@ PaintScreen.prototype.undoButtonHandler = function undoButtonHandler() {
   }
 
   this.redoStateManager.push(state);
+
+  if (this.redoButton.isDisabled()) {
+    this.redoButton.enable();
+  }
+
   localStorage.setItem('paint', JSON.stringify(this.matrix.data));
 };
 
@@ -77,6 +89,10 @@ PaintScreen.prototype.redoButtonHandler = function redoButtonHandler() {
 
   var state = this.redoStateManager.pop();
 
+  if (this.redoStateManager.isEmpty()) {
+    this.redoButton.disable();
+  }
+
   for (let index = 0; index < state.length; index++) {
     state[index].item.value = state[index].prevValue;
     state[index].prevValue = state[index].nextValue;
@@ -84,6 +100,11 @@ PaintScreen.prototype.redoButtonHandler = function redoButtonHandler() {
   }
 
   this.undoStateManager.push(state);
+
+  if (this.undoButton.isDisabled()) {
+    this.undoButton.enable();
+  }
+
   localStorage.setItem('paint', JSON.stringify(this.matrix.data));
 };
 
@@ -103,6 +124,11 @@ PaintScreen.prototype.clearButtonHandler = function clearButtonHandler() {
   }
 
   this.undoStateManager.push(newState);
+
+  if (this.undoButton.isDisabled()) {
+    this.undoButton.enable();
+  }
+
   localStorage.setItem('paint', JSON.stringify(this.matrix.data));
 };
 
@@ -129,6 +155,10 @@ PaintScreen.prototype.matrixMoveHandler = function matrixMoveHandler(event) {
 PaintScreen.prototype.matrixEndHandler = function matrixEndHandler() {
   if (this.currentAction.length > 0) {
     this.undoStateManager.push(this.currentAction);
+
+    if (this.undoButton.isDisabled()) {
+      this.undoButton.enable();
+    }
   }
 
   localStorage.setItem('paint', JSON.stringify(this.matrix.data));
