@@ -3,7 +3,6 @@ function fillMatrix(matrix, config) {
         for (let j = 0; j < config.columns; j++) {
             var matrixElement = document.createElement('div');
             matrixElement.classList.add('matrix__element');
-            
             let positionX = j * config.width + j * config.marginX,
                 positionY = i * config.height + i * config.marginY;
 
@@ -61,7 +60,7 @@ function mouseMoveOnMatrixHandler(event) {
             y: event.y - this.offsetTop
         },
         matrixElements = this.querySelectorAll('.matrix__element');
-    
+
 
     matrixElements.forEach(function(node) {
         node.style.backgroundColor = '#3A69CD';

@@ -10,6 +10,14 @@ function Stiva(maxLength) {
 };
 
 Stiva.prototype.push = function push(newElement) {
+  if (!this.elements) {
+    this.elements = [];
+  };
+
+  if (!this.length) {
+    this.length = 0;
+  };
+
   this.elements[this.length] = newElement;
   this.length++;
 };
