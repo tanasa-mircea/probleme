@@ -6,13 +6,15 @@ function PaintScreen(rows, columns, elementHeight, elementWidth) {
     width: elementWidth
   };
 
-  this.matrix = draw(this.config);
+  localStoragePaint = JSON.parse(localStorage.getItem('paint'));
+
+  this.matrix = draw(this.config, localStoragePaint);
   this.initDragNDrop(this.matrix.node);
   this.currentAction = [];
   this.toolValue = 1;
 
-  this.undoStateManager = new Stiva();
-  this.redoStateManager = new Stiva();
+  this.undoStateManager = new Stiva(30);
+  this.redoStateManager = new Stiva(30);
 
   this.undoButton = new Button('Undo');
   this.redoButton = new Button('Redo');
@@ -65,6 +67,7 @@ PaintScreen.prototype.undoButtonHandler = function undoButtonHandler() {
   }
 
   this.redoStateManager.push(state);
+  localStorage.setItem('paint', JSON.stringify(this.matrix.data));
 };
 
 PaintScreen.prototype.redoButtonHandler = function redoButtonHandler() {
@@ -81,6 +84,7 @@ PaintScreen.prototype.redoButtonHandler = function redoButtonHandler() {
   }
 
   this.undoStateManager.push(state);
+  localStorage.setItem('paint', JSON.stringify(this.matrix.data));
 };
 
 PaintScreen.prototype.clearButtonHandler = function clearButtonHandler() {
@@ -99,6 +103,7 @@ PaintScreen.prototype.clearButtonHandler = function clearButtonHandler() {
   }
 
   this.undoStateManager.push(newState);
+  localStorage.setItem('paint', JSON.stringify(this.matrix.data));
 };
 
 PaintScreen.prototype.matrixMoveHandler = function matrixMoveHandler(event) {
@@ -125,10 +130,13 @@ PaintScreen.prototype.matrixEndHandler = function matrixEndHandler() {
   if (this.currentAction.length > 0) {
     this.undoStateManager.push(this.currentAction);
   }
+
+  localStorage.setItem('paint', JSON.stringify(this.matrix.data));
+
   this.currentAction = [];
 };
 
-function fillMatrix(matrix, config) {
+function fillMatrix(matrix, config, prevPaint) {
   var matrixElement = document.createElement('div');
   matrixElement.classList.add('matrix__element');
   matrixElement.style.height = `${config.height}px`;
@@ -139,11 +147,18 @@ function fillMatrix(matrix, config) {
   for (let i = 0; i < config.rows; i++) {
     matrixData[i] = [];
     for (let j = 0; j < config.columns; j++) {
-        var nodeClone = matrixElement.cloneNode();
-          matrixData[i].push({
-            node: nodeClone,
-            value: 0
-          });
+        var nodeClone = matrixElement.cloneNode(),
+            elementData = {
+              node: nodeClone
+            };
+
+          if (prevPaint) {
+            elementData.value = prevPaint[i][j].value;
+          } else {
+            elementData.value = 0;
+          }
+
+          matrixData[i].push(elementData);
           matrix.appendChild(nodeClone);
       }
   }
@@ -151,11 +166,11 @@ function fillMatrix(matrix, config) {
   return matrixData;
 }
 
-function draw(config) {
+function draw(config, prevPaint) {
   var newMatrix = document.createElement('div'),
       final = {
         node: newMatrix,
-        data: fillMatrix(newMatrix, config)
+        data: fillMatrix(newMatrix, config, prevPaint)
       };
 
   newMatrix.classList.add('matrix');

@@ -1,7 +1,7 @@
 var paintScreenOne;
 
 function contentLoadedHandler() {
-  paintScreenOne = new PaintScreen(20, 20, 10, 10);
+  paintScreenOne = new PaintScreen(50, 50, 10, 10);
 
   var displayer = document.getElementById('displayer');
   displayer.appendChild(paintScreenOne.matrix.node);
