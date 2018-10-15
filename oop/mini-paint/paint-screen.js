@@ -1,18 +1,29 @@
-function PaintScreen() {
-  this.matrix = draw(matrixConfig);
+function PaintScreen(rows, columns, elementHeight, elementWidth) {
+  this.config = {
+    rows: rows,
+    columns: columns,
+    height: elementHeight,
+    width: elementWidth
+  };
+
+  this.matrix = draw(this.config);
   this.initDragNDrop(this.matrix.node);
   this.currentAction = [];
+
   this.undoStateManager = new Stiva();
   this.redoStateManager = new Stiva();
 
   this.undoButton = new Button('Undo');
   this.redoButton = new Button('Redo');
+  this.clearButton = new Button('Clear');
 
   this.matrix.node.appendChild(this.undoButton.element);
   this.matrix.node.appendChild(this.redoButton.element);
+  this.matrix.node.appendChild(this.clearButton.element);
 
   this.undoButton.addListener('customButtonClick', this.undoButtonHandler.bind(this));
   this.redoButton.addListener('customButtonClick', this.redoButtonHandler.bind(this));
+  this.clearButton.addListener('customButtonClick', this.clearButtonHandler.bind(this));
 
   this.addListener('dragNDropStart', this.matrixMoveHandler.bind(this));
   this.addListener('dragNDropMove', this.matrixMoveHandler.bind(this));
@@ -54,9 +65,27 @@ PaintScreen.prototype.redoButtonHandler = function redoButtonHandler() {
   this.undoStateManager.push(state);
 };
 
+PaintScreen.prototype.clearButtonHandler = function clearButtonHandler() {
+  var matrixData = paintScreenOne.matrix.data,
+      newState = [];
+
+  for (let index = 0; index < this.config.rows; index++) {
+    for (let j = 0; j < this.config.columns; j++) {
+      newState.push({
+        item: matrixData[index][j],
+        prevValue: matrixData[index][j].value,
+        nextValue: 0
+      });
+      matrixData[index][j].value = 0;
+    }
+  }
+
+  this.undoStateManager.push(newState);
+};
+
 PaintScreen.prototype.matrixMoveHandler = function matrixMoveHandler(event) {
-  var row = Math.ceil(event.y * matrixConfig.rows / (matrixConfig.rows * matrixConfig.height));
-  var column = Math.ceil(event.x * matrixConfig.columns / (matrixConfig.columns * matrixConfig.width));
+  var row = Math.ceil(event.y * this.config.rows / (this.config.rows * this.config.height));
+  var column = Math.ceil(event.x * this.config.columns / (this.config.columns * this.config.width));
   if (!this.matrix.data[row - 1]) {
     return;
   }
@@ -79,16 +108,6 @@ PaintScreen.prototype.matrixEndHandler = function matrixEndHandler() {
     this.undoStateManager.push(this.currentAction);
   }
   this.currentAction = [];
-};
-
-
-var matrixConfig = {
-  rows: 100,
-  columns: 100,
-  width: 10,
-  height: 10,
-  secondaryColor: '#D60D0D',
-  radius: 1
 };
 
 function fillMatrix(matrix, config) {
