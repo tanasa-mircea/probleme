@@ -14,6 +14,14 @@ function Button(config) {
   } else {
     this.selected = false;
   }
+
+  if (this.config.disabled) {
+    this.disabled = true;
+    this.element.classList.add('button--disabled');
+  } else {
+    this.disabled = false;
+  }
+
   this.clickListenerRef = this.clickHandler.bind(this);
 
   Object.assign(this.element.style, this.config.customStyle);
@@ -23,12 +31,12 @@ mixin(Button.prototype, CustomEventTarget.prototype);
 
 Object.assign(Button.prototype, {
   enable: function enable() {
-    this.enabled = true;
+    this.disabled = false;
     this.element.classList.remove('button--disabled');
   },
 
   disable: function disable() {
-    this.disabled = false;
+    this.disabled = true;
     this.element.classList.add('button--disabled');
   },
 

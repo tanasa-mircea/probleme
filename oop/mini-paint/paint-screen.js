@@ -14,42 +14,12 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
   this.currentAction = [];
   this.toolValue = 1;
 
-  this.undoStateManager = new Stiva(30);
-  this.redoStateManager = new Stiva(30);
+  this.undoManager = new UndoManager();
+  this.undoManager.addListener('undo', this.undoHandler.bind(this));
+  this.undoManager.addListener('redo', this.redoHandler.bind(this));
 
-  // ACTIONS (UNDO REDO CLEAR)
-  var actionsStyles = {
-        backgroundColor: '#0f0',
-        fontSize: '18px',
-        marginRight: '5px'
-      },
-      actionsGroupConfig = {
-        style: {
-          display: 'flex',
-          alignItems: 'flex-start',
-          marginRight: '5px'
-        }
-      },
-      actionsGroupButtonsConfig = [
-        {
-          name: 'undo',
-          text: 'Undo',
-          customStyle: actionsStyles
-        }, {
-          name: 'redo',
-          text: 'Redo',
-          customStyle: actionsStyles
-        }, {
-          name: 'clear',
-          text: 'Clear',
-          customStyle: actionsStyles
-        }
-      ];
-
-  this.actionsGroup = new ButtonGroup(actionsGroupConfig, actionsGroupButtonsConfig);
-  this.actionsGroup.addListener('groupChange', function(event) {
-    this[event.action + 'ButtonHandler']();
-  }.bind(this));
+  this.clearButton = new Button({ name: 'clear', text: 'Clear'});
+  this.clearButton.addListener('buttonClick', this.clearButtonHandler.bind(this));
 
   // TOOLS (PENCIL ERASER)
   var toolsStyles = {
@@ -124,9 +94,8 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
     }
   }.bind(this));
 
-
-  this.actionsGroup.disable();
-  this.matrix.node.appendChild(this.actionsGroup.element);
+  this.matrix.node.appendChild(this.undoManager.element);
+  this.matrix.node.appendChild(this.clearButton.element);
   this.matrix.node.appendChild(this.toolsGroup.element);
   this.matrix.node.appendChild(this.screenChangerGroup.element);
 
@@ -139,16 +108,8 @@ mixin(PaintScreen.prototype, CustomEventTarget.prototype);
 mixin(PaintScreen.prototype, MouseActions.prototype);
 
 Object.assign(PaintScreen.prototype, {
-  undoButtonHandler: function undoButtonHandler() {
-    if (this.undoStateManager.isEmpty()) {
-      return;
-    };
-
-    var state = this.undoStateManager.pop();
-
-    if (this.undoStateManager.isEmpty()) {
-      this.actionsGroup.disable(['undo']);
-    }
+  undoHandler: function undoHandler(event) {
+    var state = event.state;
 
     for (let index = 0; index < state.length; index++) {
       if (state[index].prevValue) {
@@ -160,24 +121,12 @@ Object.assign(PaintScreen.prototype, {
       state[index].prevValue = state[index].nextValue;
       state[index].nextValue = state[index].item.state;
     }
-
-    this.redoStateManager.push(state);
-
-    this.actionsGroup.enable(['redo']);
 
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
   },
 
-  redoButtonHandler: function redoButtonHandler() {
-    if (this.redoStateManager.isEmpty()) {
-      return;
-    }
-
-    var state = this.redoStateManager.pop();
-
-    if (this.redoStateManager.isEmpty()) {
-      this.actionsGroup.disable(['redo']);
-    }
+  redoHandler: function redoHandler(event) {
+    var state = event.state;
 
     for (let index = 0; index < state.length; index++) {
       if (state[index].prevValue) {
@@ -189,10 +138,6 @@ Object.assign(PaintScreen.prototype, {
       state[index].prevValue = state[index].nextValue;
       state[index].nextValue = state[index].item.state;
     }
-
-    this.undoStateManager.push(state);
-
-    this.actionsGroup.enable(['undo']);
 
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
   },
@@ -213,11 +158,7 @@ Object.assign(PaintScreen.prototype, {
       }
     }
 
-    this.undoStateManager.push(newState);
-
-    this.actionsGroup.enable(['undo']);
-    this.actionsGroup.disable(['clear']);
-
+    this.undoManager.addAction(newState);
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
   },
 
@@ -250,10 +191,7 @@ Object.assign(PaintScreen.prototype, {
 
   matrixEndHandler: function matrixEndHandler() {
     if (this.currentAction.length > 0) {
-      this.undoStateManager.push(this.currentAction);
-
-
-      this.actionsGroup.enable(['undo', 'clear']);
+      this.undoManager.addAction(this.currentAction);
     }
 
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
