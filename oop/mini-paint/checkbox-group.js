@@ -1,7 +1,7 @@
 function CheckboxGroup(groupConfig, buttonsConfig) {
   var group = new ButtonGroup(groupConfig, buttonsConfig);
 
-  group.customButtonClickOveride = function(event) {
+  group.buttonClickOveride = function(event) {
     if (event.button.isSelected()) {
       event.button.unselect();
     } else {

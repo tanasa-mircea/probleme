@@ -13,19 +13,19 @@ function ButtonGroup(groupConfig, buttonsConfig) {
   }
 
   for (let i = 0; i < buttonsConfig.length; i++) {
-    newButton = new CustomButton(buttonsConfig[i]);
+    newButton = new Button(buttonsConfig[i]);
 
     this.buttonsInstancesMap[buttonsConfig[i].name] = newButton;
     this.element.appendChild(newButton.element);
 
-    newButton.addListener('customButtonClick', this.customButtonClickHandler.bind(this));
+    newButton.addListener('buttonClick', this.buttonClickHandler.bind(this));
   }
 };
 
 mixin(ButtonGroup.prototype, CustomEventTarget.prototype);
 Object.assign(ButtonGroup.prototype, {
-  customButtonClickHandler: function customButtonClickHandler(event) {
-    this.customButtonClickOveride(event);
+  buttonClickHandler: function buttonClickHandler(event) {
+    this.buttonClickOveride(event);
 
     this.fire({
       type: 'groupChange',
@@ -34,7 +34,7 @@ Object.assign(ButtonGroup.prototype, {
     });
   },
 
-  customButtonClickOveride: function customButtonClickOveride() {},
+  buttonClickOveride: function buttonClickOveride() {},
 
   getSelected: function getSelected() {
     responseVector = [];

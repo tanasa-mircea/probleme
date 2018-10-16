@@ -1,7 +1,7 @@
 function RadioGroup(groupConfig, buttonsConfig) {
   var group = new ButtonGroup(groupConfig, buttonsConfig);
 
-  group.customButtonClickOveride = function(event) {
+  group.buttonClickOveride = function(event) {
     for (let i = 0; i < this.buttons.length; i++) {
       if (this.buttons[i].name === event.button.name) {
         this.buttonsInstancesMap[this.buttons[i].name].select();

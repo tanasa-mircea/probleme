@@ -1,26 +1,63 @@
-var buttonElement = document.createElement('button');
+var button = document.createElement('div'),
+    response;
+button.classList.add('button');
 
-function Button(text) {
-  this.element = buttonElement.cloneNode();
-  this.element.innerHTML = text;
+function Button(config) {
+  this.config = config;
+  this.element = button.cloneNode();
+  this.element.innerHTML = config.text;
+  this.name = this.config.name;
 
-  this.element.addEventListener('click', function() {
-    this.fire({
-      type: 'customButtonClick'
-    });
-  }.bind(this));
-};
+  if (this.config.selected) {
+    this.selected = true;
+    this.element.classList.add('button--active');
+  } else {
+    this.selected = false;
+  }
+  this.clickListenerRef = this.clickHandler.bind(this);
 
+  Object.assign(this.element.style, this.config.customStyle);
+  this.element.addEventListener('click', this.clickListenerRef);
+}
 mixin(Button.prototype, CustomEventTarget.prototype);
 
-Button.prototype.disable = function disable() {
-  this.element.disabled = true;
-};
+Object.assign(Button.prototype, {
+  enable: function enable() {
+    this.enabled = true;
+    this.element.classList.remove('button--disabled');
+  },
 
-Button.prototype.enable = function enable() {
-  this.element.disabled = false;
-};
+  disable: function disable() {
+    this.disabled = false;
+    this.element.classList.add('button--disabled');
+  },
 
-Button.prototype.isDisabled = function isDisabled() {
-  return this.element.disabled;
-};
+  select: function select() {
+    this.selected = true;
+    this.element.classList.add('button--active');
+  },
+
+  unselect: function unselect() {
+    this.selected = false;
+    this.element.classList.remove('button--active');
+  },
+
+  isDisabled: function isDisabled() {
+    return this.disabled;
+  },
+
+  isSelected: function isSelected() {
+    return this.selected;
+  },
+
+  clickHandler: function clickHandler(event) {
+    if (this.disabled) {
+      return;
+    };
+
+    this.fire({
+      type: 'buttonClick',
+      button: this
+    });
+  }
+});
