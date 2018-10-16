@@ -29,6 +29,7 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
         marginBottom: '5px'
       },
       toolsGroupConfig = {
+        type: 'radio',
         style: {
           display: 'flex',
           flexDirection: 'column'
@@ -50,7 +51,7 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
         }
       ];
 
-  this.toolsGroup = new RadioGroup(toolsGroupConfig, toolsGroupButtonsConfig);
+  this.toolsGroup = new ButtonGroup(toolsGroupConfig, toolsGroupButtonsConfig);
   this.toolsGroup.addListener('groupChange', function(event) {
     this.toolValue = event.button.config.value;
   }.bind(this));
@@ -63,6 +64,7 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
         marginRight: '5px'
       },
       screenChangerGroupConfig = {
+        type: 'checkbox',
         style: {
           display: 'flex',
           alignItems: 'flex-start'
@@ -82,7 +84,7 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
         }
       ];
 
-  this.screenChangerGroup = new CheckboxGroup(screenChangerGroupConfig, screenChangerGroupButtonsConfig);
+  this.screenChangerGroup = new ButtonGroup(screenChangerGroupConfig, screenChangerGroupButtonsConfig);
   this.screenChangerGroup.addListener('groupChange', function(event) {
     console.log('getSelected', this.screenChangerGroup.getSelected());
     console.log('getUnselected', this.screenChangerGroup.getUnselected());

@@ -6,6 +6,7 @@ group.classList.add('group');
 function ButtonGroup(groupConfig, buttonsConfig) {
   this.element = group.cloneNode();
   this.buttons = buttonsConfig;
+  this.config = groupConfig;
 
   if (groupConfig.style) {
     Object.assign(this.element.style, groupConfig.style);
@@ -24,7 +25,23 @@ function ButtonGroup(groupConfig, buttonsConfig) {
 mixin(ButtonGroup.prototype, CustomEventTarget.prototype);
 Object.assign(ButtonGroup.prototype, {
   buttonClickHandler: function buttonClickHandler(event) {
-    this.buttonClickOveride(event);
+    if (this.config.type === 'radio') {
+      for (let i = 0; i < this.buttons.length; i++) {
+        if (this.buttons[i].name === event.button.name) {
+          this.buttonsInstancesMap[this.buttons[i].name].select();
+        } else {
+          this.buttonsInstancesMap[this.buttons[i].name].unselect();
+        }
+      };
+    }
+
+    if (this.config.type === 'checkbox') {
+      if (event.button.isSelected()) {
+        event.button.unselect();
+      } else {
+        event.button.select();
+      }
+    }
 
     this.fire({
       type: 'groupChange',
