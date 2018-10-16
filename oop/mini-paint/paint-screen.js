@@ -10,36 +10,120 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
   localStoragePaint = JSON.parse(localStorage.getItem('paint'));
 
   this.matrix = draw(this.config, localStoragePaint);
-  this.initDragNDrop(this.matrix.node);
+  this.initMouseActions(this.matrix.node);
   this.currentAction = [];
   this.toolValue = 1;
 
   this.undoStateManager = new Stiva(30);
   this.redoStateManager = new Stiva(30);
 
-  this.undoButton = new Button('Undo');
-  this.redoButton = new Button('Redo');
-  this.clearButton = new Button('Clear');
+  // this.undoButton = new Button('Undo');
+  // this.redoButton = new Button('Redo');
+  // this.clearButton = new Button('Clear');
+  var actionsStyles = {
+        backgroundColor: '#0f0',
+        fontSize: '18px',
+        marginRight: '5px'
+      },
+      actionsGroupConfig = {
+        style: {
+          display: 'flex',
+          alignItems: 'flex-start',
+          marginRight: '5px'
+        }
+      },
+      actionsGroupButtonsConfig = [
+        {
+          name: 'undo',
+          text: 'Undo',
+          customStyle: actionsStyles
+        }, {
+          name: 'redo',
+          text: 'Redo',
+          customStyle: actionsStyles
+        }, {
+          name: 'clear',
+          text: 'Clear',
+          customStyle: actionsStyles
+        }
+      ];
 
-  this.undoButton.disable();
-  this.redoButton.disable();
+  this.actionsGroup = new ButtonGroup(actionsGroupConfig, actionsGroupButtonsConfig);
+  this.actionsGroup.addListener('groupChange', function(event) {
+    this[event.action + 'ButtonHandler']();
+  }.bind(this));
 
-  this.pencilTool = new Tool('Pencil', true);
-  this.eraserTool = new Tool('Eraser', false);
+  var toolsStyles = {
+        backgroundColor: '#00f',
+        color: '#fff',
+        fontSize: '16px',
+        marginBottom: '5px'
+      },
+      toolsGroupConfig = {
+        style: {
+          display: 'flex',
+          flexDirection: 'column'
+        }
+      },
+      toolsGroupButtonsConfig = [
+        {
+          name: 'pencil',
+          text: 'Pencil',
+          selected: true,
+          value: 1,
+          customStyle: toolsStyles
+        }, {
+          name: 'eraser',
+          text: 'Eraser',
+          selected: false,
+          value: 0,
+          customStyle: toolsStyles
+        }
+      ];
 
-  this.matrix.node.appendChild(this.pencilTool.element);
-  this.matrix.node.appendChild(this.eraserTool.element);
+  this.toolsGroup = new RadioGroup(toolsGroupConfig, toolsGroupButtonsConfig);
+  this.toolsGroup.addListener('groupChange', function(event) {
+    this.toolValue = event.value;
+  }.bind(this));
 
-  this.matrix.node.appendChild(this.undoButton.element);
-  this.matrix.node.appendChild(this.redoButton.element);
-  this.matrix.node.appendChild(this.clearButton.element);
+  // Screen Changer
+  var screenChangerStyles = {
+        backgroundColor: '#3f3',
+        color: '#000',
+        fontSize: '20px',
+        marginRight: '5px'
+      },
+      screenChangerGroupConfig = {
+        style: {
+          display: 'flex',
+          alignItems: 'flex-start'
+        }
+      },
+      screenChangerGroupButtonsConfig = [
+        {
+          name: 'black-bg',
+          text: 'Black Background',
+          selected: true,
+          value: 1,
+          customStyle: screenChangerStyles
+        }, {
+          name: 'big-border',
+          text: 'Big Border',
+          selected: false,
+          value: 0,
+          customStyle: screenChangerStyles
+        }
+      ];
 
-  this.undoButton.addListener('customButtonClick', this.undoButtonHandler.bind(this));
-  this.redoButton.addListener('customButtonClick', this.redoButtonHandler.bind(this));
-  this.clearButton.addListener('customButtonClick', this.clearButtonHandler.bind(this));
+  this.screenChangerGroup = new CheckboxGroup(screenChangerGroupConfig, screenChangerGroupButtonsConfig);
+  this.screenChangerGroup.addListener('groupChange', function(event) {
+    // this.toolValue = event.value;
+  }.bind(this));
 
-  this.pencilTool.addListener('toolChange', this.pencilToolChange.bind(this));
-  this.eraserTool.addListener('toolChange', this.eraserToolChange.bind(this));
+
+  this.matrix.node.appendChild(this.actionsGroup.element);
+  this.matrix.node.appendChild(this.toolsGroup.element);
+  this.matrix.node.appendChild(this.screenChangerGroup.element);
 
   this.mouseDownOverride = this.matrixMoveHandler.bind(this);
   this.mouseMoveOverride = this.matrixMoveHandler.bind(this);
@@ -47,18 +131,9 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
 };
 
 mixin(PaintScreen.prototype, CustomEventTarget.prototype);
-mixin(PaintScreen.prototype, DragNDrop.prototype);
+mixin(PaintScreen.prototype, MouseActions.prototype);
 
 Object.assign(PaintScreen.prototype, {
-  // TOOLS LOGIC
-  pencilToolChange: function pencilToolChange(event) {
-    this.toolValue = 1;
-  },
-
-  eraserToolChange: function eraserToolChange(event) {
-    this.toolValue = 0;
-  },
-
   // BUTTONS LOGIc
 
   undoButtonHandler: function undoButtonHandler() {
@@ -179,9 +254,9 @@ Object.assign(PaintScreen.prototype, {
     if (this.currentAction.length > 0) {
       this.undoStateManager.push(this.currentAction);
 
-      if (this.undoButton.isDisabled()) {
-        this.undoButton.enable();
-      }
+      // if (this.undoButton.isDisabled()) {
+      //   this.undoButton.enable();
+      // }
     }
 
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));

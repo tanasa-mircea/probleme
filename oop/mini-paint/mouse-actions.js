@@ -1,7 +1,7 @@
-function DragNDrop() {}
+function MouseActions() {}
 
-DragNDrop.prototype = {
-    initDragNDrop: function initDragNDrop(element) {
+MouseActions.prototype = {
+    initMouseActions: function initMouseActions(element) {
         element.addEventListener('mousedown', this.mouseDownHandler.bind(this));
     },
 
