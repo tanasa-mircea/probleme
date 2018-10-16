@@ -5,17 +5,16 @@ group.classList.add('group');
 
 function ButtonGroup(groupConfig, buttonsConfig) {
   this.element = group.cloneNode();
-  this.buttonsInstancesMap = {};
   this.buttons = buttonsConfig;
 
   if (groupConfig.style) {
     Object.assign(this.element.style, groupConfig.style);
   }
 
-  for (let i = 0; i < buttonsConfig.length; i++) {
-    newButton = new Button(buttonsConfig[i]);
+  for (let i = 0; i < this.buttons.length; i++) {
+    newButton = new Button(this.buttons[i]);
 
-    this.buttonsInstancesMap[buttonsConfig[i].name] = newButton;
+    this.buttons[i].instance = newButton;
     this.element.appendChild(newButton.element);
 
     newButton.addListener('buttonClick', this.buttonClickHandler.bind(this));
@@ -40,47 +39,55 @@ Object.assign(ButtonGroup.prototype, {
     responseVector = [];
 
     for (let i = 0; i < this.buttons.length; i++) {
-      if (this.buttons[i].selected) {
+      if (this.buttons[i].instance.isSelected()) {
         responseVector.push(this.buttons[i]);
       }
-
-      return responseVector;
     }
+
+    return responseVector;
   },
 
   getUnselected: function getUnselected() {
     responseVector = [];
 
     for (let i = 0; i < this.buttons.length; i++) {
-      if (!this.buttons[i].selected) {
+      if (!this.buttons[i].instance.isSelected()) {
         responseVector.push(this.buttons[i]);
       }
-
-      return responseVector;
     }
+
+    return responseVector;
   },
 
   setSelected: function setSelected(buttons) {
-
+    for (let i = 0; i < this.buttons.length; i++) {
+      if (!buttons || buttons.indexOf(this.buttons[i].name) >= 0) {
+        this.buttons[i].instance.select();
+      }
+    }
   },
 
   setUnselected: function setSelected(buttons) {
-
+    for (let i = 0; i < this.buttons.length; i++) {
+      if (!buttons || buttons.indexOf(this.buttons[i].name) >= 0) {
+        this.buttons[i].instance.unselect();
+      }
+    }
   },
 
   disable: function disable(buttons) {
-    var iterableButtons = buttons || this.buttons;
-
-    for (let i = 0; i < iterableButtons.length; i++) {
-      this.buttonsInstancesMap[iterableButtons[i].name].disable();
+    for (let i = 0; i < this.buttons.length; i++) {
+      if (!buttons || buttons.indexOf(this.buttons[i].name) >= 0) {
+        this.buttons[i].instance.disable();
+      }
     }
   },
 
   enable: function enable(buttons) {
-    var iterableButtons = buttons || this.buttons;
-
-    for (let i = 0; i < iterableButtons.length; i++) {
-      this.buttonsInstancesMap[iterableButtons[i].name].enable();
+    for (let i = 0; i < this.buttons.length; i++) {
+      if (!buttons || buttons.indexOf(this.buttons[i].name) >= 0) {
+        this.buttons[i].instance.enable();
+      }
     }
   }
 });

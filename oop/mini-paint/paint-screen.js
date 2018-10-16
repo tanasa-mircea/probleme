@@ -114,6 +114,9 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
 
   this.screenChangerGroup = new CheckboxGroup(screenChangerGroupConfig, screenChangerGroupButtonsConfig);
   this.screenChangerGroup.addListener('groupChange', function(event) {
+    console.log('getSelected', this.screenChangerGroup.getSelected());
+    console.log('getUnselected', this.screenChangerGroup.getUnselected());
+
     if (event.button.isSelected()) {
       this.matrix.node.classList.add('matrix--' + event.action);
     } else {
@@ -144,7 +147,7 @@ Object.assign(PaintScreen.prototype, {
     var state = this.undoStateManager.pop();
 
     if (this.undoStateManager.isEmpty()) {
-      this.actionsGroup.disable([{ name: 'undo' }]);
+      this.actionsGroup.disable(['undo']);
     }
 
     for (let index = 0; index < state.length; index++) {
@@ -160,7 +163,7 @@ Object.assign(PaintScreen.prototype, {
 
     this.redoStateManager.push(state);
 
-    this.actionsGroup.enable([{ name: 'redo' }]);
+    this.actionsGroup.enable(['redo']);
 
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
   },
@@ -173,7 +176,7 @@ Object.assign(PaintScreen.prototype, {
     var state = this.redoStateManager.pop();
 
     if (this.redoStateManager.isEmpty()) {
-      this.actionsGroup.disable([{ name: 'redo' }]);
+      this.actionsGroup.disable(['redo']);
     }
 
     for (let index = 0; index < state.length; index++) {
@@ -189,7 +192,7 @@ Object.assign(PaintScreen.prototype, {
 
     this.undoStateManager.push(state);
 
-    this.actionsGroup.enable([{ name: 'undo' }]);
+    this.actionsGroup.enable(['undo']);
 
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
   },
@@ -212,8 +215,8 @@ Object.assign(PaintScreen.prototype, {
 
     this.undoStateManager.push(newState);
 
-    this.actionsGroup.enable([{ name: 'undo' }]);
-    this.actionsGroup.disable([{ name: 'clear' }]);
+    this.actionsGroup.enable(['undo']);
+    this.actionsGroup.disable(['clear']);
 
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
   },
@@ -250,7 +253,7 @@ Object.assign(PaintScreen.prototype, {
       this.undoStateManager.push(this.currentAction);
 
 
-      this.actionsGroup.enable([{ name: 'undo' }, { name: 'clear' }]);
+      this.actionsGroup.enable(['undo', 'clear']);
     }
 
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
