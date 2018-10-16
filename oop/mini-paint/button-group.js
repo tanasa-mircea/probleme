@@ -29,7 +29,8 @@ Object.assign(ButtonGroup.prototype, {
 
     this.fire({
       type: 'groupChange',
-      action: event.button.name
+      action: event.button.name,
+      button: event.button
     });
   },
 
@@ -65,5 +66,21 @@ Object.assign(ButtonGroup.prototype, {
 
   setUnselected: function setSelected(buttons) {
 
+  },
+
+  disable: function disable(buttons) {
+    if (!buttons) {
+      for (let i = 0; i < this.buttons.length; i++) {
+        this.buttonsInstancesMap[this.buttons[i].name].disable();
+      }
+    }
+  },
+
+  enable: function enable(buttons) {
+    if (!buttons) {
+      for (let i = 0; i < this.buttons.length; i++) {
+        this.buttonsInstancesMap[this.buttons[i].name].disable();
+      }
+    }
   }
 });

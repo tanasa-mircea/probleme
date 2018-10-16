@@ -17,9 +17,7 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
   this.undoStateManager = new Stiva(30);
   this.redoStateManager = new Stiva(30);
 
-  // this.undoButton = new Button('Undo');
-  // this.redoButton = new Button('Redo');
-  // this.clearButton = new Button('Clear');
+  // ACTIONS (UNDO REDO CLEAR)
   var actionsStyles = {
         backgroundColor: '#0f0',
         fontSize: '18px',
@@ -53,6 +51,7 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
     this[event.action + 'ButtonHandler']();
   }.bind(this));
 
+  // TOOLS (PENCIL ERASER)
   var toolsStyles = {
         backgroundColor: '#00f',
         color: '#fff',
@@ -83,10 +82,10 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
 
   this.toolsGroup = new RadioGroup(toolsGroupConfig, toolsGroupButtonsConfig);
   this.toolsGroup.addListener('groupChange', function(event) {
-    this.toolValue = event.value;
+    this.toolValue = event.button.config.value;
   }.bind(this));
 
-  // Screen Changer
+  // SCREEN CHANGER ( BACKGROUND BORDER )
   var screenChangerStyles = {
         backgroundColor: '#3f3',
         color: '#000',
@@ -103,24 +102,27 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
         {
           name: 'black-bg',
           text: 'Black Background',
-          selected: true,
-          value: 1,
+          selected: false,
           customStyle: screenChangerStyles
         }, {
           name: 'big-border',
           text: 'Big Border',
           selected: false,
-          value: 0,
           customStyle: screenChangerStyles
         }
       ];
 
   this.screenChangerGroup = new CheckboxGroup(screenChangerGroupConfig, screenChangerGroupButtonsConfig);
   this.screenChangerGroup.addListener('groupChange', function(event) {
-    // this.toolValue = event.value;
+    if (event.button.isSelected()) {
+      this.matrix.node.classList.add('matrix--' + event.action);
+    } else {
+      this.matrix.node.classList.remove('matrix--' + event.action);
+    }
   }.bind(this));
 
 
+  this.actionsGroup.disable();
   this.matrix.node.appendChild(this.actionsGroup.element);
   this.matrix.node.appendChild(this.toolsGroup.element);
   this.matrix.node.appendChild(this.screenChangerGroup.element);
@@ -134,8 +136,6 @@ mixin(PaintScreen.prototype, CustomEventTarget.prototype);
 mixin(PaintScreen.prototype, MouseActions.prototype);
 
 Object.assign(PaintScreen.prototype, {
-  // BUTTONS LOGIc
-
   undoButtonHandler: function undoButtonHandler() {
     if (this.undoStateManager.isEmpty()) {
       return;
@@ -254,9 +254,9 @@ Object.assign(PaintScreen.prototype, {
     if (this.currentAction.length > 0) {
       this.undoStateManager.push(this.currentAction);
 
-      // if (this.undoButton.isDisabled()) {
-      //   this.undoButton.enable();
-      // }
+      if (this.undoButton.isDisabled()) {
+        this.undoButton.enable();
+      }
     }
 
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));

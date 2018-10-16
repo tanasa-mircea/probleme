@@ -3,11 +3,12 @@ var button = document.createElement('div'),
 button.classList.add('button');
 
 function CustomButton(config) {
+  this.config = config;
   this.element = button.cloneNode();
   this.element.innerHTML = config.text;
-  this.name = config.name;
+  this.name = this.config.name;
 
-  if (config.selected) {
+  if (this.config.selected) {
     this.selected = true;
     this.element.classList.add('button--active');
   } else {
@@ -15,7 +16,7 @@ function CustomButton(config) {
   }
   this.clickListenerRef = this.clickHandler.bind(this);
 
-  Object.assign(this.element.style, config.customStyle);
+  Object.assign(this.element.style, this.config.customStyle);
   this.element.addEventListener('click', this.clickListenerRef);
 }
 mixin(CustomButton.prototype, CustomEventTarget.prototype);
