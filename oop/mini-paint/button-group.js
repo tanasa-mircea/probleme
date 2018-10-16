@@ -69,18 +69,18 @@ Object.assign(ButtonGroup.prototype, {
   },
 
   disable: function disable(buttons) {
-    if (!buttons) {
-      for (let i = 0; i < this.buttons.length; i++) {
-        this.buttonsInstancesMap[this.buttons[i].name].disable();
-      }
+    var iterableButtons = buttons || this.buttons;
+
+    for (let i = 0; i < iterableButtons.length; i++) {
+      this.buttonsInstancesMap[iterableButtons[i].name].disable();
     }
   },
 
   enable: function enable(buttons) {
-    if (!buttons) {
-      for (let i = 0; i < this.buttons.length; i++) {
-        this.buttonsInstancesMap[this.buttons[i].name].disable();
-      }
+    var iterableButtons = buttons || this.buttons;
+
+    for (let i = 0; i < iterableButtons.length; i++) {
+      this.buttonsInstancesMap[iterableButtons[i].name].enable();
     }
   }
 });

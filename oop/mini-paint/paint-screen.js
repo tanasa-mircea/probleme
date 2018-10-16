@@ -144,7 +144,7 @@ Object.assign(PaintScreen.prototype, {
     var state = this.undoStateManager.pop();
 
     if (this.undoStateManager.isEmpty()) {
-      this.undoButton.disable();
+      this.actionsGroup.disable([{ name: 'undo' }]);
     }
 
     for (let index = 0; index < state.length; index++) {
@@ -160,9 +160,7 @@ Object.assign(PaintScreen.prototype, {
 
     this.redoStateManager.push(state);
 
-    if (this.redoButton.isDisabled()) {
-      this.redoButton.enable();
-    }
+    this.actionsGroup.enable([{ name: 'redo' }]);
 
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
   },
@@ -175,7 +173,7 @@ Object.assign(PaintScreen.prototype, {
     var state = this.redoStateManager.pop();
 
     if (this.redoStateManager.isEmpty()) {
-      this.redoButton.disable();
+      this.actionsGroup.disable([{ name: 'redo' }]);
     }
 
     for (let index = 0; index < state.length; index++) {
@@ -191,9 +189,7 @@ Object.assign(PaintScreen.prototype, {
 
     this.undoStateManager.push(state);
 
-    if (this.undoButton.isDisabled()) {
-      this.undoButton.enable();
-    }
+    this.actionsGroup.enable([{ name: 'undo' }]);
 
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
   },
@@ -216,9 +212,8 @@ Object.assign(PaintScreen.prototype, {
 
     this.undoStateManager.push(newState);
 
-    if (this.undoButton.isDisabled()) {
-      this.undoButton.enable();
-    }
+    this.actionsGroup.enable([{ name: 'undo' }]);
+    this.actionsGroup.disable([{ name: 'clear' }]);
 
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
   },
@@ -254,9 +249,8 @@ Object.assign(PaintScreen.prototype, {
     if (this.currentAction.length > 0) {
       this.undoStateManager.push(this.currentAction);
 
-      if (this.undoButton.isDisabled()) {
-        this.undoButton.enable();
-      }
+
+      this.actionsGroup.enable([{ name: 'undo' }, { name: 'clear' }]);
     }
 
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
