@@ -203,30 +203,39 @@ Object.assign(PaintScreen.prototype, {
 });
 
 function fillMatrix(matrix, config, prevPaint) {
-  var matrixData = [];
+  var instancesMap = [],
+      data = [];
 
   for (let i = 0; i < config.rows; i++) {
-    matrixData[i] = [];
+    instancesMap[i] = [];
+    data[i] = [];
+
     for (let j = 0; j < config.columns; j++) {
         var newPixel = new Pixel(config.height, config.width);
+        data[i][j] = 0;
 
-        if (prevPaint && prevPaint[i][j].state) {
-           newPixel.enable();
+        if (prevPaint && prevPaint[i][j]) {
+          data[i][j] = prevPaint[i][j];
         };
 
-        matrixData[i].push(newPixel);
+        instancesMap[i].push(newPixel);
         matrix.appendChild(newPixel.element);
       }
   }
 
-  return matrixData;
+  return {
+    instancesMap: instancesMap,
+    data: data
+  };
 }
 
 function draw(config, prevPaint) {
   var newMatrix = document.createElement('div'),
+      fillResponse = fillMatrix(newMatrix, config, prevPaint),
       final = {
         node: newMatrix,
-        data: fillMatrix(newMatrix, config, prevPaint)
+        data: fillResponse.data,
+        instancesMap: fillResponse.instancesMap
       };
 
   newMatrix.classList.add('matrix');
