@@ -169,6 +169,18 @@ Object.assign(PaintScreen.prototype, {
 
   matrixEndHandler: function matrixEndHandler() {
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
+  },
+
+  paint: function paint() {
+    for (let i = 0; i < this.matrix.data.length; i++) {
+      for (let j = 0; j < this.matrix.data.length; j++) {
+        if (this.matrix.data[i][j]) {
+          this.matrix.instancesMap[i][j].enable();
+        } else {
+          this.matrix.instancesMap[i][j].disable();
+        }
+      }
+    }
   }
 });
 
