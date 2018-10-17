@@ -71,6 +71,41 @@ Tree.prototype = {
     }
   },
 
+  rotate: function(direction) {
+    let newRootBranch,
+        auxBranch;
+
+    if (direction === 'left' && this.root.right) {
+      newRootBranch = Object.assign({}, this.root.right);
+      newRootBranch.parent = null;
+
+      auxBranch = Object.assign({}, newRootBranch.left);
+      auxBranch.parent = this.root;
+      this.root.right = auxBranch;
+
+      this.root.parent = newRootBranch;
+      newRootBranch.left = Object.assign({}, this.root);
+
+      this.root = newRootBranch;
+    }
+
+    if (direction === 'right') {
+      newRootBranch = Object.assign({}, this.root.left);
+      newRootBranch.parent = null;
+
+      auxBranch = Object.assign({}, newRootBranch.right);
+      auxBranch.parent = this.root;
+      this.root.left = auxBranch;
+
+      this.root.parent = newRootBranch;
+      newRootBranch.right = Object.assign({}, this.root);
+
+      this.root = newRootBranch;
+    }
+
+
+  },
+
   findMinNode: function findMinNode(minNode) {
     let newMinNode;
 
@@ -196,8 +231,23 @@ tree.insert(new Node(17));
 tree.insert(new Node(18));
 tree.insert(new Node(15.5));
 tree.insert(new Node(16));
+tree.insert(new Node(30));
+tree.insert(new Node(25));
+tree.insert(new Node(35));
+tree.insert(new Node(21));
+tree.insert(new Node(22));
+tree.insert(new Node(23));
+tree.insert(new Node(24));
+tree.insert(new Node(26));
+tree.insert(new Node(27));
+tree.insert(new Node(28));
+tree.insert(new Node(29));
+tree.insert(new Node(31));
+tree.insert(new Node(32));
+tree.insert(new Node(33));
 
 console.log('tree ', tree);
+debugger
 
 // tree.find(7);
 // tree.find(4);
