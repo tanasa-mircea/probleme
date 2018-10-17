@@ -212,7 +212,8 @@ Tree.prototype = {
 var tree = new Tree();
 
 
-let treeConfig = [20, 10, 5, 15, 3, 2, 4, 7, 6, 8, 14, 13, 12, 11, 17, 18, 15.5, 16, 30, 25, 35, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33];
+let treeConfig = [41,20,65,11,29,50,26,23];
+// let treeConfig = [20, 10, 5, 15, 3, 2, 4, 7, 6, 8, 14, 13, 12, 11, 17, 18, 15.5, 16, 30, 25, 35, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33];
 
 for (let i = 0; i < treeConfig.length; i++) {
   tree.insert(new Node(treeConfig[i]));
@@ -227,9 +228,9 @@ console.log('tree ', tree);
 // tree.find(12);
 // tree.find(9);
 
-tree.deleteByValue(15);
+// tree.deleteByValue(15);
 
-tree.dfs();
-tree.bfs();
+// tree.dfs();
+// tree.bfs();
 
 // console.log('Min node is ', tree.findMinNode(tree.find(6)));
