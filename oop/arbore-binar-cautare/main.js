@@ -71,13 +71,45 @@ Tree.prototype = {
     }
   },
 
-  deleteNode: function deleteNode(value) {
+  findMinNode: function findMinNode(minNode) {
+    let newMinNode;
+
+    if (!minNode.left) {
+      return minNode;
+    }
+
+    if (minNode.left.value < minNode.value) {
+      newMinNode = minNode.left;
+    } else {
+      newMinNode = minNode;
+    }
+
+    return findMinNode(newMinNode);
+  },
+
+  deleteByValue: function deleteByValue(value) {
     var nodeToDelete = this.find(value);
 
     if (!nodeToDelete) {
       console.log('Node not found ', nodeToDelete);
       return;
     }
+
+    this.deleteNode(nodeToDelete);
+  },
+
+  deleteNode: function deleteNode(nodeToDelete) {
+    if (nodeToDelete.left || nodeToDelete.right) {
+      if (nodeToDelete.right) {
+        var replacerNode = this.findMinNode(nodeToDelete.right);
+
+        nodeToDelete.value = replacerNode.value;
+
+        this.deleteNode(replacerNode);
+      }
+
+      return;
+    };
 
     if (nodeToDelete.value < nodeToDelete.parent.value) {
       nodeToDelete.parent.left = null;
@@ -87,7 +119,6 @@ Tree.prototype = {
   },
 
   dfs: function dfs(levelRoot, path) {
-    // debugger
     if (!levelRoot) {
       levelRoot = this.root;
       path = 'Start from root ' + levelRoot.value + ' -> ';
@@ -146,14 +177,25 @@ Tree.prototype = {
 };
 
 var tree = new Tree();
-tree.insert(new Node(8));
-tree.insert(new Node(6));
-tree.insert(new Node(7));
+
+tree.insert(new Node(20));
 tree.insert(new Node(10));
 tree.insert(new Node(5));
+tree.insert(new Node(15));
+tree.insert(new Node(3));
+tree.insert(new Node(2));
 tree.insert(new Node(4));
-tree.insert(new Node(9));
+tree.insert(new Node(7));
+tree.insert(new Node(6));
+tree.insert(new Node(8));
+tree.insert(new Node(14));
+tree.insert(new Node(13));
 tree.insert(new Node(12));
+tree.insert(new Node(11));
+tree.insert(new Node(17));
+tree.insert(new Node(18));
+tree.insert(new Node(15.5));
+tree.insert(new Node(16));
 
 console.log('tree ', tree);
 
@@ -164,7 +206,9 @@ console.log('tree ', tree);
 // tree.find(12);
 // tree.find(9);
 
-// tree.deleteNode(6);
+tree.deleteByValue(15);
 
 tree.dfs();
 tree.bfs();
+
+// console.log('Min node is ', tree.findMinNode(tree.find(6)));
