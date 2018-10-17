@@ -211,38 +211,12 @@ Tree.prototype = {
 
 var tree = new Tree();
 
-tree.insert(new Node(20));
-tree.insert(new Node(10));
-tree.insert(new Node(5));
-tree.insert(new Node(15));
-tree.insert(new Node(3));
-tree.insert(new Node(2));
-tree.insert(new Node(4));
-tree.insert(new Node(7));
-tree.insert(new Node(6));
-tree.insert(new Node(8));
-tree.insert(new Node(14));
-tree.insert(new Node(13));
-tree.insert(new Node(12));
-tree.insert(new Node(11));
-tree.insert(new Node(17));
-tree.insert(new Node(18));
-tree.insert(new Node(15.5));
-tree.insert(new Node(16));
-tree.insert(new Node(30));
-tree.insert(new Node(25));
-tree.insert(new Node(35));
-tree.insert(new Node(21));
-tree.insert(new Node(22));
-tree.insert(new Node(23));
-tree.insert(new Node(24));
-tree.insert(new Node(26));
-tree.insert(new Node(27));
-tree.insert(new Node(28));
-tree.insert(new Node(29));
-tree.insert(new Node(31));
-tree.insert(new Node(32));
-tree.insert(new Node(33));
+
+let treeConfig = [20, 10, 5, 15, 3, 2, 4, 7, 6, 8, 14, 13, 12, 11, 17, 18, 15.5, 16, 30, 25, 35, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33];
+
+for (let i = 0; i < treeConfig.length; i++) {
+  tree.insert(new Node(treeConfig[i]));
+};
 
 console.log('tree ', tree);
 
