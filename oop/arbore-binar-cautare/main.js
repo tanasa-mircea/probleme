@@ -102,8 +102,6 @@ Tree.prototype = {
 
       this.root = newRootBranch;
     }
-
-
   },
 
   findMinNode: function findMinNode(minNode) {
@@ -247,7 +245,6 @@ tree.insert(new Node(32));
 tree.insert(new Node(33));
 
 console.log('tree ', tree);
-debugger
 
 // tree.find(7);
 // tree.find(4);
