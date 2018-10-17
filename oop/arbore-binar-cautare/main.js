@@ -24,6 +24,7 @@ Tree.prototype = {
       if (!levelRoot.left) {
         node.parent = levelRoot;
         levelRoot.left = node;
+        this.balance(node);
         return;
       }
       return this.insert(node, levelRoot.left);
@@ -31,10 +32,42 @@ Tree.prototype = {
       if (!levelRoot.right) {
         node.parent = levelRoot;
         levelRoot.right = node;
+        this.balance(node);
         return;
       }
 
       return this.insert(node, levelRoot.right);
+    }
+  },
+
+  balance: function balance(node) {
+    console.log('node ', node);
+    let parent = node.parent,
+        grandParent = node.parent.parent;
+
+    if (!grandParent) {
+      return;
+    }
+
+    if (grandParent.left === null || grandParent.right === null) {
+      grandParent.left = parent;
+      grandParent.right = node;
+      parent.right = null;
+
+      if (parent.left === null) {
+        parent.left = grandParent;
+      }
+
+      if (parent.right === null) {
+        parent.right = grandParent;
+      }
+
+      grandParent.value = parent.value;
+      grandParent.parent = parent;
+      node.parent.parent = Object.assign({}, parent);
+
+      // debugger
+
     }
   },
 
