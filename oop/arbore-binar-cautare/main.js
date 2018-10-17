@@ -50,10 +50,6 @@ Tree.prototype = {
     }
 
     if (grandParent.left === null || grandParent.right === null) {
-      grandParent.left = parent;
-      grandParent.right = node;
-      parent.right = null;
-
       if (parent.left === null) {
         parent.left = grandParent;
       }
