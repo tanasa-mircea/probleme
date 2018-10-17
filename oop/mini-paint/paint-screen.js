@@ -14,12 +14,16 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
   this.currentAction = [];
   this.toolValue = 1;
 
+  // Undo Manager
   this.undoManager = new UndoManager();
   this.undoManager.addListener('undo', this.undoHandler.bind(this));
   this.undoManager.addListener('redo', this.redoHandler.bind(this));
+  this.matrix.node.appendChild(this.undoManager.element);
 
+  // Clear Button
   this.clearButton = new Button({ name: 'clear', text: 'Clear'});
   this.clearButton.addListener('buttonClick', this.clearButtonHandler.bind(this));
+  this.matrix.node.appendChild(this.clearButton.element);
 
   // TOOLS (PENCIL ERASER)
   var toolsStyles = {
@@ -50,11 +54,9 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
           customStyle: toolsStyles
         }
       ];
-
   this.toolsGroup = new ButtonGroup(toolsGroupConfig, toolsGroupButtonsConfig);
-  this.toolsGroup.addListener('groupChange', function(event) {
-    this.toolValue = event.button.config.value;
-  }.bind(this));
+  this.toolsGroup.addListener('groupChange', this.toolsChangeHandler.bind(this));
+  this.matrix.node.appendChild(this.toolsGroup.element);
 
   // SCREEN CHANGER ( BACKGROUND BORDER )
   var screenChangerStyles = {
@@ -85,23 +87,10 @@ function PaintScreen(rows, columns, elementHeight, elementWidth, radius) {
       ];
 
   this.screenChangerGroup = new ButtonGroup(screenChangerGroupConfig, screenChangerGroupButtonsConfig);
-  this.screenChangerGroup.addListener('groupChange', function(event) {
-    console.log('getSelected', this.screenChangerGroup.getSelected());
-    console.log('getUnselected', this.screenChangerGroup.getUnselected());
-
-    if (event.button.isSelected()) {
-      this.matrix.node.classList.add('matrix--' + event.action);
-    } else {
-      this.matrix.node.classList.remove('matrix--' + event.action);
-    }
-  }.bind(this));
-
-  this.matrix.node.appendChild(this.undoManager.element);
-  this.matrix.node.appendChild(this.clearButton.element);
-  this.matrix.node.appendChild(this.toolsGroup.element);
+  this.screenChangerGroup.addListener('groupChange', this.screenModifierChangeHandler.bind(this));
   this.matrix.node.appendChild(this.screenChangerGroup.element);
 
-  this.mouseDownOverride = this.matrixMoveHandler.bind(this);
+  this.mouseDownOverride = this.matrixStartHandler.bind(this);
   this.mouseMoveOverride = this.matrixMoveHandler.bind(this);
   this.mouseUpOverride = this.matrixEndHandler.bind(this);
 };
@@ -111,94 +100,75 @@ mixin(PaintScreen.prototype, MouseActions.prototype);
 
 Object.assign(PaintScreen.prototype, {
   undoHandler: function undoHandler(event) {
-    var state = event.state;
-
-    for (let index = 0; index < state.length; index++) {
-      if (state[index].prevValue) {
-        state[index].item.enable();
-      } else {
-        state[index].item.disable();
-      }
-
-      state[index].prevValue = state[index].nextValue;
-      state[index].nextValue = state[index].item.state;
-    }
-
+    this.matrix.data = event.state.slice();
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
   },
 
   redoHandler: function redoHandler(event) {
-    var state = event.state;
-
-    for (let index = 0; index < state.length; index++) {
-      if (state[index].prevValue) {
-        state[index].item.enable();
-      } else {
-        state[index].item.disable();
-      }
-
-      state[index].prevValue = state[index].nextValue;
-      state[index].nextValue = state[index].item.state;
-    }
-
+    this.matrix.data = event.state.slice();
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
   },
 
+  toolsChangeHandler: function toolsChangeHandler(event) {
+    this.toolValue = event.button.config.value;
+  },
+
+  screenModifierChangeHandler: function screenModifierChangeHandler(event) {
+    console.log('getSelected', this.screenChangerGroup.getSelected());
+    console.log('getUnselected', this.screenChangerGroup.getUnselected());
+
+    if (event.button.isSelected()) {
+      this.matrix.node.classList.add('matrix--' + event.action);
+    } else {
+      this.matrix.node.classList.remove('matrix--' + event.action);
+    }
+  },
+
   clearButtonHandler: function clearButtonHandler() {
-    var matrixData = paintScreenOne.matrix.data,
-        newState = [];
+    var dataCopy = JSON.parse( JSON.stringify(this.matrix.data));
+    this.undoManager.addAction(dataCopy);
 
-    for (let index = 0; index < this.config.rows; index++) {
+    for (let i = 0; i < this.config.rows; i++) {
       for (let j = 0; j < this.config.columns; j++) {
-        newState.push({
-          item: matrixData[index][j],
-          prevValue: matrixData[index][j].state,
-          nextValue: 0
-        });
-
-        matrixData[index][j].disable();
+        this.matrix.data[i][j] = 0;
       }
     }
 
-    this.undoManager.addAction(newState);
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
   },
 
   // MATRIX LOGIC
 
+  matrixStartHandler: function matrixStartHandler(event) {
+    if (!event.target.matches('.pixel')) {
+      return;
+    }
+
+    var dataCopy = JSON.parse( JSON.stringify(this.matrix.data));
+    this.undoManager.addAction(dataCopy);
+  },
+
   matrixMoveHandler: function matrixMoveHandler(event) {
     var row = Math.ceil(event.y * this.config.rows / (this.config.rows * this.config.height));
     var column = Math.ceil(event.x * this.config.columns / (this.config.columns * this.config.width));
 
-    if (!this.matrix.data[row - 1]) {
+    if (!this.matrix.instancesMap[row - 1]) {
       return;
     }
 
-    var current = this.matrix.data[row - 1][column - 1];
+    var current = this.matrix.instancesMap[row - 1][column - 1];
 
     if (current && !(this.currentAction.length && this.currentAction[this.currentAction.length - 1].item === current)) {
-      this.currentAction.push({
-        item: current,
-        prevValue: current.state,
-        nextValue: this.toolValue
-      });
-
       if (this.toolValue) {
-        current.enable();
+        this.matrix.data[row - 1][column - 1] = 1;
       } else {
-        current.disable();
+        this.matrix.data[row - 1][column - 1] = 0;
       }
     }
   },
 
   matrixEndHandler: function matrixEndHandler() {
-    if (this.currentAction.length > 0) {
-      this.undoManager.addAction(this.currentAction);
-    }
-
     localStorage.setItem('paint', JSON.stringify(this.matrix.data));
-
-    this.currentAction = [];
   }
 });
 

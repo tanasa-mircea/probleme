@@ -28,9 +28,9 @@ Object.assign(ButtonGroup.prototype, {
     if (this.config.type === 'radio') {
       for (let i = 0; i < this.buttons.length; i++) {
         if (this.buttons[i].name === event.button.name) {
-          this.buttonsInstancesMap[this.buttons[i].name].select();
+          this.buttons[i].instance.select();
         } else {
-          this.buttonsInstancesMap[this.buttons[i].name].unselect();
+          this.buttons[i].instance.unselect();
         }
       };
     }
