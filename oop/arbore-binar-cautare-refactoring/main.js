@@ -144,6 +144,11 @@ Tree.prototype = {
       // Set oldRoot's parent the newRoot
       currentPivot.parent = newRootBranch;
 
+      if (!pivot.parent) {
+        this.root = newRootBranch;
+        return;
+      }
+
       if (newRootBranch.value > pivot.parent.value) {
         pivot.parent.right = newRootBranch;
       } else {
@@ -241,6 +246,7 @@ Tree.prototype = {
     // If we have a direction then delete the node that it says
     if (direction) {
       nodeToDelete.parent[direction] = null;
+      this.balance(nodeToDelete);
 
       return;
     }
@@ -251,6 +257,8 @@ Tree.prototype = {
     } else {
       nodeToDelete.parent.right = null;
     }
+
+    this.balance(nodeToDelete);
   },
 
   // Depth First Search
@@ -324,9 +332,10 @@ Tree.prototype = {
 var tree = new Tree();
 
 // let treeConfig = [15, 13, 17, 16, 18, 19];
-// let treeConfig = [41, 35, 30];
+// let treeConfig = [41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30];
+let treeConfig = [1,2,3,4,5,6,7,8,9,10];
 // let treeConfig = [41, 48, 40, 50];
-let treeConfig = [41,20,65,11,29, 50,26,23, 30, 70, 75, 60];
+// let treeConfig = [41,20,65,11,29, 50,26, 70, 75, 60];
 // let treeConfig = [20, 10, 5, 15, 3, 2, 4, 7, 6, 8, 14, 13, 12, 11, 17, 18, 15.5, 16, 30, 25, 35, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33];
 // let treeConfig = [40, 45, 35, 42];
 
@@ -344,7 +353,7 @@ console.log('tree ', tree);
 // tree.find(9);
 
 // tree.deleteByValue(40);
-tree.deleteByValue(23);
+// tree.deleteByValue(11);
 
 // tree.dfs();
 // tree.bfs();
