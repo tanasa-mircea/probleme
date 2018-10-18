@@ -41,30 +41,33 @@ Tree.prototype = {
   },
 
   balance: function balance(node) {
-    console.log('node ', node);
-    let parent = node.parent,
-        grandParent = node.parent.parent;
+    if (!node.parent || !node.parent.parent) {
+      return;
+    };
+
+    let parent = node.parent.parent,
+        grandParent = parent.parent;
 
     if (!grandParent) {
+      // Here parent is root
+      if (!parent.left) {
+        this.rotate('left');
+        return;
+      }
+
+      if (!parent.right) {
+        this.rotate('right');
+        return;
+      }
+
       return;
     }
 
-    if (grandParent.left === null || grandParent.right === null) {
-      if (parent.left === null) {
-        parent.left = grandParent;
-      }
-
-      if (parent.right === null) {
-        parent.right = grandParent;
-      }
-
-      grandParent.value = parent.value;
-      grandParent.parent = parent;
-      node.parent.parent = Object.assign({}, parent);
-
-      // debugger
-
+    if (parent.left && parent.right) {
+      return;
     }
+
+    this.rotateNew('right', parent, grandParent);
   },
 
   find: function find(value, levelRoot, path) {
@@ -118,7 +121,7 @@ Tree.prototype = {
       this.root = newRootBranch;
     }
 
-    if (direction === 'right') {
+    if (direction === 'right' && this.root.left) {
       newRootBranch = Object.assign({}, this.root.left);
       newRootBranch.parent = null;
 
@@ -130,6 +133,47 @@ Tree.prototype = {
       newRootBranch.right = Object.assign({}, this.root);
 
       this.root = newRootBranch;
+    }
+  },
+
+  rotateNew: function(direction, pivotNode, pivotNodeParent) {
+    let newRootBranch,
+        auxBranch;
+
+    if (direction === 'left' && pivotNode.right) {
+      newRootBranch = Object.assign({}, pivotNode.right);
+      newRootBranch.parent = null;
+
+      auxBranch = Object.assign({}, newRootBranch.left);
+      auxBranch.parent = pivotNode;
+      pivotNode.right = auxBranch;
+
+      pivotNode.parent = newRootBranch;
+      newRootBranch.left = Object.assign({}, pivotNode);
+
+      if (pivotNode.value > pivotNodeParent.value) {
+        pivotNodeParent.right = newRootBranch;
+      } else {
+        pivotNodeParent.left = newRootBranch;
+      }
+    }
+
+    if (direction === 'right' && pivotNode.left) {
+      newRootBranch = Object.assign({}, pivotNode.left);
+      newRootBranch.parent = null;
+
+      auxBranch = Object.assign({}, newRootBranch.right);
+      auxBranch.parent = pivotNode;
+      pivotNode.left = auxBranch;
+
+      pivotNode.parent = newRootBranch;
+      newRootBranch.right = Object.assign({}, pivotNode);
+
+      if (pivotNode.value > pivotNodeParent.value) {
+        pivotNodeParent.right = newRootBranch;
+      } else {
+        pivotNodeParent.left = newRootBranch;
+      }
     }
   },
 
@@ -241,7 +285,9 @@ Tree.prototype = {
 var tree = new Tree();
 
 
-let treeConfig = [41,20,65,11,29,50,26,23];
+// let treeConfig = [41, 35, 30];
+// let treeConfig = [41, 48, 50];
+// let treeConfig = [41,20,65,11,29,50,26,23];
 // let treeConfig = [20, 10, 5, 15, 3, 2, 4, 7, 6, 8, 14, 13, 12, 11, 17, 18, 15.5, 16, 30, 25, 35, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33];
 
 for (let i = 0; i < treeConfig.length; i++) {
