@@ -127,7 +127,7 @@ Tree.prototype = {
       newRootBranch.parent = currentPivot.parent;
 
       // Save newRoot's left as auxBranch because it will be replace by oldRoot's left
-      if (!newRootBranch.right) {
+      if (!newRootBranch.left) {
         auxBranch = null;
       } else {
         Object.assign(auxBranch, newRootBranch.left);
@@ -136,6 +136,7 @@ Tree.prototype = {
 
       // Make oldRoot the left of the newRoot
       newRootBranch.left = currentPivot;
+      newRootBranch.right.parent = newRootBranch;
 
       // Set oldRoot's left the aux branch
       currentPivot.right = auxBranch;
@@ -167,6 +168,7 @@ Tree.prototype = {
 
       // Make oldRoot the right of the newRoot
       newRootBranch.right = currentPivot;
+      newRootBranch.left.parent = newRootBranch;
 
       // Set oldRoot's right the aux branch
       currentPivot.left = auxBranch;
@@ -324,7 +326,7 @@ var tree = new Tree();
 // let treeConfig = [15, 13, 17, 16, 18, 19];
 // let treeConfig = [41, 35, 30];
 // let treeConfig = [41, 48, 40, 50];
-let treeConfig = [41,20,65,11,29,50,26,23, 70, 75, 60];
+let treeConfig = [41,20,65,11,29, 50,26,23, 30, 70, 75, 60];
 // let treeConfig = [20, 10, 5, 15, 3, 2, 4, 7, 6, 8, 14, 13, 12, 11, 17, 18, 15.5, 16, 30, 25, 35, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33];
 // let treeConfig = [40, 45, 35, 42];
 
@@ -342,7 +344,7 @@ console.log('tree ', tree);
 // tree.find(9);
 
 // tree.deleteByValue(40);
-// tree.deleteByValue(45);
+tree.deleteByValue(23);
 
 // tree.dfs();
 // tree.bfs();
