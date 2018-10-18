@@ -59,18 +59,25 @@ Tree.prototype = {
     }
 
     if (!parent.left) {
+      debugger
       if (node.left) {
         this.rotate('right', node);
       }
+
+      debugger
+
 
       this.rotate('left', parent);
       return;
     }
 
     if (!parent.right) {
+      debugger
       if (node.right) {
         this.rotate('left', node);
       }
+
+      debugger
 
       this.rotate('right', parent);
       return;
