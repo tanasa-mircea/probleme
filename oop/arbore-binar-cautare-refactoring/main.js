@@ -11,15 +11,19 @@ function Node(value) {
 
 Tree.prototype = {
   insert: function insert(node, levelRoot) {
+    // If the root was not set then the node is the root
     if (!this.root) {
       this.root = node;
       return;
     }
 
+    // At init the level root is undefined
     if (!levelRoot) {
       levelRoot = this.root;
     }
 
+    // Left case
+    // If the spot is free then set the node there, else go to the next level
     if (node.value <= levelRoot.value) {
       if (!levelRoot.left) {
         node.parent = levelRoot;
@@ -28,16 +32,19 @@ Tree.prototype = {
         return;
       }
       return this.insert(node, levelRoot.left);
-    } else {
-      if (!levelRoot.right) {
-        node.parent = levelRoot;
-        levelRoot.right = node;
-        this.balance(node);
-        return;
-      }
-
-      return this.insert(node, levelRoot.right);
     }
+
+    // Right case
+    // If the spot is free then set the node there, else go to the next level
+    if (!levelRoot.right) {
+      node.parent = levelRoot;
+      levelRoot.right = node;
+      this.balance(node);
+      return;
+    }
+
+    return this.insert(node, levelRoot.right);
+
   },
 
   balance: function balance(node) {
@@ -71,19 +78,23 @@ Tree.prototype = {
   },
 
   find: function find(value, levelRoot, path) {
+    // At init level root is undefined
     if (!levelRoot) {
       levelRoot = this.root;
       path = 'Find ' + value + '. Start on root -> ';
     }
 
+    // If the value of current node is the same with the searched one then we found it
     if (levelRoot.value === value) {
       path += 'Found it';
       console.log('Path ', path);
       return levelRoot;
     }
 
+    // If the value of current node lower than the searched one then we go to the left
     if (value < levelRoot.value) {
       if (!levelRoot.left) {
+        // If there is no left to go to then there is no node with that value
         path += 'Not Found it';
         console.log('Path ', path);
         return;
@@ -91,16 +102,17 @@ Tree.prototype = {
 
       path += 'Go to the left -> ';
       return this.find(value, levelRoot.left, path);
-    } else {
-      if (!levelRoot.right) {
-        path += 'Not Found it';
-        console.log('Path ', path);
-        return;
-      }
-
-      path += 'Go to the right -> ';
-      return this.find(value, levelRoot.right, path);
     }
+
+    // If there is no right to go to then there is no node with that value
+    if (!levelRoot.right) {
+      path += 'Not Found it';
+      console.log('Path ', path);
+      return;
+    }
+
+    path += 'Go to the right -> ';
+    return this.find(value, levelRoot.right, path);
   },
 
   rotate: function(direction) {
@@ -194,6 +206,8 @@ Tree.prototype = {
   },
 
   deleteByValue: function deleteByValue(value) {
+    // First get the node with the searched value
+    // If there is one, call the deleteNode method
     var nodeToDelete = this.find(value);
 
     if (!nodeToDelete) {
@@ -204,53 +218,36 @@ Tree.prototype = {
     this.deleteNode(nodeToDelete);
   },
 
-  deleteNode: function deleteNode(nodeToDelete) {
-    if (nodeToDelete.left || nodeToDelete.right) {
-      if (nodeToDelete.right) {
-        var replacerNode = this.findMinNode(nodeToDelete.right);
+  deleteNode: function deleteNode(nodeToDelete, direction) {
+    // If it has a right then we get the minNode from the right and replace the node we want to delete with it
+    // After that delete the minNode
+    if (nodeToDelete.right) {
+      var replacerNode = this.findMinNode(nodeToDelete.right);
 
-        nodeToDelete.value = replacerNode.value;
+      nodeToDelete.value = replacerNode.value;
 
-        this.deleteNode(replacerNode);
-      }
+      return this.deleteNode(replacerNode, 'right');
+    }
+
+    // If it has a left then we replace the node we want to delete with the left node
+    if (nodeToDelete.left) {
+      nodeToDelete.value = nodeToDelete.left.value;
+
+      return this.deleteNode(nodeToDelete.left, 'left');
+    }
+
+    // If we have a direction then delete the node that it says
+    if (direction) {
+      nodeToDelete.parent[direction] = null;
 
       return;
-    };
+    }
 
-    if (nodeToDelete.value < nodeToDelete.parent.value) {
+    // If we don't have directions than we should find it
+    if (nodeToDelete.value <= nodeToDelete.parent.value) {
       nodeToDelete.parent.left = null;
-
-      if (nodeToDelete.parent.right) {
-        if (!nodeToDelete.parent.parent) {
-          // It means nodeToDelete.parent is root
-          return this.rotate('left');
-        }
-
-        if (nodeToDelete.parent.right.right && !nodeToDelete.parent.right.left) {
-          return this.rotateNew('left', nodeToDelete.parent, nodeToDelete.parent.parent);
-        }
-
-        if (nodeToDelete.parent.right.left && !nodeToDelete.parent.right.right) {
-          return this.rotateNew('left', nodeToDelete.parent, nodeToDelete.parent.parent);
-        }
-      }
     } else {
       nodeToDelete.parent.right = null;
-
-      if (nodeToDelete.parent.left) {
-        if (!nodeToDelete.parent.parent) {
-          // It means nodeToDelete.parent is root
-          return this.rotate('right');
-        }
-
-        if (nodeToDelete.parent.left.right && !nodeToDelete.parent.left.left) {
-          return this.rotateNew('right', nodeToDelete.parent, nodeToDelete.parent.parent);
-        }
-
-        if (nodeToDelete.parent.left.left && !nodeToDelete.parent.left.right) {
-          return this.rotateNew('right', nodeToDelete.parent, nodeToDelete.parent.parent);
-        }
-      }
     }
   },
 
@@ -318,7 +315,8 @@ var tree = new Tree();
 // let treeConfig = [41, 35, 30];
 // let treeConfig = [41, 48, 40, 50];
 // let treeConfig = [41,20,65,11,29,50,26,23];
-let treeConfig = [20, 10, 5, 15, 3, 2, 4, 7, 6, 8, 14, 13, 12, 11, 17, 18, 15.5, 16, 30, 25, 35, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33];
+// let treeConfig = [20, 10, 5, 15, 3, 2, 4, 7, 6, 8, 14, 13, 12, 11, 17, 18, 15.5, 16, 30, 25, 35, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33];
+let treeConfig = [40, 45, 35, 42];
 
 for (let i = 0; i < treeConfig.length; i++) {
   tree.insert(new Node(treeConfig[i]));
@@ -334,7 +332,7 @@ console.log('tree ', tree);
 // tree.find(9);
 
 // tree.deleteByValue(40);
-// tree.deleteByValue(16);
+tree.deleteByValue(45);
 
 // tree.dfs();
 // tree.bfs();
