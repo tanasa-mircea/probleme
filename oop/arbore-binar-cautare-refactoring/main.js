@@ -51,30 +51,22 @@ Tree.prototype = {
       return;
     };
 
-    let parent = node.parent,
-        grandParent = parent.parent;
+    let parent = node.parent;
 
     // If the parent's branches are filled then we can't rotate;
     if (parent.left && parent.right) {
       return;
     }
 
-    // If there is no grandParent then we are on root so we just rotate in the direction of the empty branch
-    if (!grandParent) {
-      if (!parent.left) {
-        this.rotate('left');
-        return;
-      }
-
-      if (!parent.right) {
-        this.rotate('right', this.root);
-        return;
-      }
-
+    if (!parent.left) {
+      this.rotate('left', parent);
       return;
     }
 
-    this.rotate('right', parent);
+    if (!parent.right) {
+      this.rotate('right', parent);
+      return;
+    }
   },
 
   find: function find(value, levelRoot, path) {
@@ -151,12 +143,10 @@ Tree.prototype = {
       // Set oldRoot's parent the newRoot
       currentPivot.parent = newRootBranch;
 
-      if (!pivot) {
-        this.root = newRootBranch;
-        return;
-      } else {
-        // hardcoded
+      if (newRootBranch.value > pivot.parent.value) {
         pivot.parent.right = newRootBranch;
+      } else {
+        pivot.parent.left = newRootBranch;
       }
     }
 
@@ -184,12 +174,15 @@ Tree.prototype = {
       // Set oldRoot's parent the newRoot
       currentPivot.parent = newRootBranch;
 
-      if (!pivot) {
+      if (!pivot.parent) {
         this.root = newRootBranch;
         return;
-      } else {
-        // hardcoded
+      }
+
+      if (newRootBranch.value > pivot.parent.value) {
         pivot.parent.right = newRootBranch;
+      } else {
+        pivot.parent.left = newRootBranch;
       }
     }
   },
