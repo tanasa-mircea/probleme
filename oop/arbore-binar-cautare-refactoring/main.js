@@ -50,7 +50,7 @@ QUnit.test('Tree Find', function( assert ) {
   var testNode = new Node(7);
   testNode.parent = tree.root.left;
 
-  assert.deepEqual( tree.find(7), testNode, "Same tree" );
+  assert.deepEqual( tree.find(7), testNode, "Same node" );
 });
 
 QUnit.test('Tree Delete', function( assert ) {
@@ -101,7 +101,7 @@ QUnit.test('Tree BFS', function( assert ) {
       expectedBfs = 'Start from root 20 -> 10 30  -> 5 15 25 35  -> Done';
 
 
-  assert.deepEqual( bfs, expectedBfs, "Same tree" );
+  assert.deepEqual( bfs, expectedBfs, "Same sequence" );
 });
 
 QUnit.test('Tree DFS', function( assert ) {
@@ -110,5 +110,5 @@ QUnit.test('Tree DFS', function( assert ) {
   expectedDfs = 'Start from root 20 -> 10 -> 5 -> 15 -> 30 -> 25 -> 35 -> Done';
 
 
-assert.deepEqual( dfs, expectedDfs, "Same tree" );
+assert.deepEqual( dfs, expectedDfs, "Same sequence" );
 });
