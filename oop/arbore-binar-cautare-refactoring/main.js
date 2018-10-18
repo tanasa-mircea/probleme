@@ -355,6 +355,8 @@ console.log('tree ', tree);
 // tree.deleteByValue(40);
 // tree.deleteByValue(11);
 
+// tree.rotate('right');
+
 // tree.dfs();
 // tree.bfs();
 
