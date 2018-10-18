@@ -23,58 +23,58 @@ Tree.prototype = {
     }
 
     // Left case
-    // If the spot is free then set the node there, else go to the next level
+    // If the spot is free then set the node there and balance the tree, else go to the next level
     if (node.value <= levelRoot.value) {
       if (!levelRoot.left) {
         node.parent = levelRoot;
         levelRoot.left = node;
-        this.balance(node);
+        this.balance(levelRoot);
         return;
       }
       return this.insert(node, levelRoot.left);
     }
 
     // Right case
-    // If the spot is free then set the node there, else go to the next level
+    // If the spot is free then set the node there and balance the tree, else go to the next level
     if (!levelRoot.right) {
       node.parent = levelRoot;
       levelRoot.right = node;
-      this.balance(node);
+      this.balance(levelRoot);
       return;
     }
 
     return this.insert(node, levelRoot.right);
-
   },
 
   balance: function balance(node) {
-    if (!node.parent || !node.parent.parent) {
+    if (!node || !node.parent) {
       return;
     };
 
-    let parent = node.parent.parent,
+    let parent = node.parent,
         grandParent = parent.parent;
 
+    // If the parent's branches are filled then we can't rotate;
+    if (parent.left && parent.right) {
+      return;
+    }
+
+    // If there is no grandParent then we are on root so we just rotate in the direction of the empty branch
     if (!grandParent) {
-      // Here parent is root
       if (!parent.left) {
         this.rotate('left');
         return;
       }
 
       if (!parent.right) {
-        this.rotate('right');
+        this.rotate('right', this.root);
         return;
       }
 
       return;
     }
 
-    if (parent.left && parent.right) {
-      return;
-    }
-
-    this.rotateNew('right', parent, grandParent);
+    this.rotate('right', parent);
   },
 
   find: function find(value, levelRoot, path) {
@@ -115,76 +115,81 @@ Tree.prototype = {
     return this.find(value, levelRoot.right, path);
   },
 
-  rotate: function(direction) {
-    let newRootBranch,
-        auxBranch;
+  rotate: function(direction, pivot) {
+    // If pivot is empty then the root will be the pivot
+    let newRootBranch = new Node(0),
+        auxBranch = new Node(0),
+        currentPivot = new Node(0);
 
-    if (direction === 'left' && this.root.right) {
-      newRootBranch = Object.assign({}, this.root.right);
-      newRootBranch.parent = null;
-
-      auxBranch = Object.assign({}, newRootBranch.left);
-      auxBranch.parent = this.root;
-      this.root.right = auxBranch;
-
-      this.root.parent = newRootBranch;
-      newRootBranch.left = Object.assign({}, this.root);
-
-      this.root = newRootBranch;
+    if (!pivot) {
+      Object.assign(currentPivot, this.root);
+    } else {
+      Object.assign(currentPivot, pivot);
     }
 
-    if (direction === 'right' && this.root.left) {
-      newRootBranch = Object.assign({}, this.root.left);
-      newRootBranch.parent = null;
+    // For the left rotation we must have something on the right
+    if (direction === 'left' && currentPivot.right) {
+      // The new root will be the right branch
+      Object.assign(newRootBranch, currentPivot.right);
+      // Set new root parent as currentPivot parent
+      newRootBranch.parent = currentPivot.parent;
 
-      auxBranch = Object.assign({}, newRootBranch.right);
-      auxBranch.parent = this.root;
-      this.root.left = auxBranch;
-
-      this.root.parent = newRootBranch;
-      newRootBranch.right = Object.assign({}, this.root);
-
-      this.root = newRootBranch;
-    }
-  },
-
-  rotateNew: function(direction, pivotNode, pivotNodeParent) {
-    let newRootBranch,
-        auxBranch;
-
-    if (direction === 'left' && pivotNode.right) {
-      newRootBranch = Object.assign({}, pivotNode.right);
-      newRootBranch.parent = null;
-
-      auxBranch = Object.assign({}, newRootBranch.left);
-      auxBranch.parent = pivotNode;
-      pivotNode.right = auxBranch;
-
-      pivotNode.parent = newRootBranch;
-      newRootBranch.left = Object.assign({}, pivotNode);
-
-      if (pivotNode.value > pivotNodeParent.value) {
-        pivotNodeParent.right = newRootBranch;
+      // Save newRoot's left as auxBranch because it will be replace by oldRoot's left
+      if (!newRootBranch.right) {
+        auxBranch = null;
       } else {
-        pivotNodeParent.left = newRootBranch;
+        Object.assign(auxBranch, newRootBranch.left);
+        auxBranch.parent = currentPivot;
+      }
+
+      // Make oldRoot the left of the newRoot
+      newRootBranch.left = currentPivot;
+
+      // Set oldRoot's left the aux branch
+      currentPivot.right = auxBranch;
+
+      // Set oldRoot's parent the newRoot
+      currentPivot.parent = newRootBranch;
+
+      if (!pivot) {
+        this.root = newRootBranch;
+        return;
+      } else {
+        // hardcoded
+        pivot.parent.right = newRootBranch;
       }
     }
 
-    if (direction === 'right' && pivotNode.left) {
-      newRootBranch = Object.assign({}, pivotNode.left);
-      newRootBranch.parent = null;
+    // For the right rotation we must have something on the left
+    if (direction === 'right' && currentPivot.left) {
+      // The new root will be the left branch
+      Object.assign(newRootBranch, currentPivot.left);
+      // Set new root parent as currentPivot parent
+      newRootBranch.parent = currentPivot.parent;
 
-      auxBranch = Object.assign({}, newRootBranch.right);
-      auxBranch.parent = pivotNode;
-      pivotNode.left = auxBranch;
-
-      pivotNode.parent = newRootBranch;
-      newRootBranch.right = Object.assign({}, pivotNode);
-
-      if (pivotNode.value > pivotNodeParent.value) {
-        pivotNodeParent.right = newRootBranch;
+      // Save newRoot's right as auxBranch because it will be replace by oldRoot's right
+      if (!newRootBranch.right) {
+        auxBranch = null;
       } else {
-        pivotNodeParent.left = newRootBranch;
+        Object.assign(auxBranch, newRootBranch.right);
+        auxBranch.parent = currentPivot;
+      }
+
+      // Make oldRoot the right of the newRoot
+      newRootBranch.right = currentPivot;
+
+      // Set oldRoot's right the aux branch
+      currentPivot.left = auxBranch;
+
+      // Set oldRoot's parent the newRoot
+      currentPivot.parent = newRootBranch;
+
+      if (!pivot) {
+        this.root = newRootBranch;
+        return;
+      } else {
+        // hardcoded
+        pivot.parent.right = newRootBranch;
       }
     }
   },
@@ -192,10 +197,12 @@ Tree.prototype = {
   findMinNode: function findMinNode(minNode) {
     let newMinNode;
 
+    // If the current node doesn't have left then it means that the currentNode is the min
     if (!minNode.left) {
       return minNode;
     }
 
+    // If the left's value is less than current value then got to the left
     if (minNode.left.value < minNode.value) {
       newMinNode = minNode.left;
     } else {
@@ -211,7 +218,7 @@ Tree.prototype = {
     var nodeToDelete = this.find(value);
 
     if (!nodeToDelete) {
-      console.log('Node not found ', nodeToDelete);
+      console.log('Node not found ', value);
       return;
     }
 
@@ -251,41 +258,50 @@ Tree.prototype = {
     }
   },
 
+  // Depth First Search
   dfs: function dfs(levelRoot, path) {
+    // At init, start from root
     if (!levelRoot) {
       levelRoot = this.root;
       path = 'Start from root ' + levelRoot.value + ' -> ';
     }
 
+    // If the current level has a left then go to it and mark it as visited
     if (levelRoot.left && !levelRoot.left.isVisited) {
       levelRoot.left.isVisited = true;
       path += levelRoot.left.value + ' -> ';
       return dfs(levelRoot.left, path);
     }
 
+    // If the current level has a right then go to it and mark it as visited
     if (levelRoot.right && !levelRoot.right.isVisited) {
       levelRoot.right.isVisited = true;
       path += levelRoot.right.value + ' -> ';
       return dfs(levelRoot.right, path);
     }
 
+    // If neither left nor right are unvisited and we don't have a parent then we are done
     if (!levelRoot.parent) {
       path += 'Done';
       console.log(path);
       return;
     }
 
+    // If neither left nor right are unvisited but we have a parent then go back to it
     return dfs(levelRoot.parent, path);
   },
 
+  // Breadth First Search
   bfs: function bfs(queue, path) {
     var nextQueue = [];
 
+    // At init, set a queue with the root inside
     if (!queue) {
       queue = [this.root];
       path = 'Start from root ' + this.root.value + ' -> ';
     }
 
+    // Iterate through the queue and push to the nextQueue the next branches
     for (let i = 0; i < queue.length; i++) {
       if (queue[i].left) {
         path += queue[i].left.value + ' ';
@@ -298,6 +314,7 @@ Tree.prototype = {
       }
     }
 
+    // If the nextQueue is empty then we are done
     if (nextQueue.length === 0) {
       path += 'Done';
       console.log(path);
@@ -314,9 +331,9 @@ var tree = new Tree();
 // let treeConfig = [15, 13, 17, 16, 18, 19];
 // let treeConfig = [41, 35, 30];
 // let treeConfig = [41, 48, 40, 50];
-// let treeConfig = [41,20,65,11,29,50,26,23];
+let treeConfig = [41,20,65,11,29,50,26,23, 70, 75, 60];
 // let treeConfig = [20, 10, 5, 15, 3, 2, 4, 7, 6, 8, 14, 13, 12, 11, 17, 18, 15.5, 16, 30, 25, 35, 21, 22, 23, 24, 26, 27, 28, 29, 31, 32, 33];
-let treeConfig = [40, 45, 35, 42];
+// let treeConfig = [40, 45, 35, 42];
 
 for (let i = 0; i < treeConfig.length; i++) {
   tree.insert(new Node(treeConfig[i]));
@@ -332,7 +349,7 @@ console.log('tree ', tree);
 // tree.find(9);
 
 // tree.deleteByValue(40);
-tree.deleteByValue(45);
+// tree.deleteByValue(45);
 
 // tree.dfs();
 // tree.bfs();
