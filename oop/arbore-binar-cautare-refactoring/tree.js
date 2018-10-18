@@ -59,11 +59,19 @@ Tree.prototype = {
     }
 
     if (!parent.left) {
+      if (node.left) {
+        this.rotate('right', node);
+      }
+
       this.rotate('left', parent);
       return;
     }
 
     if (!parent.right) {
+      if (node.right) {
+        this.rotate('left', node);
+      }
+
       this.rotate('right', parent);
       return;
     }
@@ -136,7 +144,11 @@ Tree.prototype = {
 
       // Make oldRoot the left of the newRoot
       newRootBranch.left = currentPivot;
-      newRootBranch.right.parent = newRootBranch;
+
+      // Make sure that newRoot's right has the right parent ref
+      if (newRootBranch.right) {
+        newRootBranch.right.parent = newRootBranch;
+      }
 
       // Set oldRoot's left the aux branch
       currentPivot.right = auxBranch;
@@ -144,7 +156,7 @@ Tree.prototype = {
       // Set oldRoot's parent the newRoot
       currentPivot.parent = newRootBranch;
 
-      if (!pivot.parent) {
+      if (!pivot || !pivot.parent) {
         this.root = newRootBranch;
         return;
       }
@@ -173,7 +185,11 @@ Tree.prototype = {
 
       // Make oldRoot the right of the newRoot
       newRootBranch.right = currentPivot;
-      newRootBranch.left.parent = newRootBranch;
+
+      // Make sure that newRoot's right has the right parent ref
+      if (newRootBranch.left) {
+        newRootBranch.left.parent = newRootBranch;
+      }
 
       // Set oldRoot's right the aux branch
       currentPivot.left = auxBranch;
@@ -181,7 +197,7 @@ Tree.prototype = {
       // Set oldRoot's parent the newRoot
       currentPivot.parent = newRootBranch;
 
-      if (!pivot.parent) {
+      if (!pivot || !pivot.parent) {
         this.root = newRootBranch;
         return;
       }

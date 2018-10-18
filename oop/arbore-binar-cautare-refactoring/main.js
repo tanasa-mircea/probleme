@@ -46,7 +46,6 @@ QUnit.test('Tree Insert Balancing Decreasing', function( assert ) {
 });
 
 QUnit.test('Tree Find', function( assert ) {
-  // var tree = generateTree([10,5,15,2,3]);
   var tree = generateTree([10,5,15,7]);
   var testNode = new Node(7);
   testNode.parent = tree.root.left;
@@ -69,15 +68,15 @@ QUnit.test('Tree Delete', function( assert ) {
 });
 
 QUnit.test('Tree Delete Balancing', function( assert ) {
-  // var tree = generateTree([10,5,15,7]);
-  var tree = generateTree([10,5,15,18]);
+  var tree = generateTree([10,5,15,7]);
+  // var tree = generateTree([10,5,15,18]);
   tree.deleteByValue(15);
 
   let testTree = new Tree();
   testTree.root = new Node(10);
   testTree.root.left = new Node(5);
   testTree.root.left.parent = testTree.root;
-  testTree.root.right = new Node(18);
+  testTree.root.right = new Node(7);
   testTree.root.right.parent = testTree.root;
 
   assert.deepEqual( tree, testTree, "Same tree" );
