@@ -14,6 +14,8 @@ Tree.prototype = {
     // If the root was not set then the node is the root
     if (!this.root) {
       this.root = node;
+      // this.setRanks();
+      // this.setUnvisited();
       return;
     }
 
@@ -28,8 +30,10 @@ Tree.prototype = {
       if (!levelRoot.left) {
         node.parent = levelRoot;
         levelRoot.left = node;
-        this.balance(levelRoot);
-        return;
+        // this.setRanks();
+        // this.setUnvisited();
+
+        return this.balance(levelRoot);
       }
       return this.insert(node, levelRoot.left);
     }
@@ -39,17 +43,88 @@ Tree.prototype = {
     if (!levelRoot.right) {
       node.parent = levelRoot;
       levelRoot.right = node;
-      this.balance(levelRoot);
-      return;
+      // this.setRanks();
+      // this.setUnvisited();
+
+      return this.balance(levelRoot);
     }
 
     return this.insert(node, levelRoot.right);
+  },
+
+  setUnvisited: function setUnvisited(queue) {
+    var nextQueue = [];
+
+    // At init, set a queue with the root inside
+    if (!queue) {
+      queue = [this.root];
+    }
+
+    // Iterate through the queue and push to the nextQueue the next branches
+    for (let i = 0; i < queue.length; i++) {
+      if (queue[i].hasOwnProperty('isVisited')) {
+        delete queue[i].isVisited;
+      }
+
+      if (queue[i].left) {
+        nextQueue.push(queue[i].left);
+      }
+
+      if (queue[i].right) {
+        nextQueue.push(queue[i].right);
+      }
+    }
+
+    // If the nextQueue is empty then we are done
+    if (nextQueue.length === 0) {
+      return;
+    }
+
+    return setUnvisited(nextQueue);
+  },
+
+  setRanks: function setRanks(levelRoot) {
+    // At init, start from root
+    if (!levelRoot) {
+      levelRoot = this.root;
+    }
+
+    // If the current level has a left then go to it and mark it as visited
+    if (levelRoot.left && !levelRoot.left.isVisited) {
+      levelRoot.left.isVisited = true;
+      return this.setRanks(levelRoot.left);
+    }
+
+    // If the current level has a right then go to it and mark it as visited
+    if (levelRoot.right && !levelRoot.right.isVisited) {
+      levelRoot.right.isVisited = true;
+      return this.setRanks(levelRoot.right);
+    }
+
+    if (!levelRoot.right && !levelRoot.left) {
+      levelRoot.rank = 0;
+    } else {
+      let leftRank = levelRoot.left && levelRoot.left.rank + 1,
+          rightRank = levelRoot.right && levelRoot.right.rank + 1;
+      levelRoot.rank = Math.max(leftRank || 1, rightRank || 1);
+    }
+
+    // If neither left nor right are unvisited and we don't have a parent then we are done
+    if (!levelRoot.parent) {
+      return this.root;
+    }
+
+    // If neither left nor right are unvisited but we have a parent then go back to it
+    return this.setRanks(levelRoot.parent);
   },
 
   balance: function balance(node) {
     if (!node || !node.parent) {
       return;
     };
+
+    // this.setRanks();
+    // this.setUnvisited();
 
     let parent = node.parent;
 
@@ -59,25 +134,32 @@ Tree.prototype = {
     }
 
     if (!parent.left) {
-      debugger
       if (node.left) {
         this.rotate('right', node);
       }
 
-      debugger
-
+      // TODO: Refactor
+      if (!node.right && !node.left) {
+        if (parent.right && !parent.right.right && parent.right.left) {
+          this.rotate('right', parent.right);
+        }
+      }
 
       this.rotate('left', parent);
       return;
     }
 
     if (!parent.right) {
-      debugger
       if (node.right) {
         this.rotate('left', node);
       }
 
-      debugger
+      // TODO: Refactor
+      if (!node.right && !node.left) {
+        if (parent.left && !parent.left.left && parent.left.right) {
+          this.rotate('left', parent.left);
+        }
+      }
 
       this.rotate('right', parent);
       return;
@@ -165,6 +247,10 @@ Tree.prototype = {
 
       if (!pivot || !pivot.parent) {
         this.root = newRootBranch;
+
+        // this.setRanks();
+        // this.setUnvisited();
+
         return;
       }
 
@@ -173,6 +259,9 @@ Tree.prototype = {
       } else {
         pivot.parent.left = newRootBranch;
       }
+
+      // this.setRanks();
+      // this.setUnvisited();
     }
 
     // For the right rotation we must have something on the left
