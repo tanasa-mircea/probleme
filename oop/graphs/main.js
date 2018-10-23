@@ -4,18 +4,24 @@ var config = {
       label: 'Test1',
       value: 25,
       additionalClass: 'test-class'
-    },
-    {
+    }, {
       label: 'Test2',
       value: 100
-    },
-    {
+    }, {
       label: 'Test3',
       value: 45
-    },
-    {
+    }, {
       label: 'Test4',
       value: 30
+    }, {
+      label: 'Test5',
+      value: 30
+    }, {
+      label: 'Test6',
+      value: 58
+    }, {
+      label: 'Test7',
+      value: 76
     }
   ]
 };
@@ -31,7 +37,7 @@ Object.assign(Graph.prototype, {
   }
 });
 
-function PieChart() {
+function PieChart(config) {
   var radius = 150;
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   this.element.setAttribute('height', radius * 2);
@@ -43,66 +49,87 @@ function PieChart() {
   circle.setAttribute('r', radius);
   this.element.appendChild(circle);
 
-  var slices = [{
-    percentage: .4
-  }, {
-    percentage: .3
-  }, {
-    percentage: .2
-  }];
+  var prevDegrees = 0,
+      prevCoords = [150, 0],
+      total = 0;
 
-  var prevCoords = [150, 0];
+  for (let i = 0; i < config.data.length; i++) {
+    total += config.data[i].value;
+  }
 
-  for (let i = 0; i < slices.length; i++) {
-    var path = createPath(slices[i], radius, prevCoords);
-    prevCoords[0] = path.endCoords[0];
-    prevCoords[1] = path.endCoords[1];
+  for (let i = 0; i < config.data.length; i++) {
+    var percentage = config.data[i].value * 100 / total;
+
+    var path = createPath(percentage / 100, radius, prevDegrees);
     this.element.appendChild(path.element);
 
-    var breakpoint = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    breakpoint.setAttribute('cx', prevCoords[0]);
-    breakpoint.setAttribute('cy', prevCoords[1]);
-    breakpoint.setAttribute('r', 5);
-    breakpoint.setAttribute('fill', '#f00');
-    this.element.appendChild(breakpoint);
+
+    var text = createText(Math.round(percentage), getTriangleCenter([radius, radius], prevCoords, path.endCoords ), prevDegrees);
+    this.element.appendChild(text.element);
+
+    prevDegrees += path.degrees;
+    prevCoords = path.endCoords;
+    // this.element.appendChild(group);
   }
 }
 
-function createPath(slice, radius, startingCoords) {
+function getTriangleCenter(a, b, c) {
+  return [
+    (a[0] + b[0] + c[0]) / 3,
+    (a[1] + b[1] + c[1]) / 3
+  ];
+}
+
+function createPath(percentage, radius, previousDegrees) {
   var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
   // Start from x 150 y 0
   // Draw arc equivalent of value from x 150 y 0 to x 200 y 40
   // Go to chart center
-  var slicePercentage = slice.percentage;
-  var newPercentage = .5 - slicePercentage;
+  var newPercentage = .5 - percentage;
   var largeArcFlag = 0;
   var sweepFlag = 1;
 
-  if (slicePercentage > 0.5) {
+  if (percentage > 0.5) {
     largeArcFlag = 1;
     sweepFlag = 1;
-    newPercentage = 1.5 - slicePercentage;
+    newPercentage = 1.5 - percentage;
   }
 
-  console.log('startingCoords ', startingCoords);
 
-  var initialCoords = getCoordinatesForPercentage(0, radius, startingCoords);
-  var endCoords = getCoordinatesForPercentage(newPercentage, radius, startingCoords);
+  var radians = 2 * Math.PI * newPercentage;
+  var endCoords = getCoordinatesForPercentage(radians, radius);
 
-  path.setAttribute('d', `M 150 0 A 150 150, 0, ${largeArcFlag} ${sweepFlag}, ${endCoords[0]} ${endCoords[1]} L ${radius} ${radius} Z`);
+  path.setAttribute('d', `M ${radius} 0
+                          A ${radius} ${radius}, 0, ${largeArcFlag} ${sweepFlag}, ${endCoords[0]} ${endCoords[1]}
+                          L ${radius} ${radius} Z`);
+
   path.setAttribute('fill', getColor());
+  path.setAttribute('transform', `rotate(${previousDegrees}, ${radius}, ${radius})`);
 
   return {
     element: path,
-    endCoords: endCoords
+    endCoords: endCoords,
+    degrees: 180 - radians * 180 / Math.PI
   };
 }
 
-function getCoordinatesForPercentage(percentage, radius, startingCoords) {
-  var x = radius + radius * Math.sin(2 * Math.PI * percentage);
-  var y = radius + radius * Math.cos(2 * Math.PI * percentage);
+function createText(innerText, coords, rotation) {
+  var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  text.innerHTML = innerText + '%';
+  text.setAttribute('x', coords[0]);
+  text.setAttribute('y', coords[1]);
+
+  return {
+    element: text
+  };
+}
+
+function getCoordinatesForPercentage(degrees, radius) {
+  var x = radius + radius * Math.sin(degrees);
+  var y = radius + radius * Math.cos(degrees);
   return [x, y];
 }
+
 
 function getColor() {
   return '#' + Math.floor(Math.random() * 0xffffff).toString(16);
@@ -111,20 +138,20 @@ function getColor() {
 mixin(PieChart.prototype, Graph.prototype);
 
 function GraphFactory() {
-  this.create = function create(type) {
+  this.create = function create(type, config) {
     var graph;
 
     if (type === 'pie') {
-      graph = new PieChart();
+      graph = new PieChart(config);
     }
 
     return graph;
   };
 }
 
-var graphFactory = new GraphFactory();
-var chart = graphFactory.create('pie');
-
 document.addEventListener("DOMContentLoaded", function() {
+  var graphFactory = new GraphFactory();
+  var chart = graphFactory.create('pie', config);
+
   document.getElementById('displayer').appendChild(chart.element);
 });
