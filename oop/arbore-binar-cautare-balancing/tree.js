@@ -16,7 +16,7 @@ Node.prototype = {
       return 0;
     }
 
-    return this.left.height;
+    return this.left.height + 1;
   },
 
   getRightHeight: function() {
@@ -24,7 +24,7 @@ Node.prototype = {
       return 0;
     }
 
-    return this.right.height;
+    return this.right.height + 1;
   }
 };
 
@@ -46,11 +46,11 @@ Tree.prototype = {
       levelRoot.right = this.insertNode(value, levelRoot.right);
     }
 
-    levelRoot.height = Math.max(levelRoot.getLeftHeight(), levelRoot.getRightHeight()) + 1;
+    levelRoot.height = Math.max(levelRoot.getLeftHeight(), levelRoot.getRightHeight());
 
     // Update height and rebalance tree
     var balanceState = this.getBalancingDirection(levelRoot);
-    if (balanceState < -1) {
+    if (balanceState <= -2) {
       if (value < levelRoot.left.value) {
         // Left left case
         levelRoot = this.rotate('right', levelRoot);
@@ -61,7 +61,7 @@ Tree.prototype = {
       }
     }
 
-    if (balanceState > 1) {
+    if (balanceState >= 2) {
       if (value > (levelRoot.right && levelRoot.right.value) || 0 ) {
         // Right right case
         levelRoot = this.rotate('left', levelRoot);
@@ -116,10 +116,10 @@ Tree.prototype = {
   rotate: function(direction, pivot) {
     if (direction === 'right') {
       var other = pivot.left;
-      pivot.left = other && other.right;
+      pivot.left = other.right;
       other.right = pivot;
-      pivot.height = Math.max(pivot.getLeftHeight(), pivot.getRightHeight()) + 1;
-      other.height = Math.max(other.getLeftHeight(), pivot.height) + 1;
+      pivot.height = Math.max(pivot.getLeftHeight(), pivot.getRightHeight());
+      other.height = Math.max(other.getLeftHeight(), other.getRightHeight());
       return other;
     }
 
@@ -127,8 +127,9 @@ Tree.prototype = {
       var other = pivot.right;
       pivot.right = other.left;
       other.left = pivot;
-      pivot.height = Math.max(pivot.getLeftHeight(), pivot.getRightHeight()) + 1;
-      other.height = Math.max(other.getRightHeight(), pivot.height) + 1;
+
+      pivot.height = Math.max(pivot.getLeftHeight(), pivot.getRightHeight());
+      other.height = Math.max(other.getRightHeight(), other.getLeftHeight());
       return other;
     }
   },
@@ -195,9 +196,8 @@ Tree.prototype = {
       } else {
         // Node has 2 children, get the in-order successor
         var inOrderSuccessor = this.findMinNode(levelRoot.right);
-        levelRoot.key = inOrderSuccessor.key;
         levelRoot.value = inOrderSuccessor.value;
-        levelRoot.right = this._delete(inOrderSuccessor.key, levelRoot.right);
+        levelRoot.right = this.deleteNode(inOrderSuccessor.key, levelRoot.right);
       }
     }
 
@@ -205,31 +205,32 @@ Tree.prototype = {
       return levelRoot;
     }
 
+
     // Update height and rebalance tree
-    levelRoot.height = Math.max(levelRoot.getLeftHeight(), levelRoot.getRightHeight()) + 1;
+    levelRoot.height = Math.max(levelRoot.getLeftHeight(), levelRoot.getRightHeight());
     var balanceState = this.getBalancingDirection(levelRoot);
 
-    if (balanceState < -1) {
+    if (balanceState <= -2) {
       // Left left case
       if (this.getBalancingDirection(levelRoot.left) === 0 || this.getBalancingDirection(levelRoot.left) === -1) {
         return this.rotate('right', levelRoot);
 
       }
       // Left right case
-      if (this.getBalancingDirection(levelRoot.left) === BalanceState.SLIGHTLY_UNBALANCED_RIGHT) {
+      if (this.getBalancingDirection(levelRoot.left) === 1) {
         levelRoot.left = this.rotate('left', levelRoot.left);
         return this.rotate('right', levelRoot);
       }
     }
 
-    if (balanceState > 1) {
+    if (balanceState >= 2) {
       // Right right case
       if (this.getBalancingDirection(levelRoot.right) === 0 || this.getBalancingDirection(levelRoot.right) === 1) {
         return this.rotate('left', levelRoot);
 
       }
       // Right left case
-      if (this.getBalancingDirection(levelRoot.right) === BalanceState.SLIGHTLY_UNBALANCED_LEFT) {
+      if (this.getBalancingDirection(levelRoot.right) === -1) {
         levelRoot.right = this.rotate('right', levelRoot.right);
         return this.rotate('left', levelRoot);
       }
@@ -239,7 +240,7 @@ Tree.prototype = {
   },
 
   // Depth First Search
-  dfs: function dfs(levelRoot, path) {
+  dfs: function dfs(levelRoot, path, parent) {
     // At init, start from root
     if (!levelRoot) {
       levelRoot = this.root;
@@ -250,25 +251,25 @@ Tree.prototype = {
     if (levelRoot.left && !levelRoot.left.isVisited) {
       levelRoot.left.isVisited = true;
       path += levelRoot.left.value + ' -> ';
-      return dfs(levelRoot.left, path);
+      path = dfs(levelRoot.left, path, levelRoot);
     }
 
     // If the current level has a right then go to it and mark it as visited
     if (levelRoot.right && !levelRoot.right.isVisited) {
       levelRoot.right.isVisited = true;
       path += levelRoot.right.value + ' -> ';
-      return dfs(levelRoot.right, path);
+      path = dfs(levelRoot.right, path, levelRoot);
     }
 
     // If neither left nor right are unvisited and we don't have a parent then we are done
-    if (!levelRoot.parent) {
+    if (!parent) {
       path += 'Done';
       console.log(path);
       return path;
     }
 
     // If neither left nor right are unvisited but we have a parent then go back to it
-    return dfs(levelRoot.parent, path);
+    return path;
   },
 
   // Breadth First Search
