@@ -14,6 +14,10 @@ function GraphFactory() {
       graph = new HorizontalBarChart(config);
     }
 
+    if (type === 'verticalBar') {
+      graph = new VerticalBarChart(config);
+    }
+
     return graph;
   };
 }

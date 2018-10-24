@@ -1,7 +1,7 @@
-function HorizontalBarChart(config) {
+function VerticalBarChart(config) {
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  this.element.setAttribute('height', 50);
-  this.element.setAttribute('width', 600);
+  this.element.setAttribute('height', 600);
+  this.element.setAttribute('width', 50);
 
   this.tooltip = new Tooltip();
 
@@ -11,12 +11,12 @@ function HorizontalBarChart(config) {
   };
 
 
-  generateHBars(0, config.data, 0, 600, this.element, total, this.tooltip);
+  generateBars(0, config.data, 0, 600, this.element, total, this.tooltip);
   this.element.appendChild(this.tooltip.element);
 }
-mixin(HorizontalBarChart.prototype, Graph.prototype);
+mixin(VerticalBarChart.prototype, Graph.prototype);
 
-function generateHBars(index, data, lastPosition, containerWidth, container, total, tooltip) {
+function generateBars(index, data, lastPosition, containerHeight, container, total, tooltip) {
   console.log(index);
   console.log(index >= data.length);
   if (index >= data.length) {
@@ -24,12 +24,12 @@ function generateHBars(index, data, lastPosition, containerWidth, container, tot
   }
 
   var newBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  var width = data[index].value * containerWidth / total;
+  var height = data[index].value * containerHeight / total;
   var color = getColor();
 
-  newBar.setAttribute('height', '50');
-  newBar.setAttribute('width', width);
-  newBar.setAttribute('x', lastPosition);
+  newBar.setAttribute('width', '50');
+  newBar.setAttribute('height', height);
+  newBar.setAttribute('y', lastPosition);
   newBar.setAttribute('fill', color);
 
   container.appendChild(newBar);
@@ -48,5 +48,5 @@ function generateHBars(index, data, lastPosition, containerWidth, container, tot
     tooltip.hide();
   });
 
-  return generateHBars(index + 1, data, lastPosition + width, containerWidth, container, total, tooltip);
+  return generateBars(index + 1, data, lastPosition + height, containerHeight, container, total, tooltip);
 }
