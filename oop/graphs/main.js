@@ -5,9 +5,11 @@ document.addEventListener("DOMContentLoaded", function() {
       var graphFactory = new GraphFactory();
       var pie = graphFactory.create('pie', config);
       var doughnut = graphFactory.create('doughnut', config);
+      var horizontalBar = graphFactory.create('horizontalBar', config);
 
       document.getElementById('displayer').appendChild(pie.element);
       document.getElementById('displayer').appendChild(doughnut.element);
+      document.getElementById('displayer').appendChild(horizontalBar.element);
     });
 });
 

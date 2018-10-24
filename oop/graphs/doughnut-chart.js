@@ -1,7 +1,9 @@
 function DoughnutChart(config) {
-  config.data = {
-    label: 'Test',
-    percentage: 34
+  var config = {
+    data: {
+      label: 'Test',
+      percentage: 34
+    }
   };
   var radius = 150;
 

@@ -10,6 +10,10 @@ function GraphFactory() {
       graph = new DoughnutChart(config);
     }
 
+    if (type === 'horizontalBar') {
+      graph = new HorizontalBarChart(config);
+    }
+
     return graph;
   };
 }
