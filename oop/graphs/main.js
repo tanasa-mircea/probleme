@@ -20,6 +20,39 @@ var config = {
   ]
 };
 
+function Legend(config) {
+  this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  this.lastYPosition = 0;
+
+  if (config.coords) {
+    this.element.setAttribute('transform', `translate(${config.coords[0]}, ${config.coords[1]})`);
+  }
+}
+
+Object.assign(Legend.prototype, {
+  add: function add(color, text) {
+    var group = document.createElementNS("http://www.w3.org/2000/svg", "g"),
+        colorElement = document.createElementNS("http://www.w3.org/2000/svg", "rect"),
+        textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+
+    colorElement.setAttribute('height', 15);
+    colorElement.setAttribute('width', 30);
+    colorElement.setAttribute('fill', color);
+    colorElement.setAttribute('y', 0);
+
+    textElement.setAttribute('x', 35);
+    textElement.setAttribute('y', 10);
+    textElement.innerHTML = text;
+
+    group.setAttribute('transform', `translate(0, ${this.lastYPosition})`);
+    group.appendChild(colorElement);
+    group.appendChild(textElement);
+
+    this.lastYPosition = this.lastYPosition + 15 + 5;
+    this.element.appendChild(group);
+  }
+});
+
 function Graph() {}
 Object.assign(Graph.prototype, {
   mouseEnterOverride: function() {
@@ -34,9 +67,11 @@ Object.assign(Graph.prototype, {
 function PieChart(config) {
   var radius = 150;
 
+  this.legend = new Legend({ coords: [400, 100]});
+
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  this.element.setAttribute('height', radius * 2);
-  this.element.setAttribute('width', radius * 2);
+  this.element.setAttribute('height', 600);
+  this.element.setAttribute('width', 600);
 
   var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   circle.setAttribute('cx', radius);
@@ -45,7 +80,7 @@ function PieChart(config) {
   this.element.appendChild(circle);
 
   var prevCoords = [150, 0],
-      prevValue = 0,
+      prevPercentage = 0,
       total = 0;
 
   for (let i = 0; i < config.data.length; i++) {
@@ -53,18 +88,22 @@ function PieChart(config) {
   }
 
   for (let i = 0; i < config.data.length; i++) {
-    var percentage = (config.data[i].value + prevValue) * 100 / total;
+    var percentage = config.data[i].value * 100 / total;
+    var color = getColor();
 
-    var path = createPath(percentage / 100, radius, prevCoords);
+    this.legend.add(color, config.data[i].label);
+
+    var path = createPath(percentage / 100, radius, prevCoords, prevPercentage / 100, color);
     this.element.appendChild(path.element);
-
 
     var text = createText(Math.round(percentage), getTriangleCenter([radius, radius], prevCoords, path.endCoords));
     this.element.appendChild(text.element);
 
-    prevValue += config.data[i].value;
+    prevPercentage += percentage;
     prevCoords = path.endCoords;
   }
+
+  this.element.appendChild(this.legend.element);
 }
 
 function getTriangleCenter(a, b, c) {
@@ -74,11 +113,13 @@ function getTriangleCenter(a, b, c) {
   ];
 }
 
-function createPath(percentage, radius, prevCoords, prevPercentage) {
+function createPath(percentage, radius, prevCoords, prevPercentage, color) {
   var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
   // Start from x 150 y 0
   // Draw arc equivalent of value from x 150 y 0 to x 200 y 40
   // Go to chart center
+  percentage = percentage + prevPercentage;
+
   var newPercentage = .5 - percentage;
   var largeArcFlag = 0;
   var sweepFlag = 1;
@@ -88,7 +129,6 @@ function createPath(percentage, radius, prevCoords, prevPercentage) {
     newPercentage = 1.5 - percentage;
   }
 
-
   var radians = 2 * Math.PI * newPercentage;
   var endCoords = getCoordinatesForPercentage(radians, radius);
 
@@ -96,7 +136,7 @@ function createPath(percentage, radius, prevCoords, prevPercentage) {
                           A ${radius} ${radius}, 0, ${largeArcFlag} ${sweepFlag}, ${endCoords[0]} ${endCoords[1]}
                           L ${radius} ${radius} Z`);
 
-  path.setAttribute('fill', getColor());
+  path.setAttribute('fill', color);
 
   return {
     element: path,
@@ -109,6 +149,7 @@ function createText(innerText, coords) {
   text.innerHTML = innerText + '%';
   text.setAttribute('x', coords[0]);
   text.setAttribute('y', coords[1]);
+  text.setAttribute('transform', `translate(-12, 0)`);
 
   return {
     element: text
