@@ -13,6 +13,8 @@ function PieChart(config) {
   circle.setAttribute('r', radius);
   this.element.appendChild(circle);
 
+  this.tooltip = new Tooltip();
+
   var prevCoords = [150, 0],
       prevPercentage = 0,
       total = 0;
@@ -31,13 +33,29 @@ function PieChart(config) {
     this.element.appendChild(path.element);
 
     var text = createText(Math.round(percentage), getTriangleCenter([radius, radius], prevCoords, path.endCoords));
+    text.element.style.pointerEvents = 'none';
     this.element.appendChild(text.element);
 
     prevPercentage += percentage;
     prevCoords = path.endCoords;
+
+    path.element.addEventListener('mouseenter', function(event) {
+      this.tooltip.updateText(config.data[i].label);
+      this.tooltip.show();
+      this.tooltip.updatePosition([event.x, event.y]);
+    }.bind(this));
+
+    path.element.addEventListener('mousemove', function(event) {
+      this.tooltip.updatePosition([event.x, event.y]);
+    }.bind(this));
+
+    path.element.addEventListener('mouseleave', function() {
+      this.tooltip.hide();
+    }.bind(this));
   }
 
   this.element.appendChild(this.legend.element);
+  this.element.appendChild(this.tooltip.element);
 }
 mixin(PieChart.prototype, Graph.prototype);
 

@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-var pieChartConfig = "{\"data\":[{\"label\":\"Test1\",\"value\":25,\"additionalClass\":\"test-class\"},{\"label\":\"Test2\",\"value\":100},{\"label\":\"Test3\",\"value\":25},{\"label\":\"Test3\",\"value\":50},{\"label\":\"Test3\",\"value\":60}]}";
+var pieChartConfig = "{\"data\":[{\"label\":\"Test1\",\"value\":25,\"additionalClass\":\"test-class\"},{\"label\":\"Test2\",\"value\":100},{\"label\":\"Test3\",\"value\":25},{\"label\":\"Test4\",\"value\":50},{\"label\":\"Test5\",\"value\":60}]}";
 
 const readFileP = function(file) {
   return new Promise(function(resolve, reject) {
