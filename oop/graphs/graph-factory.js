@@ -6,6 +6,10 @@ function GraphFactory() {
       graph = new PieChart(config);
     }
 
+    if (type === 'doughnut') {
+      graph = new DoughnutChart(config);
+    }
+
     return graph;
   };
 }

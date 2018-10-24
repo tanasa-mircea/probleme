@@ -3,9 +3,11 @@ document.addEventListener("DOMContentLoaded", function() {
     .then(function(response) {
       var config = JSON.parse(response);
       var graphFactory = new GraphFactory();
-      var chart = graphFactory.create('pie', config);
+      var pie = graphFactory.create('pie', config);
+      var doughnut = graphFactory.create('doughnut', config);
 
-      document.getElementById('displayer').appendChild(chart.element);
+      document.getElementById('displayer').appendChild(pie.element);
+      document.getElementById('displayer').appendChild(doughnut.element);
     });
 });
 

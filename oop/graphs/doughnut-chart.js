@@ -1,7 +1,9 @@
-function PieChart(config) {
+function DoughnutChart(config) {
+  config.data = {
+    label: 'Test',
+    percentage: 34
+  };
   var radius = 150;
-
-  this.legend = new Legend({ coords: [400, 100]});
 
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   this.element.setAttribute('height', 300);
@@ -16,45 +18,45 @@ function PieChart(config) {
   this.tooltip = new Tooltip();
 
   var prevCoords = [150, 0],
-      prevPercentage = 0,
-      total = 0;
+      prevPercentage = 0;
 
-  for (let i = 0; i < config.data.length; i++) {
-    total += config.data[i].value;
-  }
+  var percentage = config.data.percentage;
+  var color = getColor();
 
-  for (let i = 0; i < config.data.length; i++) {
-    var percentage = config.data[i].value * 100 / total;
-    var color = getColor();
+  var path = createPath(percentage / 100, radius, prevCoords, prevPercentage / 100, color);
+  this.element.appendChild(path.element);
 
-    this.legend.add(color, config.data[i].label);
+  prevPercentage += percentage;
+  prevCoords = path.endCoords;
 
-    var path = createPath(percentage / 100, radius, prevCoords, prevPercentage / 100, color);
-    this.element.appendChild(path.element);
+  path.element.addEventListener('mouseenter', function(event) {
+    this.tooltip.updateText(config.data.label);
+    this.tooltip.show();
+    this.tooltip.updatePosition([event.x, event.y]);
+  }.bind(this));
 
-    var text = createText(Math.round(percentage), getTriangleCenter([radius, radius], prevCoords, path.endCoords));
-    text.element.style.pointerEvents = 'none';
-    this.element.appendChild(text.element);
+  path.element.addEventListener('mousemove', function(event) {
+    this.tooltip.updatePosition([event.x, event.y]);
+  }.bind(this));
 
-    prevPercentage += percentage;
-    prevCoords = path.endCoords;
+  path.element.addEventListener('mouseleave', function() {
+    this.tooltip.hide();
+  }.bind(this));
 
-    path.element.addEventListener('mouseenter', function(event) {
-      this.tooltip.updateText(config.data[i].label);
-      this.tooltip.show();
-      this.tooltip.updatePosition([event.x, event.y]);
-    }.bind(this));
+  var centerCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  centerCircle.setAttribute('cx', radius);
+  centerCircle.setAttribute('cy', radius);
+  centerCircle.setAttribute('r', radius * 0.8);
+  centerCircle.setAttribute('fill', '#fff');
+  this.element.appendChild(centerCircle);
 
-    path.element.addEventListener('mousemove', function(event) {
-      this.tooltip.updatePosition([event.x, event.y]);
-    }.bind(this));
+  var text = createText(Math.round(percentage), [radius, radius]);
+  text.element.style.pointerEvents = 'none';
+  text.element.setAttribute('font-size', '60');
+  text.element.setAttribute('transform', 'translate(-40, 10)');
+  this.element.appendChild(text.element);
 
-    path.element.addEventListener('mouseleave', function() {
-      this.tooltip.hide();
-    }.bind(this));
-  }
 
-  this.element.appendChild(this.legend.element);
   this.element.appendChild(this.tooltip.element);
 }
 mixin(PieChart.prototype, Graph.prototype);
