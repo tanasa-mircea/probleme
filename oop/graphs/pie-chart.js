@@ -14,11 +14,11 @@ function PieChart(config) {
   this.svg.setAttribute('height', this.elementHeight);
   this.svg.setAttribute('width', this.elementWidth);
 
-  this.build();
   this.element.classList.add('chart');
   this.element.appendChild(this.svg);
   this.element.appendChild(this.legend.element);
   this.element.appendChild(this.tooltip.element);
+  this.build();
 }
 mixin(PieChart.prototype, Graph.prototype);
 Object.assign(PieChart.prototype, {
@@ -43,7 +43,7 @@ Object.assign(PieChart.prototype, {
       var percentage = this.data[i].value * 100 / total,
           color = getColor();
 
-      var slice = this.drawSlice((percentage + percentageAcc) / 100 , startCoords, color, percentage / 100 > 0.5);
+      var slice = this.drawSlice(percentage / 100 , startCoords, color, percentageAcc / 100);
 
       var angleAcc = 2 * Math.PI * percentageAcc / 100;
       var angle = 2 * Math.PI * percentage / 2 / 100;
@@ -56,6 +56,7 @@ Object.assign(PieChart.prototype, {
 
       this.svg.appendChild(slice.element);
       textGroup.appendChild(text.element);
+      slice.startAnimation();
 
       percentageAcc += percentage;
       startCoords = slice.endCoords;

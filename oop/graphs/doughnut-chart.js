@@ -32,21 +32,22 @@ Object.assign(DoughnutChart.prototype, {
         color = getColor();
 
     // Draw a slice and append it
-    var path = this.drawSlice(percentage, sliceStartingPoint, color, percentage > 0.5);
-    this.svg.appendChild(path.element);
+    var slice = this.drawSlice(percentage, sliceStartingPoint, color, 0);
+    this.svg.appendChild(slice.element);
+    slice.startAnimation();
 
     // Add mouse actions listener for tooltip
-    path.element.addEventListener('mouseenter', function(event) {
+    slice.element.addEventListener('mouseenter', function(event) {
       this.tooltip.updateText(this.data.label);
       this.tooltip.show();
       this.tooltip.updatePosition([event.offsetX, event.offsetY]);
     }.bind(this));
 
-    path.element.addEventListener('mousemove', function(event) {
+    slice.element.addEventListener('mousemove', function(event) {
       this.tooltip.updatePosition([event.offsetX, event.offsetY]);
     }.bind(this));
 
-    path.element.addEventListener('mouseleave', function() {
+    slice.element.addEventListener('mouseleave', function() {
       this.tooltip.hide();
     }.bind(this));
 
