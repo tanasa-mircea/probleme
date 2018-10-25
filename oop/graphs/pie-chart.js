@@ -30,6 +30,7 @@ Object.assign(PieChart.prototype, {
     circle.setAttribute('r', this.radius);
     this.svg.appendChild(circle);
 
+    var textGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
     var startCoords = [150, 0],
         percentageAcc = 0,
         total = 0;
@@ -54,7 +55,7 @@ Object.assign(PieChart.prototype, {
       this.legend.add(color, this.data[i].label);
 
       this.svg.appendChild(slice.element);
-      this.svg.appendChild(text.element);
+      textGroup.appendChild(text.element);
 
       percentageAcc += percentage;
       startCoords = slice.endCoords;
@@ -73,6 +74,8 @@ Object.assign(PieChart.prototype, {
         this.tooltip.hide();
       }.bind(this));
     }
+
+    this.svg.appendChild(textGroup);
   },
 });
 
