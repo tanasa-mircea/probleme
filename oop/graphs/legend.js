@@ -1,10 +1,6 @@
 function Legend(config) {
-  this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   this.lastYPosition = 0;
-
-  if (config.coords) {
-    this.element.setAttribute('transform', `translate(${config.coords[0]}, ${config.coords[1]})`);
-  }
 }
 
 Object.assign(Legend.prototype, {
@@ -19,7 +15,7 @@ Object.assign(Legend.prototype, {
     colorElement.setAttribute('y', 0);
 
     textElement.setAttribute('x', 35);
-    textElement.setAttribute('y', 10);
+    textElement.setAttribute('y', 12);
     textElement.innerHTML = text;
 
     group.setAttribute('transform', `translate(0, ${this.lastYPosition})`);

@@ -5,14 +5,18 @@ function PieChart(config) {
   this.center = [150, 150];
   this.data = config.data;
 
-  this.legend = new Legend({ coords: [400, 100]});
+  this.legend = new Legend();
   this.tooltip = new Tooltip();
 
-  this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  this.element.setAttribute('height', this.elementHeight);
-  this.element.setAttribute('width', this.elementWidth);
+  this.element = document.createElement('div');
+  this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+  this.svg.setAttribute('height', this.elementHeight);
+  this.svg.setAttribute('width', this.elementWidth);
 
   this.build();
+  this.element.classList.add('chart');
+  this.element.appendChild(this.svg);
   this.element.appendChild(this.legend.element);
   this.element.appendChild(this.tooltip.element);
 }
@@ -24,7 +28,7 @@ Object.assign(PieChart.prototype, {
     circle.setAttribute('cx', this.radius);
     circle.setAttribute('cy', this.radius);
     circle.setAttribute('r', this.radius);
-    this.element.appendChild(circle);
+    this.svg.appendChild(circle);
 
     var startCoords = [150, 0],
         percentageAcc = 0,
@@ -44,8 +48,8 @@ Object.assign(PieChart.prototype, {
 
       this.legend.add(color, this.data[i].label);
 
-      this.element.appendChild(slice.element);
-      this.element.appendChild(text.element);
+      this.svg.appendChild(slice.element);
+      this.svg.appendChild(text.element);
 
       percentageAcc += percentage;
       startCoords = slice.endCoords;
@@ -53,11 +57,11 @@ Object.assign(PieChart.prototype, {
       slice.element.addEventListener('mouseenter', function(event) {
         this.tooltip.updateText(this.data[i].label);
         this.tooltip.show();
-        this.tooltip.updatePosition([event.x, event.y]);
+        this.tooltip.updatePosition([event.offsetX, event.offsetY]);
       }.bind(this));
 
       slice.element.addEventListener('mousemove', function(event) {
-        this.tooltip.updatePosition([event.x, event.y]);
+        this.tooltip.updatePosition([event.offsetX, event.offsetY]);
       }.bind(this));
 
       slice.element.addEventListener('mouseleave', function() {

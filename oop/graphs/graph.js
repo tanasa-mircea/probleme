@@ -10,7 +10,6 @@ Object.assign(Graph.prototype, {
     var largeArcFlag = 0;
     var sweepFlag = 1;
 
-    console.log('isMoreThanFifty ', isMoreThanFifty)
     if (isMoreThanFifty) {
       largeArcFlag = 1;
     }

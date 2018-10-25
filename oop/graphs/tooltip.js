@@ -1,12 +1,15 @@
 function Tooltip() {
-  this.element = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  this.visible = true;
+  this.element = document.createElement('div');
+  this.element.classList.add('tooltip');
+  this.element.classList.add('hidden');
+  this.visible = false;
 };
 
 Object.assign(Tooltip.prototype, {
   updatePosition: function(coords) {
-    this.element.setAttribute('x', coords[0]);
-    this.element.setAttribute('y', coords[1]);
+    // this.element.setAttribute('x', coords[0]);
+    // this.element.setAttribute('y', coords[1]);
+    this.element.style.transform = `translate(${coords[0] + 10}px, ${coords[1] + 10}px)`;
   },
 
   show: function() {

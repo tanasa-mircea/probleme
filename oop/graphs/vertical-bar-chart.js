@@ -2,9 +2,10 @@ function VerticalBarChart(config) {
   this.data = config.data;
   this.elementHeight = 600;
   this.elementWidth = 50;
-  this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  this.element.setAttribute('height', this.elementHeight);
-  this.element.setAttribute('width', this.elementWidth);
+  this.element = document.createElement('div');
+  this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  this.svg.setAttribute('height', this.elementHeight);
+  this.svg.setAttribute('width', this.elementWidth);
 
   this.tooltip = new Tooltip();
 
@@ -14,7 +15,9 @@ function VerticalBarChart(config) {
   };
 
   this.build(0, 0);
+  this.element.classList.add('chart');
   this.element.appendChild(this.tooltip.element);
+  this.element.appendChild(this.svg);
 }
 
 mixin(VerticalBarChart.prototype, Graph.prototype);
@@ -33,7 +36,7 @@ Object.assign(VerticalBarChart.prototype, {
     newBar.setAttribute('y', lastPosition);
     newBar.setAttribute('fill', color);
 
-    this.element.appendChild(newBar);
+    this.svg.appendChild(newBar);
 
     newBar.addEventListener('mouseenter', function(event) {
       this.tooltip.updateText(this.data[index].label);

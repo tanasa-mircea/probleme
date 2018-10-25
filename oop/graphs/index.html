@@ -6,6 +6,10 @@
   <title>Page Title</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    .chart {
+      position: relative;
+    }
+
     path {
       stroke: white;
     }
@@ -29,6 +33,24 @@
       100% {
         stroke-width: 0;
       }
+    }
+
+    .tooltip {
+      background-color: white;
+      border: 1px solid black;
+      border-radius: 4px;
+      font-size: 18px;
+      left: 0;
+      max-width: 100px;
+      padding: 5px 10px;
+      position: absolute;
+      pointer-events: none;
+      top: 0;
+      text-align: center;
+    }
+
+    .tooltip-bg {
+      fill: wheat;
     }
 
   </style>
