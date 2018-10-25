@@ -6,6 +6,7 @@ function VerticalBarChart(config) {
   this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   this.svg.setAttribute('height', this.elementHeight);
   this.svg.setAttribute('width', this.elementWidth);
+  this.svg.classList.add('vertical-bar-chart');
 
   this.tooltip = new Tooltip();
 
@@ -14,10 +15,10 @@ function VerticalBarChart(config) {
     this.total += this.data[i].value;
   };
 
-  this.build(0, 0);
   this.element.classList.add('chart');
   this.element.appendChild(this.tooltip.element);
   this.element.appendChild(this.svg);
+  this.build(0, 0);
 }
 
 mixin(VerticalBarChart.prototype, Graph.prototype);
@@ -31,10 +32,15 @@ Object.assign(VerticalBarChart.prototype, {
     var height = this.data[index].value * this.elementHeight / this.total;
     var color = getColor();
 
-    newBar.setAttribute('width', '50');
-    newBar.setAttribute('height', height);
+    newBar.setAttribute('width', 50);
+    newBar.setAttribute('height', 0);
     newBar.setAttribute('y', lastPosition);
     newBar.setAttribute('fill', color);
+    newBar.classList.add('bar');
+
+    setTimeout(function() {
+      newBar.setAttribute('height', height);
+    }.bind(this), index * 150);
 
     this.svg.appendChild(newBar);
 

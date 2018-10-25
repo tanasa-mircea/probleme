@@ -1,23 +1,20 @@
 function GraphFactory() {
   this.create = function create(type, config) {
-    var graph;
-
     if (type === 'pie') {
-      graph = new PieChart(config);
+      return new PieChart(config);
     }
 
     if (type === 'doughnut') {
-      graph = new DoughnutChart(config);
+      return new DoughnutChart(config);
     }
-
     if (type === 'horizontalBar') {
-      graph = new HorizontalBarChart(config);
+      return new HorizontalBarChart(config);
     }
 
     if (type === 'verticalBar') {
-      graph = new VerticalBarChart(config);
+      return new VerticalBarChart(config);
     }
-
-    return graph;
   };
 }
+
+var factory = new GraphFactory();

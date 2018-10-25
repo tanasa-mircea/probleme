@@ -8,6 +8,7 @@ function HorizontalBarChart(config) {
   this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   this.svg.setAttribute('height', this.elementHeight);
   this.svg.setAttribute('width', this.elementWidth);
+  this.svg.classList.add('horizontal-bar-chart');
 
   this.tooltip = new Tooltip();
 
@@ -15,10 +16,10 @@ function HorizontalBarChart(config) {
     this.total += config.data[i].value;
   };
 
-  this.build(0, 0);
   this.element.classList.add('chart');
   this.element.appendChild(this.tooltip.element);
   this.element.appendChild(this.svg);
+  this.build(0, 0);
 }
 mixin(HorizontalBarChart.prototype, Graph.prototype);
 Object.assign(HorizontalBarChart.prototype, {
@@ -31,10 +32,15 @@ Object.assign(HorizontalBarChart.prototype, {
     var width = this.data[index].value * this.elementWidth / this.total;
     var color = getColor();
 
-    newBar.setAttribute('height', '50');
-    newBar.setAttribute('width', width);
+    newBar.setAttribute('height', 50);
+    newBar.setAttribute('width', 0);
     newBar.setAttribute('x', lastPosition);
     newBar.setAttribute('fill', color);
+    newBar.classList.add('bar');
+
+    setTimeout(function() {
+      newBar.setAttribute('width', width);
+    }.bind(this), index * 150);
 
     this.svg.appendChild(newBar);
 
