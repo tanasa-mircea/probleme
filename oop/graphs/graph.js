@@ -34,7 +34,7 @@ Object.assign(Graph.prototype, {
     textElement.innerHTML = text + '%';
     textElement.setAttribute('x', coords[0]);
     textElement.setAttribute('y', coords[1]);
-    textElement.setAttribute('transform', `translate(-12, 0)`);
+    textElement.setAttribute('transform', `translate(-10, 0)`);
 
     return {
       element: textElement
@@ -42,7 +42,7 @@ Object.assign(Graph.prototype, {
   },
 
   getCircleCoordinatesForPercentage: function(percentage, radius) {
-    var radians = 2 * Math.PI * (0.5 - percentage);
+    var radians = 2 * Math.PI * (percentage > 0.5 ? 0.5 - percentage : 1.5 - percentage);
     var x = radius + radius * Math.sin(radians);
     var y = radius + radius * Math.cos(radians);
     return [x, y];

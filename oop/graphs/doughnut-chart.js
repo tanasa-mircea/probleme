@@ -59,7 +59,7 @@ Object.assign(DoughnutChart.prototype, {
     this.svg.appendChild(centerCircle);
 
     // Add text element
-    var text = this.createText(this.data.percentage, [this.radius, this.radius]);
+    var text = this.createText(this.data.percentage, this.center);
     text.element.style.pointerEvents = 'none';
     text.element.setAttribute('font-size', '60');
     text.element.setAttribute('transform', 'translate(-40, 10)');

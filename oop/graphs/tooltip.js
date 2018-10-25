@@ -1,7 +1,6 @@
 function Tooltip() {
   this.element = document.createElement('div');
-  this.element.classList.add('tooltip');
-  this.element.classList.add('hidden');
+  this.element.classList.add('tooltip', 'hidden');
   this.visible = false;
 };
 

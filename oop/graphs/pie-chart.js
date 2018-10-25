@@ -43,7 +43,12 @@ Object.assign(PieChart.prototype, {
           color = getColor();
 
       var slice = this.drawSlice((percentage + percentageAcc) / 100 , startCoords, color, percentage / 100 > 0.5);
-      var text = this.createText(Math.round(percentage), getTriangleCenter([this.radius, this.radius], startCoords, slice.endCoords));
+
+      var angleAcc = 2 * Math.PI * percentageAcc / 100;
+      var angle = 2 * Math.PI * percentage / 2 / 100;
+      var textCoords = [150 + 75 * Math.sin(angleAcc + angle), 150 - 75 * Math.cos(angleAcc + angle)];
+
+      var text = this.createText(Math.round(percentage), textCoords);
       text.element.style.pointerEvents = 'none';
 
       this.legend.add(color, this.data[i].label);
@@ -70,3 +75,4 @@ Object.assign(PieChart.prototype, {
     }
   },
 });
+
