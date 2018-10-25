@@ -1,114 +1,66 @@
 function DoughnutChart(config) {
-  var config = {
-    data: {
-      label: 'Test',
-      percentage: 34
-    }
-  };
-  var radius = 150;
+  this.data = config.data;
+
+  this.radius = 150;
+  this.elementHeight = 300;
+  this.elementWidth = 600;
+  this.center = [150, 150];
 
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  this.element.setAttribute('height', 300);
-  this.element.setAttribute('width', 600);
-
-  var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  circle.setAttribute('cx', radius);
-  circle.setAttribute('cy', radius);
-  circle.setAttribute('r', radius);
-  this.element.appendChild(circle);
+  this.element.setAttribute('height', this.elementHeight);
+  this.element.setAttribute('width', this.elementWidth);
 
   this.tooltip = new Tooltip();
-
-  var prevCoords = [150, 0],
-      prevPercentage = 0;
-
-  var percentage = config.data.percentage;
-  var color = getColor();
-
-  var path = createPath(percentage / 100, radius, prevCoords, prevPercentage / 100, color);
-  this.element.appendChild(path.element);
-
-  prevPercentage += percentage;
-  prevCoords = path.endCoords;
-
-  path.element.addEventListener('mouseenter', function(event) {
-    this.tooltip.updateText(config.data.label);
-    this.tooltip.show();
-    this.tooltip.updatePosition([event.x, event.y]);
-  }.bind(this));
-
-  path.element.addEventListener('mousemove', function(event) {
-    this.tooltip.updatePosition([event.x, event.y]);
-  }.bind(this));
-
-  path.element.addEventListener('mouseleave', function() {
-    this.tooltip.hide();
-  }.bind(this));
-
-  var centerCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  centerCircle.setAttribute('cx', radius);
-  centerCircle.setAttribute('cy', radius);
-  centerCircle.setAttribute('r', radius * 0.8);
-  centerCircle.setAttribute('fill', '#fff');
-  this.element.appendChild(centerCircle);
-
-  var text = createText(Math.round(percentage), [radius, radius]);
-  text.element.style.pointerEvents = 'none';
-  text.element.setAttribute('font-size', '60');
-  text.element.setAttribute('transform', 'translate(-40, 10)');
-  this.element.appendChild(text.element);
-
-
   this.element.appendChild(this.tooltip.element);
+
+  this.build();
 }
-mixin(PieChart.prototype, Graph.prototype);
+mixin(DoughnutChart.prototype, Graph.prototype);
+Object.assign(DoughnutChart.prototype, {
+  build: function() {
+    // Create the circle, set its coords and radius than append it
+    var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute('cx', this.center[0]);
+    circle.setAttribute('cy', this.center[0]);
+    circle.setAttribute('r', this.radius);
+    this.element.appendChild(circle);
 
+    var sliceStartingPoint = [150, 0],
+        percentage = this.data.percentage / 100,
+        color = getColor();
 
-function createPath(percentage, radius, prevCoords, prevPercentage, color) {
-  var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  // Start from x 150 y 0
-  // Draw arc equivalent of value from x 150 y 0 to x 200 y 40
-  // Go to chart center
-  percentage = percentage + prevPercentage;
+    // Draw a slice and append it
+    var path = this.drawSlice(percentage, sliceStartingPoint, color, percentage > 0.5);
+    this.element.appendChild(path.element);
 
-  var newPercentage = .5 - percentage;
-  var largeArcFlag = 0;
-  var sweepFlag = 1;
+    // Add mouse actions listener for tooltip
+    path.element.addEventListener('mouseenter', function(event) {
+      this.tooltip.updateText(this.data.label);
+      this.tooltip.show();
+      this.tooltip.updatePosition([event.x, event.y]);
+    }.bind(this));
 
-  if (percentage > 0.5) {
-    sweepFlag = 1;
-    newPercentage = 1.5 - percentage;
-  }
+    path.element.addEventListener('mousemove', function(event) {
+      this.tooltip.updatePosition([event.x, event.y]);
+    }.bind(this));
 
-  var radians = 2 * Math.PI * newPercentage;
-  var endCoords = getCoordinatesForPercentage(radians, radius);
+    path.element.addEventListener('mouseleave', function() {
+      this.tooltip.hide();
+    }.bind(this));
 
-  path.setAttribute('d', `M ${prevCoords[0]} ${prevCoords[1]}
-                          A ${radius} ${radius}, 0, ${largeArcFlag} ${sweepFlag}, ${endCoords[0]} ${endCoords[1]}
-                          L ${radius} ${radius} Z`);
+    // Add center circle in order to have a doughnut appearance
+    var centerCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    centerCircle.setAttribute('cx', this.radius);
+    centerCircle.setAttribute('cy', this.radius);
+    centerCircle.setAttribute('r', this.radius * 0.8);
+    centerCircle.setAttribute('fill', '#fff');
+    this.element.appendChild(centerCircle);
 
-  path.setAttribute('fill', color);
-
-  return {
-    element: path,
-    endCoords: endCoords
-  };
-}
-
-function createText(innerText, coords) {
-  var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  text.innerHTML = innerText + '%';
-  text.setAttribute('x', coords[0]);
-  text.setAttribute('y', coords[1]);
-  text.setAttribute('transform', `translate(-12, 0)`);
-
-  return {
-    element: text
-  };
-}
-
-function getCoordinatesForPercentage(degrees, radius) {
-  var x = radius + radius * Math.sin(degrees);
-  var y = radius + radius * Math.cos(degrees);
-  return [x, y];
-}
+    // Add text element
+    var text = this.createText(this.data.percentage, [this.radius, this.radius]);
+    text.element.style.pointerEvents = 'none';
+    text.element.setAttribute('font-size', '60');
+    text.element.setAttribute('transform', 'translate(-40, 10)');
+    this.element.appendChild(text.element);
+  },
+});

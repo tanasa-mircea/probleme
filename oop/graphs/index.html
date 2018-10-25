@@ -14,6 +14,23 @@
       display: none;
     }
 
+    .pie-slice {
+      animation-fill-mode: forwards;
+      animation-iteration-count: 1;
+      animation-name: sliceGrow;
+      animation-duration: .3s;
+    }
+
+    @keyframes sliceGrow {
+      0% {
+        stroke-width: 10%;
+      }
+
+      100% {
+        stroke-width: 0;
+      }
+    }
+
   </style>
 </head>
 <body>

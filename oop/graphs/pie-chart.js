@@ -1,110 +1,68 @@
 function PieChart(config) {
-  var radius = 150;
+  this.radius = 150;
+  this.elementHeight = 300;
+  this.elementWidth = 600;
+  this.center = [150, 150];
+  this.data = config.data;
 
   this.legend = new Legend({ coords: [400, 100]});
-
-  this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  this.element.setAttribute('height', 300);
-  this.element.setAttribute('width', 600);
-
-  var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  circle.setAttribute('cx', radius);
-  circle.setAttribute('cy', radius);
-  circle.setAttribute('r', radius);
-  this.element.appendChild(circle);
-
   this.tooltip = new Tooltip();
 
-  var prevCoords = [150, 0],
-      prevPercentage = 0,
-      total = 0;
+  this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  this.element.setAttribute('height', this.elementHeight);
+  this.element.setAttribute('width', this.elementWidth);
 
-  for (let i = 0; i < config.data.length; i++) {
-    total += config.data[i].value;
-  }
-
-  for (let i = 0; i < config.data.length; i++) {
-    var percentage = config.data[i].value * 100 / total;
-    var color = getColor();
-
-    this.legend.add(color, config.data[i].label);
-
-    var path = createPath(percentage / 100, radius, prevCoords, prevPercentage / 100, color);
-    this.element.appendChild(path.element);
-
-    var text = createText(Math.round(percentage), getTriangleCenter([radius, radius], prevCoords, path.endCoords));
-    text.element.style.pointerEvents = 'none';
-    this.element.appendChild(text.element);
-
-    prevPercentage += percentage;
-    prevCoords = path.endCoords;
-
-    path.element.addEventListener('mouseenter', function(event) {
-      this.tooltip.updateText(config.data[i].label);
-      this.tooltip.show();
-      this.tooltip.updatePosition([event.x, event.y]);
-    }.bind(this));
-
-    path.element.addEventListener('mousemove', function(event) {
-      this.tooltip.updatePosition([event.x, event.y]);
-    }.bind(this));
-
-    path.element.addEventListener('mouseleave', function() {
-      this.tooltip.hide();
-    }.bind(this));
-  }
-
+  this.build();
   this.element.appendChild(this.legend.element);
   this.element.appendChild(this.tooltip.element);
 }
 mixin(PieChart.prototype, Graph.prototype);
+Object.assign(PieChart.prototype, {
+  build: function build() {
+    // Create the circle, set its coords and radius than append it
+    var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute('cx', this.radius);
+    circle.setAttribute('cy', this.radius);
+    circle.setAttribute('r', this.radius);
+    this.element.appendChild(circle);
 
+    var startCoords = [150, 0],
+        percentageAcc = 0,
+        total = 0;
 
-function createPath(percentage, radius, prevCoords, prevPercentage, color) {
-  var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  // Start from x 150 y 0
-  // Draw arc equivalent of value from x 150 y 0 to x 200 y 40
-  // Go to chart center
-  percentage = percentage + prevPercentage;
+    for (let i = 0; i < this.data.length; i++) {
+      total += this.data[i].value;
+    }
 
-  var newPercentage = .5 - percentage;
-  var largeArcFlag = 0;
-  var sweepFlag = 1;
+    for (let i = 0; i < this.data.length; i++) {
+      var percentage = this.data[i].value * 100 / total,
+          color = getColor();
 
-  if (percentage > 0.5) {
-    sweepFlag = 1;
-    newPercentage = 1.5 - percentage;
-  }
+      var slice = this.drawSlice((percentage + percentageAcc) / 100 , startCoords, color, percentage / 100 > 0.5);
+      var text = this.createText(Math.round(percentage), getTriangleCenter([this.radius, this.radius], startCoords, slice.endCoords));
+      text.element.style.pointerEvents = 'none';
 
-  var radians = 2 * Math.PI * newPercentage;
-  var endCoords = getCoordinatesForPercentage(radians, radius);
+      this.legend.add(color, this.data[i].label);
 
-  path.setAttribute('d', `M ${prevCoords[0]} ${prevCoords[1]}
-                          A ${radius} ${radius}, 0, ${largeArcFlag} ${sweepFlag}, ${endCoords[0]} ${endCoords[1]}
-                          L ${radius} ${radius} Z`);
+      this.element.appendChild(slice.element);
+      this.element.appendChild(text.element);
 
-  path.setAttribute('fill', color);
+      percentageAcc += percentage;
+      startCoords = slice.endCoords;
 
-  return {
-    element: path,
-    endCoords: endCoords
-  };
-}
+      slice.element.addEventListener('mouseenter', function(event) {
+        this.tooltip.updateText(this.data[i].label);
+        this.tooltip.show();
+        this.tooltip.updatePosition([event.x, event.y]);
+      }.bind(this));
 
-function createText(innerText, coords) {
-  var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  text.innerHTML = innerText + '%';
-  text.setAttribute('x', coords[0]);
-  text.setAttribute('y', coords[1]);
-  text.setAttribute('transform', `translate(-12, 0)`);
+      slice.element.addEventListener('mousemove', function(event) {
+        this.tooltip.updatePosition([event.x, event.y]);
+      }.bind(this));
 
-  return {
-    element: text
-  };
-}
-
-function getCoordinatesForPercentage(degrees, radius) {
-  var x = radius + radius * Math.sin(degrees);
-  var y = radius + radius * Math.cos(degrees);
-  return [x, y];
-}
+      slice.element.addEventListener('mouseleave', function() {
+        this.tooltip.hide();
+      }.bind(this));
+    }
+  },
+});

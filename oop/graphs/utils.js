@@ -6,5 +6,5 @@ function getTriangleCenter(a, b, c) {
 }
 
 function getColor() {
-  return '#' + Math.floor(Math.random() * 0xffffff).toString(16);
+  return '#' + (Math.floor(Math.random()*16777215).toString(16) + '000000').slice(2,8);
 }
