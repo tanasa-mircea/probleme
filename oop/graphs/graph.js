@@ -7,12 +7,7 @@ Object.assign(Graph.prototype, {
 
   drawSlice: function drawSlice(dataPercentage, startCoords, color, percentageAcc) {
     var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    var largeArcFlag = 0;
     var sweepFlag = 1;
-
-    if (dataPercentage > 0.5) {
-      largeArcFlag = 1;
-    }
 
     var endCoords = this.getCircleCoordinatesForPercentage(percentageAcc + dataPercentage, this.radius);
     var iteratablePercentage = 0;

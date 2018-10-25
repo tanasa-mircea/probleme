@@ -1,7 +1,7 @@
 function PieChart(config) {
   this.radius = 150;
   this.elementHeight = 300;
-  this.elementWidth = 600;
+  this.elementWidth = 300;
   this.center = [150, 150];
   this.data = config.data;
 
