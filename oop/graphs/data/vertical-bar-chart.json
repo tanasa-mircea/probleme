@@ -17,5 +17,6 @@
       "percentage": 10
     }
   ],
-  "legend": true
+  "legend": true,
+  "chartClass": "vertical-test"
 }

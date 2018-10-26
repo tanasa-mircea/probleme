@@ -5,7 +5,7 @@ Object.assign(Graph.prototype, {
     throw new Error('Build should be overridden');
   },
 
-  drawSlice: function drawSlice(dataPercentage, startCoords, color, percentageAcc) {
+  drawSlice: function drawSlice(dataPercentage, startCoords, color, percentageAcc, sliceClass) {
     var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
     var sweepFlag = 1;
 
@@ -14,6 +14,11 @@ Object.assign(Graph.prototype, {
 
     path.setAttribute('fill', color);
     path.classList.add('pie-slice');
+
+    console.log('sliceClass ', sliceClass);
+    if (sliceClass) {
+      path.classList.add(sliceClass);
+    }
 
     function startAnimation(timeout) {
       setTimeout(function() {

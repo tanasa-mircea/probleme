@@ -1,14 +1,14 @@
 {
   "data": [{
       "label": "Test1",
-      "percentage": 13,
-      "additionalClass": "test-class"
+      "percentage": 13
     }, {
       "label": "Test2",
       "percentage": 24
     }, {
       "label": "Test3",
-      "percentage": 33
+      "percentage": 33,
+      "additionalClass": "highlighted"
     }, {
       "label": "Test4",
       "percentage": 5
@@ -20,5 +20,6 @@
       "percentage": 6
     }
   ],
-  "legend": true
+  "legend": true,
+  "chartClass": "pie-test"
 }

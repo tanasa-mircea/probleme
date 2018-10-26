@@ -17,6 +17,10 @@ function PieChart(config) {
   this.element.appendChild(this.svg);
   this.element.appendChild(this.tooltip.element);
 
+  if (config.chartClass) {
+    this.element.classList.add(config.chartClass);
+  }
+
   if (config.legend) {
     this.legend = new Legend();
     this.element.appendChild(this.legend.element);
@@ -42,7 +46,7 @@ Object.assign(PieChart.prototype, {
       var percentage = this.data[i].percentage,
           color = getColor();
 
-      var slice = this.drawSlice(percentage / 100 , startCoords, color, percentageAcc / 100);
+      var slice = this.drawSlice(percentage / 100 , startCoords, color, percentageAcc / 100, this.data[i].additionalClass);
 
       var angleAcc = 2 * Math.PI * percentageAcc / 100;
       var angle = 2 * Math.PI * percentage / 2 / 100;

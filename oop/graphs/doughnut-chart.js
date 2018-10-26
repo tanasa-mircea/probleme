@@ -17,6 +17,10 @@ function DoughnutChart(config) {
   this.element.appendChild(this.tooltip.element);
   this.element.appendChild(this.svg);
 
+  if (config.chartClass) {
+    this.element.classList.add(config.chartClass);
+  }
+
   if (config.legend) {
     this.legend = new Legend();
     this.element.appendChild(this.legend.element);

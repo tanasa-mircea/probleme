@@ -34,7 +34,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 const getConfig = function(file) {
   return new Promise(function(resolve, reject) {
-    // return resolve(pieChartConfig);
     let request = new XMLHttpRequest();
     request.onload = resolve;
     request.onerror = reject;
