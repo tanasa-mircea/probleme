@@ -9,14 +9,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
   getConfig('doughnut-chart.json')
     .then(function (response) {
-      console.log('JSON.parse(response).data[0] ', JSON.parse(response).data[0]);
       var doughnut = graphFactory.create('doughnut', JSON.parse(response).data[0]);
       document.getElementById('displayer').appendChild(doughnut.element);
     });
 
   getConfig('doughnut-chart.json')
     .then(function (response) {
-      console.log('JSON.parse(response).data[1] ', JSON.parse(response).data[1]);
       var doughnut2 = graphFactory.create('doughnut', JSON.parse(response).data[1]);
       document.getElementById('displayer').appendChild(doughnut2.element);
     });
@@ -34,11 +32,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-var pieChartConfig = "{\"data\":[{\"label\":\"Test1\",\"value\":25,\"additionalClass\":\"test-class\"},{\"label\":\"Test2\",\"value\":100},{\"label\":\"Test3\",\"value\":25},{\"label\":\"Test4\",\"value\":45},{\"label\":\"Test5\",\"value\":60}], \"legend\": true}";
-
-// const getConfig = function(file) {
-//   return fetch('http://localhost/charts-data/' + file, { mode: 'no-cors' });
-// };
 const getConfig = function(file) {
   return new Promise(function(resolve, reject) {
     // return resolve(pieChartConfig);
