@@ -3,14 +3,14 @@ function DoughnutChart(config) {
   this.config = config;
 
   this.radius = 150;
-  this.elementHeight = 300;
-  this.elementWidth = 300;
+  this.chartHeight = 300;
+  this.chartWidth = 300;
   this.center = [150, 150];
 
   this.element = document.createElement('div');
   this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  this.svg.setAttribute('height', this.elementHeight);
-  this.svg.setAttribute('width', this.elementWidth);
+  this.svg.setAttribute('height', this.chartHeight);
+  this.svg.setAttribute('width', this.chartWidth);
 
   this.element.classList.add('chart');
   this.element.appendChild(this.svg);

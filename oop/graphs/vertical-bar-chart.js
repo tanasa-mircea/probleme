@@ -2,12 +2,12 @@ function VerticalBarChart(config) {
   this.data = config.data;
   this.config = config;
 
-  this.elementHeight = 600;
-  this.elementWidth = 50;
+  this.chartHeight = 600;
+  this.chartWidth = 50;
   this.element = document.createElement('div');
   this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  this.svg.setAttribute('height', this.elementHeight);
-  this.svg.setAttribute('width', this.elementWidth);
+  this.svg.setAttribute('height', this.chartHeight);
+  this.svg.setAttribute('width', this.chartWidth);
   this.svg.classList.add('vertical-bar-chart');
 
 
@@ -40,7 +40,7 @@ Object.assign(VerticalBarChart.prototype, Graph.prototype, {
 
   drawComponent: function drawComponent(index, lastPosition) {
     var newBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    var height = this.data[index].percentage * this.elementHeight / 100;
+    var height = this.data[index].percentage * this.chartHeight / 100;
     var color = getColor();
 
     newBar.setAttribute('width', 50);

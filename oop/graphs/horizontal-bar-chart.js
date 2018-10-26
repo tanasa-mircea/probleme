@@ -2,17 +2,17 @@ function HorizontalBarChart(config) {
   this.config = config;
   this.data = config.data;
 
-  this.elementHeight = 50;
-  this.elementWidth = 600;
+  this.chartHeight = 50;
+  this.chartWidth = 600;
 
   this.element = document.createElement('div');
+  this.element.classList.add('chart');
+
   this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  this.svg.setAttribute('height', this.elementHeight);
-  this.svg.setAttribute('width', this.elementWidth);
+  this.svg.setAttribute('height', this.chartHeight);
+  this.svg.setAttribute('width', this.chartWidth);
   this.svg.classList.add('horizontal-bar-chart');
 
-
-  this.element.classList.add('chart');
   this.element.appendChild(this.svg);
 
   if (config.chartClass) {
@@ -42,7 +42,7 @@ Object.assign(HorizontalBarChart.prototype, Graph.prototype, {
 
   drawComponent: function drawComponent(index, lastPosition) {
     let newBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    var width = this.data[index].percentage * this.elementWidth / 100;
+    var width = this.data[index].percentage * this.chartWidth / 100;
     var color = getColor();
 
     if (this.legend) {
