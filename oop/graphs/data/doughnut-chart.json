@@ -1,0 +1,13 @@
+{
+  "data": [{
+      "label": "Test1",
+      "percentage": 30,
+      "additionalClass": "test-class",
+      "legend": true
+    }, {
+      "label": "Test2",
+      "percentage": 63,
+      "legend": true
+    }
+  ]
+}

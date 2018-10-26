@@ -1,5 +1,5 @@
 function DoughnutChart(config) {
-  this.data = config.data;
+  this.data = config;
 
   this.radius = 150;
   this.elementHeight = 300;

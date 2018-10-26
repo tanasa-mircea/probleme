@@ -36,15 +36,10 @@ Object.assign(PieChart.prototype, {
 
     var textGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
     var startCoords = [150, 0],
-        percentageAcc = 0,
-        total = 0;
+        percentageAcc = 0;
 
     for (let i = 0; i < this.data.length; i++) {
-      total += this.data[i].value;
-    }
-
-    for (let i = 0; i < this.data.length; i++) {
-      var percentage = this.data[i].value * 100 / total,
+      var percentage = this.data[i].percentage,
           color = getColor();
 
       var slice = this.drawSlice(percentage / 100 , startCoords, color, percentageAcc / 100);

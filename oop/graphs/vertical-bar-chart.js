@@ -10,11 +10,6 @@ function VerticalBarChart(config) {
 
   this.tooltip = new Tooltip();
 
-  this.total = 0;
-  for (let i = 0; i < this.data.length; i++) {
-    this.total += this.data[i].value;
-  };
-
   this.element.classList.add('chart');
   this.element.appendChild(this.tooltip.element);
   this.element.appendChild(this.svg);
@@ -35,7 +30,7 @@ Object.assign(VerticalBarChart.prototype, {
     }
 
     var newBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    var height = this.data[index].value * this.elementHeight / this.total;
+    var height = this.data[index].percentage * this.elementHeight / 100;
     var color = getColor();
 
     newBar.setAttribute('width', 50);

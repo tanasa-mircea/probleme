@@ -1,23 +1,20 @@
 {
   "data": [{
       "label": "Test1",
-      "percentage": 13,
+      "percentage": 10,
       "additionalClass": "test-class"
     }, {
       "label": "Test2",
-      "percentage": 24
+      "percentage": 15
     }, {
       "label": "Test3",
-      "percentage": 33
-    }, {
-      "label": "Test4",
       "percentage": 5
     }, {
-      "label": "Test5",
-      "percentage": 19
+      "label": "Test4",
+      "percentage": 30
     }, {
-      "label": "Test6",
-      "percentage": 6
+      "label": "Test5",
+      "percentage": 40
     }
   ],
   "legend": true

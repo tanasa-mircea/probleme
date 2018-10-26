@@ -1,5 +1,4 @@
 function HorizontalBarChart(config) {
-  this.total = 0;
   this.data = config.data;
   this.elementHeight = 50;
   this.elementWidth = 600;
@@ -11,10 +10,6 @@ function HorizontalBarChart(config) {
   this.svg.classList.add('horizontal-bar-chart');
 
   this.tooltip = new Tooltip();
-
-  for (let i = 0; i < config.data.length; i++) {
-    this.total += config.data[i].value;
-  };
 
   this.element.classList.add('chart');
   this.element.appendChild(this.tooltip.element);
@@ -35,7 +30,7 @@ Object.assign(HorizontalBarChart.prototype, {
     }
 
     var newBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    var width = this.data[index].value * this.elementWidth / this.total;
+    var width = this.data[index].percentage * this.elementWidth / 100;
     var color = getColor();
 
     if (this.legend) {
