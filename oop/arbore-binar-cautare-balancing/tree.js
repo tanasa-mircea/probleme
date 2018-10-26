@@ -205,7 +205,6 @@ Tree.prototype = {
       return levelRoot;
     }
 
-
     // Update height and rebalance tree
     levelRoot.height = Math.max(levelRoot.getLeftHeight(), levelRoot.getRightHeight());
     var balanceState = this.getBalancingDirection(levelRoot);
