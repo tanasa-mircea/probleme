@@ -10,7 +10,6 @@ function VerticalBarChart(config) {
   this.svg.setAttribute('width', this.elementWidth);
   this.svg.classList.add('vertical-bar-chart');
 
-
   this.element.classList.add('chart');
   this.element.appendChild(this.svg);
 
@@ -33,7 +32,6 @@ Object.assign(VerticalBarChart.prototype, Graph.prototype, {
     }
 
     var newBar = this.drawComponent(index, lastPosition);
-
     this.svg.appendChild(newBar.element);
 
     return this.build(index + 1, lastPosition + newBar.height);
@@ -58,19 +56,28 @@ Object.assign(VerticalBarChart.prototype, Graph.prototype, {
       newBar.setAttribute('height', height);
     }.bind(this), index * 150);
 
-    newBar.addEventListener('mouseenter', function(event) {
+    let mouseEnterListener = function(event) {
       this.tooltip.updateText(this.data[index].label);
       this.tooltip.show();
       this.tooltip.updatePosition([event.offsetX, event.offsetY]);
-    }.bind(this));
 
-    newBar.addEventListener('mousemove', function(event) {
+      newBar.addEventListener('mousemove', mouseMoveListener);
+      newBar.addEventListener('mouseleave', mouseLeaveListener);
+    }.bind(this);
+
+    let mouseMoveListener = function(event) {
       this.tooltip.updatePosition([event.offsetX, event.offsetY]);
-    }.bind(this));
+    }.bind(this);
 
-    newBar.addEventListener('mouseleave', function() {
+    let mouseLeaveListener = function() {
       this.tooltip.hide();
-    }.bind(this));
+
+      newBar.removeEventListener('mousemove', mouseMoveListener);
+      newBar.removeEventListener('mouseleave', mouseLeaveListener);
+    }.bind(this);
+
+    newBar.addEventListener('mouseenter', mouseEnterListener);
+
 
     return {
       element: newBar,

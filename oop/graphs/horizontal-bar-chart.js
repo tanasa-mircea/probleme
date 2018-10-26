@@ -41,7 +41,7 @@ Object.assign(HorizontalBarChart.prototype, Graph.prototype, {
   },
 
   drawComponent: function drawComponent(index, lastPosition) {
-    var newBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    let newBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     var width = this.data[index].percentage * this.elementWidth / 100;
     var color = getColor();
 
@@ -59,19 +59,27 @@ Object.assign(HorizontalBarChart.prototype, Graph.prototype, {
       newBar.setAttribute('width', width);
     }.bind(this), index * 150);
 
-    newBar.addEventListener('mouseenter', function(event) {
+    let mouseEnterListener = function(event) {
       this.tooltip.updateText(this.data[index].label);
       this.tooltip.show();
       this.tooltip.updatePosition([event.offsetX, event.offsetY]);
-    }.bind(this));
 
-    newBar.addEventListener('mousemove', function(event) {
+      newBar.addEventListener('mousemove', mouseMoveListener);
+      newBar.addEventListener('mouseleave', mouseLeaveListener);
+    }.bind(this);
+
+    let mouseMoveListener = function(event) {
       this.tooltip.updatePosition([event.offsetX, event.offsetY]);
-    }.bind(this));
+    }.bind(this);
 
-    newBar.addEventListener('mouseleave', function() {
+    let mouseLeaveListener = function() {
       this.tooltip.hide();
-    }.bind(this));
+
+      newBar.removeEventListener('mousemove', mouseMoveListener);
+      newBar.removeEventListener('mouseleave', mouseLeaveListener);
+    }.bind(this);
+
+    newBar.addEventListener('mouseenter', mouseEnterListener);
 
     return {
       element: newBar,

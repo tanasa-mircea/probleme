@@ -43,21 +43,6 @@ Object.assign(DoughnutChart.prototype, CircularGraph.prototype, {
       this.legend.add(color, this.data.label);
     }
 
-    // Add mouse actions listener for tooltip
-    slice.element.addEventListener('mouseenter', function(event) {
-      this.tooltip.updateText(this.data.label);
-      this.tooltip.show();
-      this.tooltip.updatePosition([event.offsetX, event.offsetY]);
-    }.bind(this));
-
-    slice.element.addEventListener('mousemove', function(event) {
-      this.tooltip.updatePosition([event.offsetX, event.offsetY]);
-    }.bind(this));
-
-    slice.element.addEventListener('mouseleave', function() {
-      this.tooltip.hide();
-    }.bind(this));
-
     // Add center circle in order to have a doughnut appearance
     var centerCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     centerCircle.setAttribute('cx', this.radius);
@@ -72,5 +57,27 @@ Object.assign(DoughnutChart.prototype, CircularGraph.prototype, {
     text.element.setAttribute('font-size', '60');
     text.element.setAttribute('transform', 'translate(-40, 10)');
     this.svg.appendChild(text.element);
+
+    let mouseEnterListener = function(event) {
+      this.tooltip.updateText(this.data.label);
+      this.tooltip.show();
+      this.tooltip.updatePosition([event.offsetX, event.offsetY]);
+
+      slice.element.addEventListener('mousemove', mouseMoveListener);
+      slice.element.addEventListener('mouseleave', mouseLeaveListener);
+    }.bind(this);
+
+    let mouseMoveListener = function(event) {
+      this.tooltip.updatePosition([event.offsetX, event.offsetY]);
+    }.bind(this);
+
+    let mouseLeaveListener = function() {
+      this.tooltip.hide();
+
+      slice.element.removeEventListener('mousemove', mouseMoveListener);
+      slice.element.removeEventListener('mouseleave', mouseLeaveListener);
+    }.bind(this);
+
+    slice.element.addEventListener('mouseenter', mouseEnterListener);
   },
 });

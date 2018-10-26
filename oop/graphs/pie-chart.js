@@ -19,6 +19,8 @@ function PieChart(config) {
     this.element.classList.add(config.chartClass);
   }
 
+  this.listeners = [];
+
   CircularGraph.call(this);
 }
 Object.assign(PieChart.prototype, CircularGraph.prototype, {
@@ -38,8 +40,7 @@ Object.assign(PieChart.prototype, CircularGraph.prototype, {
       var percentage = this.data[i].percentage,
           color = getColor();
 
-      var slice = this.drawComponent(percentage / 100 , startCoords, color, percentageAcc / 100, this.data[i].additionalClass);
-
+      let slice = this.drawComponent(percentage / 100 , startCoords, color, percentageAcc / 100, this.data[i].additionalClass);
       var angleAcc = 2 * Math.PI * percentageAcc / 100;
       var angle = 2 * Math.PI * percentage / 2 / 100;
       var textCoords = [150 + 75 * Math.sin(angleAcc + angle), 150 - 75 * Math.cos(angleAcc + angle)];
@@ -59,19 +60,27 @@ Object.assign(PieChart.prototype, CircularGraph.prototype, {
       percentageAcc += percentage;
       startCoords = slice.endCoords;
 
-      slice.element.addEventListener('mouseenter', function(event) {
+      let mouseEnterListener = function(event) {
         this.tooltip.updateText(this.data[i].label);
         this.tooltip.show();
         this.tooltip.updatePosition([event.offsetX, event.offsetY]);
-      }.bind(this));
 
-      slice.element.addEventListener('mousemove', function(event) {
+        slice.element.addEventListener('mousemove', mouseMoveListener);
+        slice.element.addEventListener('mouseleave', mouseLeaveListener);
+      }.bind(this);
+
+      let mouseMoveListener = function(event) {
         this.tooltip.updatePosition([event.offsetX, event.offsetY]);
-      }.bind(this));
+      }.bind(this);
 
-      slice.element.addEventListener('mouseleave', function() {
+      let mouseLeaveListener = function() {
         this.tooltip.hide();
-      }.bind(this));
+
+        slice.element.removeEventListener('mousemove', mouseMoveListener);
+        slice.element.removeEventListener('mouseleave', mouseLeaveListener);
+      }.bind(this);
+
+      slice.element.addEventListener('mouseenter', mouseEnterListener);
     }
 
     this.svg.appendChild(textGroup);
