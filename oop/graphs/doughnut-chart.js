@@ -1,5 +1,6 @@
 function DoughnutChart(config) {
   this.data = config;
+  this.config = config;
 
   this.radius = 150;
   this.elementHeight = 300;
@@ -11,19 +12,11 @@ function DoughnutChart(config) {
   this.svg.setAttribute('height', this.elementHeight);
   this.svg.setAttribute('width', this.elementWidth);
 
-  this.tooltip = new Tooltip();
-
   this.element.classList.add('chart');
-  this.element.appendChild(this.tooltip.element);
   this.element.appendChild(this.svg);
 
   if (config.chartClass) {
     this.element.classList.add(config.chartClass);
-  }
-
-  if (config.legend) {
-    this.legend = new Legend();
-    this.element.appendChild(this.legend.element);
   }
 
   CircularGraph.call(this);

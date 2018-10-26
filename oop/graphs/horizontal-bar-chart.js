@@ -1,5 +1,7 @@
 function HorizontalBarChart(config) {
+  this.config = config;
   this.data = config.data;
+
   this.elementHeight = 50;
   this.elementWidth = 600;
 
@@ -9,19 +11,12 @@ function HorizontalBarChart(config) {
   this.svg.setAttribute('width', this.elementWidth);
   this.svg.classList.add('horizontal-bar-chart');
 
-  this.tooltip = new Tooltip();
 
   this.element.classList.add('chart');
-  this.element.appendChild(this.tooltip.element);
   this.element.appendChild(this.svg);
 
   if (config.chartClass) {
     this.element.classList.add(config.chartClass);
-  }
-
-  if (config.legend) {
-    this.legend = new Legend();
-    this.element.appendChild(this.legend.element);
   }
 
   Graph.call(this);

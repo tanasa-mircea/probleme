@@ -1,5 +1,7 @@
 function VerticalBarChart(config) {
   this.data = config.data;
+  this.config = config;
+
   this.elementHeight = 600;
   this.elementWidth = 50;
   this.element = document.createElement('div');
@@ -8,19 +10,12 @@ function VerticalBarChart(config) {
   this.svg.setAttribute('width', this.elementWidth);
   this.svg.classList.add('vertical-bar-chart');
 
-  this.tooltip = new Tooltip();
 
   this.element.classList.add('chart');
-  this.element.appendChild(this.tooltip.element);
   this.element.appendChild(this.svg);
 
   if (config.chartClass) {
     this.element.classList.add(config.chartClass);
-  }
-
-  if (config.legend) {
-    this.legend = new Legend();
-    this.element.appendChild(this.legend.element);
   }
 
   Graph.call(this);

@@ -3,9 +3,8 @@ function PieChart(config) {
   this.elementHeight = 300;
   this.elementWidth = 300;
   this.center = [150, 150];
+  this.config = config;
   this.data = config.data;
-
-  this.tooltip = new Tooltip();
 
   this.element = document.createElement('div');
   this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -15,15 +14,9 @@ function PieChart(config) {
 
   this.element.classList.add('chart');
   this.element.appendChild(this.svg);
-  this.element.appendChild(this.tooltip.element);
 
   if (config.chartClass) {
     this.element.classList.add(config.chartClass);
-  }
-
-  if (config.legend) {
-    this.legend = new Legend();
-    this.element.appendChild(this.legend.element);
   }
 
   CircularGraph.call(this);
