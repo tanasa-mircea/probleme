@@ -1,5 +1,6 @@
 function Legend(config) {
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  this.element.classList.add('legend');
   this.lastYPosition = 0;
 }
 

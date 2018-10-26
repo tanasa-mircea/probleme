@@ -3,7 +3,7 @@ function DoughnutChart(config) {
 
   this.radius = 150;
   this.elementHeight = 300;
-  this.elementWidth = 600;
+  this.elementWidth = 300;
   this.center = [150, 150];
 
   this.element = document.createElement('div');
@@ -12,9 +12,16 @@ function DoughnutChart(config) {
   this.svg.setAttribute('width', this.elementWidth);
 
   this.tooltip = new Tooltip();
+
   this.element.classList.add('chart');
   this.element.appendChild(this.tooltip.element);
   this.element.appendChild(this.svg);
+
+  if (config.legend) {
+    this.legend = new Legend();
+    this.element.appendChild(this.legend.element);
+  }
+
   this.build();
 }
 mixin(DoughnutChart.prototype, Graph.prototype);
@@ -35,6 +42,10 @@ Object.assign(DoughnutChart.prototype, {
     var slice = this.drawSlice(percentage, sliceStartingPoint, color, 0);
     this.svg.appendChild(slice.element);
     slice.startAnimation();
+
+    if (this.legend) {
+      this.legend.add(color, this.data.label);
+    }
 
     // Add mouse actions listener for tooltip
     slice.element.addEventListener('mouseenter', function(event) {

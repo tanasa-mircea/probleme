@@ -18,6 +18,12 @@ function VerticalBarChart(config) {
   this.element.classList.add('chart');
   this.element.appendChild(this.tooltip.element);
   this.element.appendChild(this.svg);
+
+  if (config.legend) {
+    this.legend = new Legend();
+    this.element.appendChild(this.legend.element);
+  }
+
   this.build(0, 0);
 }
 
@@ -37,6 +43,10 @@ Object.assign(VerticalBarChart.prototype, {
     newBar.setAttribute('y', lastPosition);
     newBar.setAttribute('fill', color);
     newBar.classList.add('bar');
+
+    if (this.legend) {
+      this.legend.add(color, this.data[index].label);
+    }
 
     setTimeout(function() {
       newBar.setAttribute('height', height);

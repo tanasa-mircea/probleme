@@ -19,6 +19,12 @@ function HorizontalBarChart(config) {
   this.element.classList.add('chart');
   this.element.appendChild(this.tooltip.element);
   this.element.appendChild(this.svg);
+
+  if (config.legend) {
+    this.legend = new Legend();
+    this.element.appendChild(this.legend.element);
+  }
+
   this.build(0, 0);
 }
 mixin(HorizontalBarChart.prototype, Graph.prototype);
@@ -31,6 +37,10 @@ Object.assign(HorizontalBarChart.prototype, {
     var newBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     var width = this.data[index].value * this.elementWidth / this.total;
     var color = getColor();
+
+    if (this.legend) {
+      this.legend.add(color, this.data[index].label);
+    }
 
     newBar.setAttribute('height', 50);
     newBar.setAttribute('width', 0);

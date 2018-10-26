@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
       var graphFactory = new GraphFactory();
       var pie = graphFactory.create('pie', config);
-      var doughnut = graphFactory.create('doughnut', {data: {percentage: 34, label: 'test'}});
+      var doughnut = graphFactory.create('doughnut', {data: {percentage: 34, label: 'test'}, legend: true});
       var doughnut2 = graphFactory.create('doughnut', {data: {percentage: 68, label: 'test2'}});
       var horizontalBar = graphFactory.create('horizontalBar', config);
       var verticalBar = graphFactory.create('verticalBar', config);
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // var pieChartConfig = "{\"data\":[{\"label\":\"Test1\",\"value\":25,\"additionalClass\":\"test-class\"},{\"label\":\"Test2\",\"value\":75},{\"label\":\"Test2\",\"value\":25}]}";
-var pieChartConfig = "{\"data\":[{\"label\":\"Test1\",\"value\":25,\"additionalClass\":\"test-class\"},{\"label\":\"Test2\",\"value\":100},{\"label\":\"Test3\",\"value\":25},{\"label\":\"Test4\",\"value\":45},{\"label\":\"Test5\",\"value\":60}]}";
+var pieChartConfig = "{\"data\":[{\"label\":\"Test1\",\"value\":25,\"additionalClass\":\"test-class\"},{\"label\":\"Test2\",\"value\":100},{\"label\":\"Test3\",\"value\":25},{\"label\":\"Test4\",\"value\":45},{\"label\":\"Test5\",\"value\":60}], \"legend\": true}";
 
 const readFileP = function(file) {
   return new Promise(function(resolve, reject) {

@@ -5,7 +5,6 @@ function PieChart(config) {
   this.center = [150, 150];
   this.data = config.data;
 
-  this.legend = new Legend();
   this.tooltip = new Tooltip();
 
   this.element = document.createElement('div');
@@ -16,8 +15,13 @@ function PieChart(config) {
 
   this.element.classList.add('chart');
   this.element.appendChild(this.svg);
-  this.element.appendChild(this.legend.element);
   this.element.appendChild(this.tooltip.element);
+
+  if (config.legend) {
+    this.legend = new Legend();
+    this.element.appendChild(this.legend.element);
+  }
+
   this.build();
 }
 mixin(PieChart.prototype, Graph.prototype);
@@ -52,7 +56,9 @@ Object.assign(PieChart.prototype, {
       var text = this.createText(Math.round(percentage), textCoords);
       text.element.style.pointerEvents = 'none';
 
-      this.legend.add(color, this.data[i].label);
+      if (this.legend) {
+        this.legend.add(color, this.data[i].label);
+      }
 
       this.svg.appendChild(slice.element);
       textGroup.appendChild(text.element);
