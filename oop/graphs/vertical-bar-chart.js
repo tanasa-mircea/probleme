@@ -10,6 +10,7 @@ function VerticalBarChart(config) {
   this.svg.setAttribute('width', this.elementWidth);
   this.svg.classList.add('vertical-bar-chart');
 
+
   this.element.classList.add('chart');
   this.element.appendChild(this.svg);
 

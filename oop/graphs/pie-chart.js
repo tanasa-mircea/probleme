@@ -23,6 +23,7 @@ function PieChart(config) {
 
   CircularGraph.call(this);
 }
+
 Object.assign(PieChart.prototype, CircularGraph.prototype, {
   build: function build() {
     // Create the circle, set its coords and radius than append it
@@ -86,4 +87,3 @@ Object.assign(PieChart.prototype, CircularGraph.prototype, {
     this.svg.appendChild(textGroup);
   },
 });
-
