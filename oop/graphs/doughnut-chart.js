@@ -26,10 +26,9 @@ function DoughnutChart(config) {
     this.element.appendChild(this.legend.element);
   }
 
-  this.build();
+  CircularGraph.call(this);
 }
-mixin(DoughnutChart.prototype, Graph.prototype);
-Object.assign(DoughnutChart.prototype, {
+Object.assign(DoughnutChart.prototype, CircularGraph.prototype, {
   build: function() {
     // Create the circle, set its coords and radius than append it
     var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -43,7 +42,7 @@ Object.assign(DoughnutChart.prototype, {
         color = getColor();
 
     // Draw a slice and append it
-    var slice = this.drawSlice(percentage, sliceStartingPoint, color, 0);
+    var slice = this.drawComponent(percentage, sliceStartingPoint, color, 0);
     this.svg.appendChild(slice.element);
     slice.startAnimation();
 

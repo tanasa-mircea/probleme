@@ -23,16 +23,28 @@ function VerticalBarChart(config) {
     this.element.appendChild(this.legend.element);
   }
 
-  this.build(0, 0);
+  Graph.call(this);
 }
 
-mixin(VerticalBarChart.prototype, Graph.prototype);
-Object.assign(VerticalBarChart.prototype, {
+Object.assign(VerticalBarChart.prototype, Graph.prototype, {
   build: function build(index, lastPosition) {
+    if (!index && !lastPosition) {
+      index = 0;
+      lastPosition = 0;
+    }
+
     if (index >= this.data.length) {
       return;
     }
 
+    var newBar = this.drawComponent(index, lastPosition);
+
+    this.svg.appendChild(newBar.element);
+
+    return this.build(index + 1, lastPosition + newBar.height);
+  },
+
+  drawComponent: function drawComponent(index, lastPosition) {
     var newBar = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     var height = this.data[index].percentage * this.elementHeight / 100;
     var color = getColor();
@@ -51,8 +63,6 @@ Object.assign(VerticalBarChart.prototype, {
       newBar.setAttribute('height', height);
     }.bind(this), index * 150);
 
-    this.svg.appendChild(newBar);
-
     newBar.addEventListener('mouseenter', function(event) {
       this.tooltip.updateText(this.data[index].label);
       this.tooltip.show();
@@ -67,6 +77,9 @@ Object.assign(VerticalBarChart.prototype, {
       this.tooltip.hide();
     }.bind(this));
 
-    return this.build(index + 1, lastPosition + height);
+    return {
+      element: newBar,
+      height: height
+    };
   }
 });

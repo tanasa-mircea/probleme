@@ -26,10 +26,9 @@ function PieChart(config) {
     this.element.appendChild(this.legend.element);
   }
 
-  this.build();
+  CircularGraph.call(this);
 }
-mixin(PieChart.prototype, Graph.prototype);
-Object.assign(PieChart.prototype, {
+Object.assign(PieChart.prototype, CircularGraph.prototype, {
   build: function build() {
     // Create the circle, set its coords and radius than append it
     var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -46,7 +45,7 @@ Object.assign(PieChart.prototype, {
       var percentage = this.data[i].percentage,
           color = getColor();
 
-      var slice = this.drawSlice(percentage / 100 , startCoords, color, percentageAcc / 100, this.data[i].additionalClass);
+      var slice = this.drawComponent(percentage / 100 , startCoords, color, percentageAcc / 100, this.data[i].additionalClass);
 
       var angleAcc = 2 * Math.PI * percentageAcc / 100;
       var angle = 2 * Math.PI * percentage / 2 / 100;

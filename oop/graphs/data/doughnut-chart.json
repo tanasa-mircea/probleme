@@ -3,12 +3,12 @@
       "label": "Test1",
       "percentage": 30,
       "legend": true,
-      "chartClass": "pie-test"
+      "chartClass": "doughnut-test-first"
     }, {
       "label": "Test2",
       "percentage": 63,
       "legend": false,
-      "chartClass": "pie-test"
+      "chartClass": "doughnut-test-second"
     }
   ]
 }
