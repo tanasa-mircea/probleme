@@ -10,6 +10,10 @@ Object.assign(Graph.prototype, {
     throw new Error('Build should be overridden');
   },
 
+  drawComponent: function drawComponent() {
+    throw new Error('Draw Component should be overridden');
+  },
+
   addLegend: function() {
     if (!this.config) {
       throw new Error('The chart config is missing');
@@ -28,9 +32,5 @@ Object.assign(Graph.prototype, {
   addTooltip: function() {
     this.tooltip = new Tooltip();
     this.element.appendChild(this.tooltip.element);
-  },
-
-  drawComponent: function drawComponent() {
-    throw new Error('Draw Component should be overridden');
   }
 });

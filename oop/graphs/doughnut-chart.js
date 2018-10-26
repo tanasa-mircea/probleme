@@ -21,6 +21,7 @@ function DoughnutChart(config) {
 
   CircularGraph.call(this);
 }
+
 Object.assign(DoughnutChart.prototype, CircularGraph.prototype, {
   build: function() {
     // Create the circle, set its coords and radius than append it
