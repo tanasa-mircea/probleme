@@ -15,12 +15,10 @@ Object.assign(Graph.prototype, {
     path.setAttribute('fill', color);
     path.classList.add('pie-slice');
 
-    return {
-      element: path,
-      endCoords: endCoords,
-      startAnimation: function() {
+    function startAnimation(timeout) {
+      setTimeout(function() {
         window.requestAnimationFrame(function frame() {
-          iteratablePercentage += 0.005;
+          iteratablePercentage += dataPercentage / 15;
           var endCoords = this.getCircleCoordinatesForPercentage(percentageAcc + iteratablePercentage, this.radius);
 
           path.setAttribute('d', `M ${startCoords[0]} ${startCoords[1]}
@@ -31,7 +29,14 @@ Object.assign(Graph.prototype, {
             window.requestAnimationFrame(frame.bind(this));
           }
         }.bind(this));
-      }.bind(this)
+
+      }.bind(this), timeout);
+    }
+
+    return {
+      element: path,
+      endCoords: endCoords,
+      startAnimation: startAnimation.bind(this)
     };
   },
 

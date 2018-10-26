@@ -56,7 +56,8 @@ Object.assign(PieChart.prototype, {
 
       this.svg.appendChild(slice.element);
       textGroup.appendChild(text.element);
-      slice.startAnimation();
+
+      slice.startAnimation(300 * i);
 
       percentageAcc += percentage;
       startCoords = slice.endCoords;
