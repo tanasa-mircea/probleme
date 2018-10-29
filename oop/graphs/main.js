@@ -38,7 +38,8 @@ const getConfig = function(file) {
     request.onload = resolve;
     request.onerror = reject;
     request.overrideMimeType("application/json");
-    request.open('GET', 'http://localhost/charts-data/reader.php' + '?file=' + file, true);
+    // request.open('GET', 'http://localhost/charts-data/reader.php' + '?file=' + file, true);
+    request.open('GET', './data/' + file, true);
     request.onreadystatechange = () => {
       if (request.readyState === 4 && request.status === 200) {
         resolve(request.responseText);
