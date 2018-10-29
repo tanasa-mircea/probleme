@@ -11,37 +11,45 @@ function ShapesContainer(config) {
     shape.initDragNDrop(shape.element);
     shape.addListener('shapeMoveEnd', this.shapeMoveEndHandler.bind(this));
     shape.addListener('shapeMove', this.shapeMoveHandler.bind(this));
+    shape.addListener('shapeResize', this.shapeResizeHandler.bind(this));
 
     this.data.push(shape);
     this.element.appendChild(shape.element);
   }
 
   this.element.appendChild(this.delimiter.element);
-  this.paintShapes(this.data);
+  this.paintShapes();
 }
 
 Object.assign(ShapesContainer.prototype, {
   shapeMoveHandler: function(event) {
-    this.delimiter.element.setAttribute('y', Math.min(Math.floor(event.to + 1), this.data.length) * 40 - 5);
+    this.delimiter.element.setAttribute('transform', `translate(0, ${Math.max(Math.min(Math.floor(event.to + 1), this.data.length), 0) * 40})`);
     this.delimiter.element.classList.remove('hidden');
   },
 
   shapeMoveEndHandler: function(event) {
     this.data = this.moveItem(this.data, event.from, event.to);
-    this.paintShapes(this.data);
+    this.paintShapes();
     this.delimiter.element.classList.add('hidden');
   },
 
-  paintShapes: function(data) {
-    for (let i = 0; i < data.length; i++) {
-      var shape = data[i];
-      shape.element.setAttribute('y', i * shape.height + i * shape.margin);
+  shapeResizeHandler: function() {
+    this.paintShapes();
+  },
+
+  paintShapes: function() {
+    for (let i = 0; i < this.data.length; i++) {
+      var shape = this.data[i];
+      shape.element.setAttribute('transform', `translate(${shape.elementPosition.x}, ${shape.elementPosition.y})`);
+      shape.backgroundElement.setAttribute('height', shape.elementPosition.height);
+      shape.backgroundElement.setAttribute('width', shape.elementPosition.width);
     }
   },
 
   moveItem(arr, from, to) {
-    var element = arr.splice(from, 1),
-        checkedTo = Math.floor(Math.min(arr.length - 1, to));
+    var arrLength = arr.length - 1,
+        element = arr.splice(from, 1),
+        checkedTo = Math.min(arrLength, Math.floor(to));
 
     arr.splice(checkedTo, 0, element[0]);
     return arr;
