@@ -25,7 +25,6 @@ Object.assign(Resizeable.prototype, {
     event.stopPropagation();
     event.preventDefault();
 
-    console.log('this ', this);
     this.makeResizeable();
     this.clickOverride();
   },
@@ -85,6 +84,13 @@ Object.assign(Resizeable.prototype, {
     this.position.x = event.x;
     this.position.width = this.position.width - xDiff;
     this.resizeHandlerOverride();
+  },
+
+  updateResizePointsPositions: function() {
+    this.resizePoints[0].updatePosition(0, this.position.height / 2 - 5);
+    this.resizePoints[1].updatePosition(this.position.width - 5, this.position.height / 2 - 5);
+    this.resizePoints[2].updatePosition(this.position.width / 2 - 5, 0);
+    this.resizePoints[3].updatePosition(this.position.width / 2 - 5, this.position.height - 5);
   },
 
   endXHandler: function(event) {
