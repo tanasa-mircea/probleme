@@ -40,8 +40,6 @@ Object.assign(ShapesContainer.prototype, {
 
   shapeMoveHandler: function(event) {
     var nextIndex = this.searchForNewIndex(event.from, event.positionY);
-    console.log('SHAPE MOVE HANDLER ', nextIndex);
-
 
     if (nextIndex === event.from) {
       return;
