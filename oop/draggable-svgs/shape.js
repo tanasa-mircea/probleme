@@ -18,7 +18,7 @@ function Shape(height, margin, index) {
     height: this.height
   };
 
-  this.initResizeable(this.element, {});
+  // this.initResizeable(this.element, {});
 }
 Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype, Resizeable.prototype, {
   resizeHandlerOverride: function(event) {
@@ -32,6 +32,7 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
   mouseMoveOverride: function(event) {
     this.element.setAttribute('transform', `translate(0, ${event.offsetY})`);
     this.index = event.offsetY / (this.height + this.margin);
+    console.log('index ', this.index);
     this.fire({ type: 'shapeMove', to: this.index });
   },
 
