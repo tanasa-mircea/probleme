@@ -1,21 +1,16 @@
-function Shape(height, margin, index) {
+function Shape(height, width, y, x, index) {
   this.index = index;
-  this.oldIndex = index;
-
-  this.height = height;
-  this.width = 300;
-  this.margin = margin;
-
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
   this.backgroundElement = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   this.backgroundElement.setAttribute('fill', getColor());
   this.element.appendChild(this.backgroundElement);
+  this.movePosition = 0;
 
-  this.elementPosition = {
-    x: 0,
-    y: this.index * this.height + this.index * this.margin,
-    width: this.width,
-    height: this.height
+  this.position = {
+    x: x,
+    y: y,
+    width: width,
+    height: height
   };
 
   // this.initResizeable(this.element, {});
@@ -26,17 +21,19 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
   },
 
   mouseDownOverride: function() {
-    this.oldIndex = this.index;
   },
 
   mouseMoveOverride: function(event) {
+    this.movePosition = event.offsetY;
     this.element.setAttribute('transform', `translate(0, ${event.offsetY})`);
-    this.index = event.offsetY / (this.height + this.margin);
-    console.log('index ', this.index);
-    this.fire({ type: 'shapeMove', to: this.index });
+    this.fire({ type: 'shapeMove', from: this.index, positionY: this.movePosition });
   },
 
   mouseUpOverride: function() {
-    this.fire({ type: 'shapeMoveEnd', from: this.oldIndex, to: this.index });
+    this.fire({ type: 'shapeMoveEnd', from: this.index, positionY: this.movePosition });
+  },
+
+  setIndex(index) {
+    this.index = index;
   }
 });

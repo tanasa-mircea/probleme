@@ -8,7 +8,8 @@ function ShapesContainer(config) {
 
   // generate all shapes and initialize all listeners
   for (let i = 0; i < config.shapesNumber; i++) {
-    let shape = new Shape(config.shapeHeight, config.shapeMargin, i);
+    let shape = new Shape(config.shapeHeight, 300, 0, 0, i);
+
     shape.initDragNDrop(shape.element);
     shape.addListener('shapeMoveEnd', this.shapeMoveEndHandler.bind(this));
     shape.addListener('shapeMove', this.shapeMoveHandler.bind(this));
@@ -24,14 +25,34 @@ function ShapesContainer(config) {
 
 Object.assign(ShapesContainer.prototype, {
   shapeMoveHandler: function(event) {
-    this.delimiter.element.setAttribute('transform', `translate(0, ${Math.max(Math.min(Math.round(event.to + 1), this.data.length), 0) * 40})`);
+    var nextIndex = this.searchForNewIndex(event.from, event.positionY);
+    console.log('SHAPE MOVE HANDLER ', nextIndex);
+
+
+    if (nextIndex === event.from) {
+      return;
+    }
+
+    var newPosition;
+
+    if (nextIndex > event.from) {
+      newPosition = this.data[nextIndex].position.y + this.data[nextIndex].position.height + this.config.shapeMargin / 2;
+    } else {
+      newPosition = this.data[nextIndex].position.y - this.config.shapeMargin / 2;
+    }
+
+
+
+    this.delimiter.element.setAttribute('transform', `translate(0, ${newPosition})`);
     this.delimiter.element.classList.remove('hidden');
   },
 
   shapeMoveEndHandler: function(event) {
-    this.data = this.moveItem(this.data, event.from, event.to);
-    this.paintShapes();
+
+    var nextIndex = this.searchForNewIndex(event.from, event.positionY);
+    this.data = this.moveItem(this.data, event.from, nextIndex);
     this.delimiter.element.classList.add('hidden');
+    this.paintShapes();
   },
 
   shapeResizeHandler: function() {
@@ -40,13 +61,39 @@ Object.assign(ShapesContainer.prototype, {
 
   paintShapes: function() {
     var previousY = 0;
+
     for (let i = 0; i < this.data.length; i++) {
       var shape = this.data[i];
-      shape.element.setAttribute('transform', `translate(${shape.elementPosition.x}, ${previousY})`);
-      previousY += shape.elementPosition.height + shape.margin;
-      shape.backgroundElement.setAttribute('height', shape.elementPosition.height);
-      shape.backgroundElement.setAttribute('width', shape.elementPosition.width);
+      shape.setIndex(i);
+      shape.position.y = previousY;
+      shape.visited = false;
+
+      shape.element.setAttribute('transform', `translate(${shape.position.x}, ${previousY})`);
+      previousY += shape.position.height + this.config.shapeMargin;
+
+      shape.backgroundElement.setAttribute('height', shape.position.height);
+      shape.backgroundElement.setAttribute('width', shape.position.width);
     }
+  },
+
+  searchForNewIndex: function(currentIndex, positionCheck) {
+    var currentItem = this.data[currentIndex],
+        nextItem = this.data[currentIndex + 1],
+        prevItem = this.data[currentIndex - 1];
+
+    if (!currentItem) {
+      return currentIndex;
+    }
+
+    if (prevItem && positionCheck < prevItem.position.y) {
+      return this.searchForNewIndex(prevItem.index, positionCheck);
+    }
+
+    if (nextItem && positionCheck > nextItem.position.y) {
+      return this.searchForNewIndex(nextItem.index, positionCheck);
+    }
+
+    return currentIndex;
   },
 
   moveItem(arr, from, to) {
