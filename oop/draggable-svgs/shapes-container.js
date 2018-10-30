@@ -4,6 +4,7 @@ function ShapesContainer(config) {
   this.element.setAttribute('height', 500);
   this.config = config;
   this.data = [];
+  this.clickedShape;
   this.delimiter = new Delimiter(500);
 
   // generate all shapes and initialize all listeners
@@ -13,7 +14,8 @@ function ShapesContainer(config) {
     shape.initDragNDrop(shape.element);
     shape.addListener('shapeMoveEnd', this.shapeMoveEndHandler.bind(this));
     shape.addListener('shapeMove', this.shapeMoveHandler.bind(this));
-    // shape.addListener('shapeResize', this.shapeResizeHandler.bind(this));
+    shape.addListener('shapeResize', this.shapeResizeHandler.bind(this));
+    shape.addListener('shapeClick', this.shapeClickHandler.bind(this));
 
     this.data.push(shape);
     this.element.appendChild(shape.element);
@@ -21,9 +23,21 @@ function ShapesContainer(config) {
 
   this.element.appendChild(this.delimiter.element);
   this.paintShapes();
+
+  document.addEventListener('click', this.documentClickHandler.bind(this));
 }
 
 Object.assign(ShapesContainer.prototype, {
+  documentClickHandler: function(event) {
+    if (event.target.matches('.shape') || event.target.matches('resize-point')) {
+      return;
+    }
+
+    if (this.clickedShape) {
+      this.clickedShape.unmakeResizeable();
+    }
+  },
+
   shapeMoveHandler: function(event) {
     var nextIndex = this.searchForNewIndex(event.from, event.positionY);
     console.log('SHAPE MOVE HANDLER ', nextIndex);
@@ -57,6 +71,14 @@ Object.assign(ShapesContainer.prototype, {
 
   shapeResizeHandler: function() {
     this.paintShapes();
+  },
+
+  shapeClickHandler: function(event) {
+    if (this.clickedShape && this.clickedShape !== event.shape) {
+      this.clickedShape.unmakeResizeable();
+    }
+
+    this.clickedShape = event.shape;
   },
 
   paintShapes: function() {
