@@ -36,7 +36,7 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
   mouseMoveOverride: function(event) {
     this.hasMoved = true;
     this.movePosition = event.offsetY;
-    this.element.setAttribute('transform', `translate(0, ${event.offsetY})`);
+    this.element.setAttribute('transform', `translate(${this.position.x}, ${event.offsetY})`);
     this.fire({ type: 'shapeMove', from: this.index, positionY: this.movePosition });
   },
 
