@@ -79,6 +79,7 @@ Object.assign(ShapesContainer.prototype, {
     this.clickedShape = event.shape;
   },
 
+
   paintShapes: function() {
     var previousY = 0;
 
