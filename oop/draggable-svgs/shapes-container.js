@@ -42,18 +42,22 @@ Object.assign(ShapesContainer.prototype, {
     var nextIndex = this.searchForNewIndex(event.from, event.positionY);
 
     if (nextIndex === event.from) {
+      this.delimiter.element.classList.add('hidden');
+
       return;
     }
 
     var newPosition;
 
     if (nextIndex > event.from) {
-      newPosition = this.data[nextIndex].position.y + this.data[nextIndex].position.height + this.config.shapeMargin / 2;
+      newPosition = this.data[nextIndex].position.y + this.data[nextIndex].position.height + this.config.shapeMargin / 2 + 10;
     } else {
-      newPosition = this.data[nextIndex].position.y - this.config.shapeMargin / 2;
+      if (nextIndex === 0) {
+        newPosition = 5;
+      } else {
+        newPosition = this.data[nextIndex].position.y - this.config.shapeMargin / 2 + 10;
+      }
     }
-
-
 
     this.delimiter.element.setAttribute('transform', `translate(0, ${newPosition})`);
     this.delimiter.element.classList.remove('hidden');
