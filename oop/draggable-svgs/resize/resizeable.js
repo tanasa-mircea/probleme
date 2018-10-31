@@ -42,21 +42,25 @@ Object.assign(Resizeable.prototype, {
     this.element.classList.add('resizeable');
 
     var resizeablePointXStart = new ResizeablePoint(-5, this.position.height / 2 - 5);
+    resizeablePointXStart.element.classList.add('e-resize');
     this.element.appendChild(resizeablePointXStart.element);
     resizeablePointXStart.addListener('resizeablePointMove', this.startXHandler.bind(this));
     this.resizePoints.push(resizeablePointXStart);
 
     var resizeablePointXEnd = new ResizeablePoint(this.position.width - 5, this.position.height / 2 - 5);
+    resizeablePointXEnd.element.classList.add('e-resize');
     this.element.appendChild(resizeablePointXEnd.element);
     resizeablePointXEnd.addListener('resizeablePointMove', this.endXHandler.bind(this));
     this.resizePoints.push(resizeablePointXEnd);
 
     var resizeablePointYStart = new ResizeablePoint(this.position.width / 2 - 5, -5);
+    resizeablePointYStart.element.classList.add('n-resize');
     this.element.appendChild(resizeablePointYStart.element);
     resizeablePointYStart.addListener('resizeablePointMove', this.startYHandler.bind(this));
     this.resizePoints.push(resizeablePointYStart);
 
     var resizeablePointYEnd = new ResizeablePoint(this.position.width / 2 - 5, this.position.height - 5);
+    resizeablePointYEnd.element.classList.add('n-resize');
     this.element.appendChild(resizeablePointYEnd.element);
     resizeablePointYEnd.addListener('resizeablePointMove', this.endYHandler.bind(this));
     this.resizePoints.push(resizeablePointYEnd);
