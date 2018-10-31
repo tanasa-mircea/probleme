@@ -1,11 +1,11 @@
-function ResizeablePoint(x, y, direction) {
+function ResizeablePoint(pointSide, x, y, direction) {
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   this.element.classList.add('resize-point');
   this.element.setAttribute('x', x);
   this.element.setAttribute('y', y);
   this.element.setAttribute('fill', '#fff');
-  this.element.setAttribute('height', 10);
-  this.element.setAttribute('width', 10);
+  this.element.setAttribute('height', pointSide);
+  this.element.setAttribute('width', pointSide);
   this.direction = direction;
 
   this.initResizeMouseActions(this.element);
