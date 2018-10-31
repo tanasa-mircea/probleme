@@ -41,7 +41,7 @@ Object.assign(Resizeable.prototype, {
     this.resizeable = true;
     this.element.classList.add('resizeable');
 
-    var resizeablePointXStart = new ResizeablePoint(0, this.position.height / 2 - 5);
+    var resizeablePointXStart = new ResizeablePoint(-5, this.position.height / 2 - 5);
     this.element.appendChild(resizeablePointXStart.element);
     resizeablePointXStart.addListener('resizeablePointMove', this.startXHandler.bind(this));
     this.resizePoints.push(resizeablePointXStart);
@@ -51,7 +51,7 @@ Object.assign(Resizeable.prototype, {
     resizeablePointXEnd.addListener('resizeablePointMove', this.endXHandler.bind(this));
     this.resizePoints.push(resizeablePointXEnd);
 
-    var resizeablePointYStart = new ResizeablePoint(this.position.width / 2 - 5, 0);
+    var resizeablePointYStart = new ResizeablePoint(this.position.width / 2 - 5, -5);
     this.element.appendChild(resizeablePointYStart.element);
     resizeablePointYStart.addListener('resizeablePointMove', this.startYHandler.bind(this));
     this.resizePoints.push(resizeablePointYStart);
@@ -87,9 +87,9 @@ Object.assign(Resizeable.prototype, {
   },
 
   updateResizePointsPositions: function() {
-    this.resizePoints[0].updatePosition(0, this.position.height / 2 - 5);
+    this.resizePoints[0].updatePosition(-5, this.position.height / 2 - 5);
     this.resizePoints[1].updatePosition(this.position.width - 5, this.position.height / 2 - 5);
-    this.resizePoints[2].updatePosition(this.position.width / 2 - 5, 0);
+    this.resizePoints[2].updatePosition(this.position.width / 2 - 5, -5);
     this.resizePoints[3].updatePosition(this.position.width / 2 - 5, this.position.height - 5);
   },
 

@@ -86,10 +86,12 @@ Object.assign(ShapesContainer.prototype, {
       var shape = this.data[i];
       shape.setIndex(i);
       shape.position.y = previousY;
-      shape.visited = false;
 
-      shape.element.setAttribute('transform', `translate(${shape.position.x}, ${previousY})`);
+      shape.element.setAttribute('transform', `translate(${10 + shape.position.x}, ${10 + previousY})`);
       previousY += shape.position.height + this.config.shapeMargin;
+
+      shape.element.setAttribute('height', shape.position.height);
+      shape.element.setAttribute('width', shape.position.width);
 
       shape.backgroundElement.setAttribute('height', shape.position.height);
       shape.backgroundElement.setAttribute('width', shape.position.width);
