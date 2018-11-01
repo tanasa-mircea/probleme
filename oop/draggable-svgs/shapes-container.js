@@ -1,7 +1,7 @@
 function ShapesContainer(config) {
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  this.element.setAttribute('width', 500);
-  this.element.setAttribute('height', 500);
+  this.element.setAttribute('width', 1200);
+  this.element.setAttribute('height', 1200);
   this.config = config;
   this.data = [];
   this.clickedShape;

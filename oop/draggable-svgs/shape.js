@@ -1,12 +1,17 @@
 function Shape(height, width, y, x, index) {
   this.index = index;
+
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
   this.element.classList.add('shape');
+
   this.backgroundElement = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   this.backgroundElement.setAttribute('fill', getColor());
   this.backgroundElement.setAttribute('rx', 15);
   this.backgroundElement.setAttribute('ry', 15);
   this.backgroundElement.classList.add('moving');
+
+  this.elementLayout = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+
   this.element.appendChild(this.backgroundElement);
   this.margin = 10;
   this.movePosition = 0;
@@ -23,6 +28,10 @@ function Shape(height, width, y, x, index) {
 }
 Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype, Resizeable.prototype, {
   resizeHandlerOverride: function(event) {
+    this.updateResizePointsPositions();
+  },
+
+  resizeEndHandlerOverride: function(event) {
     this.updateResizePointsPositions();
     this.fire({ type: 'shapeResize', event: event });
   },

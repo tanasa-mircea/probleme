@@ -21,6 +21,10 @@ Object.assign(Resizeable.prototype, {
     throw(new Error('resizeHandlerOverride should be overwritten'));
   },
 
+  resizeEndHandlerOverride: function() {
+    throw(new Error('resizeHandlerOverride should be overwritten'));
+  },
+
   clickHandler: function(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -43,6 +47,8 @@ Object.assign(Resizeable.prototype, {
     };
 
     this.resizeable = true;
+    this.resizeX = 0;
+    this.resizeY = 0;
     this.element.classList.add('resizeable');
 
     this.createPoint(this.startXHandler.bind(this), 'horizontal', 'first');
@@ -122,8 +128,21 @@ Object.assign(Resizeable.prototype, {
     point = new ResizeablePoint(resizeablePointSide, positionX, positionY);
     point.element.classList.add(cursor);
     point.addListener('resizeablePointMove', moveHandler);
+    point.addListener('resizeablePointEnd', this.pointEndHandler.bind(this));
     this.resizePoints.push(point);
     this.element.appendChild(point.element);
+  },
+
+  pointEndHandler: function() {
+    this.position.x = this.position.x + this.resizeX;
+    this.position.y = this.resizeY;
+    this.position.width -= this.resizeX;
+    this.position.height -= this.resizeY;
+
+    this.resizeX = 0;
+    this.resizeY = 0;
+
+    this.resizeEndHandlerOverride();
   },
 
   unmakeResizeable: function() {
@@ -139,15 +158,15 @@ Object.assign(Resizeable.prototype, {
   },
 
   updateResizePointsPositions: function() {
-    this.resizePoints[0].updatePosition(-5, this.position.height / 2 - 5);
-    this.resizePoints[1].updatePosition(this.position.width - 5, this.position.height / 2 - 5);
-    this.resizePoints[2].updatePosition(this.position.width / 2 - 5, -5);
-    this.resizePoints[3].updatePosition(this.position.width / 2 - 5, this.position.height - 5);
+    this.resizePoints[0].updatePosition(this.resizeX - 5, this.position.height / 2 - 5 + this.resizeY / 2);
+    this.resizePoints[1].updatePosition(this.position.width - 5, this.position.height / 2 - 5 + this.resizeY / 2);
+    this.resizePoints[2].updatePosition(this.position.width / 2 - 5 + this.resizeX / 2, this.resizeY - 5);
+    this.resizePoints[3].updatePosition(this.position.width / 2 - 5 + this.resizeX / 2, this.position.height - 5);
 
-    this.resizePoints[4].updatePosition(this.position.width - 5, - 5);
-    this.resizePoints[5].updatePosition(- 5, - 5);
+    this.resizePoints[4].updatePosition(this.position.width - 5, this.resizeY - 5);
+    this.resizePoints[5].updatePosition(this.resizeX - 5, this.resizeY - 5);
     this.resizePoints[6].updatePosition(this.position.width - 5, this.position.height - 5);
-    this.resizePoints[7].updatePosition(- 5, this.position.height - 5);
+    this.resizePoints[7].updatePosition(this.resizeX- 5, this.position.height - 5);
   },
 
   startXHandler: function(event) {
@@ -156,8 +175,7 @@ Object.assign(Resizeable.prototype, {
     }
 
     var xDiff = event.x - this.position.x;
-    this.position.x = event.x;
-    this.position.width = this.position.width - xDiff;
+    this.resizeX = xDiff;
     this.resizeHandlerOverride();
   },
 
@@ -176,8 +194,7 @@ Object.assign(Resizeable.prototype, {
     }
 
     var yDiff = event.y - this.position.y;
-    this.position.y = event.y;
-    this.position.height = this.position.height - yDiff;
+    this.resizeY = yDiff;
     this.resizeHandlerOverride();
   },
 
@@ -195,9 +212,9 @@ Object.assign(Resizeable.prototype, {
       return;
     }
 
-    this.resizePoints[4].updatePosition(event.x, event.y);
+    var yDiff = event.y - this.position.y;
+    this.resizeY = yDiff;
 
-    this.position.height = event.y - this.position.y;
     this.position.width = event.x - this.position.x;
 
     this.resizeHandlerOverride();
@@ -208,13 +225,11 @@ Object.assign(Resizeable.prototype, {
       return;
     }
 
-    this.resizePoints[5].updatePosition(event.x, event.y);
-
-    this.position.height = event.y - this.position.y;
+    var yDiff = event.y - this.position.y;
+    this.resizeY = yDiff;
 
     var xDiff = event.x - this.position.x;
-    this.position.x = event.x;
-    this.position.width = this.position.width - xDiff;
+    this.resizeX = xDiff;
 
     this.resizeHandlerOverride();
   },
@@ -223,8 +238,6 @@ Object.assign(Resizeable.prototype, {
     if (event.y <= this.position.y || event.x <= this.position.x) {
       return;
     }
-
-    this.resizePoints[6].updatePosition(event.x, event.y);
 
     this.position.height = event.y - this.position.y;
     this.position.width = event.x - this.position.x;
@@ -237,12 +250,10 @@ Object.assign(Resizeable.prototype, {
       return;
     }
 
-    this.resizePoints[7].updatePosition(event.x, event.y);
-
     this.position.height = event.y - this.position.y;
+
     var xDiff = event.x - this.position.x;
-    this.position.x = event.x;
-    this.position.width = this.position.width - xDiff;
+    this.resizeX = xDiff;
 
     this.resizeHandlerOverride();
   },
