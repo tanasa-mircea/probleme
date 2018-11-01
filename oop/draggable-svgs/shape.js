@@ -39,7 +39,6 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
   mouseDownOverride: function(event) {
     this.hasMoved = false;
     this.mouseDragPosition = event.offsetY - this.position.y - this.margin;
-    this.fire({ type: 'shapeMouseDown', shape: this});
   },
 
   clickOverride: function() {
@@ -47,12 +46,18 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
   },
 
   mouseMoveOverride: function(event) {
-    this.hasMoved = true;
+    var shouldMoveInFront = false;
+
+    if (!this.hasMoved) {
+      this.hasMoved = true;
+      shouldMoveInFront = true;
+
+    }
     var trueY = event.offsetY -  this.mouseDragPosition ;
     this.movePosition = event.offsetY - this.mouseDragPosition - 10;
 
     this.element.setAttribute('transform', `translate(${this.position.x + this.margin}, ${trueY})`);
-    this.fire({ type: 'shapeMove', from: this.index, positionY: this.movePosition });
+    this.fire({ type: 'shapeMove', from: this.index, positionY: this.movePosition, shouldMoveInFront: shouldMoveInFront, shape: this });
   },
 
   mouseUpOverride: function(event) {
