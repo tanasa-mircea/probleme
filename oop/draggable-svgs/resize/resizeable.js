@@ -187,7 +187,10 @@ Object.assign(Resizeable.prototype, {
 
     var xDiff = event.x - this.position.x;
     this.resizeX = xDiff;
-    this.resizeHandlerOverride();
+
+    this.position.x = event.x;
+    this.position.width = this.position.width - xDiff;
+    this.resizeEndHandlerOverride();
   },
 
   endXHandler: function(event) {
@@ -196,7 +199,7 @@ Object.assign(Resizeable.prototype, {
     }
 
     this.position.width = event.x - this.position.x;
-    this.resizeHandlerOverride();
+    this.resizeEndHandlerOverride();
   },
 
   startYHandler: function(event) {

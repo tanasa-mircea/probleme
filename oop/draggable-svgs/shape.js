@@ -53,8 +53,17 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
       shouldMoveInFront = true;
 
     }
-    var trueY = event.offsetY -  this.mouseDragPosition ;
-    this.movePosition = event.offsetY - this.mouseDragPosition - 10;
+    var trueY = event.offsetY -  this.mouseDragPosition;
+    this.movePosition = event.offsetY - this.mouseDragPosition - this.margin;
+    var positionYVariation = event.offsetY - this.position.y - this.mouseDragPosition - 10;
+
+    if (positionYVariation > 0) {
+      this.movePosition = event.offsetY -  this.mouseDragPosition + this.position.height;
+    } else {
+      this.movePosition = event.offsetY -  this.mouseDragPosition;
+    }
+
+    console.log(event.offsetY -  this.mouseDragPosition);
 
     this.element.setAttribute('transform', `translate(${this.position.x + this.margin}, ${trueY})`);
     this.fire({ type: 'shapeMove', from: this.index, positionY: this.movePosition, shouldMoveInFront: shouldMoveInFront, shape: this });
