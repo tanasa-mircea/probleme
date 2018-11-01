@@ -39,10 +39,10 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
   mouseDownOverride: function(event) {
     this.hasMoved = false;
     this.mouseDragPosition = event.offsetY - this.position.y - this.margin;
+    this.fire({ type: 'shapeMouseDown', shape: this});
   },
 
   clickOverride: function() {
-
     this.fire({ type: 'shapeClick', shape: this});
   },
 

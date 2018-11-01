@@ -14,6 +14,7 @@ function ShapesContainer(config) {
     shape.initDragNDrop(shape.element);
     shape.addListener('shapeMoveEnd', this.shapeMoveEndHandler.bind(this));
     shape.addListener('shapeMove', this.shapeMoveHandler.bind(this));
+    shape.addListener('shapeMouseDown', this.shapeMouseDown.bind(this));
     shape.addListener('shapeResize', this.shapeResizeHandler.bind(this));
     shape.addListener('shapeClick', this.shapeClickHandler.bind(this));
 
@@ -36,6 +37,10 @@ Object.assign(ShapesContainer.prototype, {
     if (this.clickedShape) {
       this.clickedShape.unmakeResizeable();
     }
+  },
+
+  shapeMouseDown: function(event) {
+    this.element.insertBefore(event.shape.element, this.delimiter.element);
   },
 
   shapeMoveHandler: function(event) {
