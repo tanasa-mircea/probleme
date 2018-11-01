@@ -62,8 +62,6 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
       this.movePosition = event.offsetY - this.mouseDragPosition - this.margin;
     }
 
-    console.log(event.offsetY -  this.mouseDragPosition);
-
     this.element.setAttribute('transform', `translate(${this.position.x + this.margin}, ${trueY})`);
     this.fire({ type: 'shapeMove', from: this.index, positionY: this.movePosition, shouldMoveInFront: shouldMoveInFront, shape: this });
   },

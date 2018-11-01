@@ -1,4 +1,4 @@
-function ResizeablePoint(pointSide, x, y, direction) {
+function ResizeablePoint(pointSide, x, y) {
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   this.element.classList.add('resize-point');
   this.element.setAttribute('x', x);
@@ -6,7 +6,6 @@ function ResizeablePoint(pointSide, x, y, direction) {
   this.element.setAttribute('fill', '#fff');
   this.element.setAttribute('height', pointSide);
   this.element.setAttribute('width', pointSide);
-  this.direction = direction;
 
   this.initResizeMouseActions(this.element);
 }
@@ -17,6 +16,8 @@ Object.assign(ResizeablePoint.prototype, ResizeMouseActions.prototype, CustomEve
   },
 
   mouseMoveOverride: function(event) {
+    event.stopPropagation();
+
     this.fire({
       type: 'resizeablePointMove',
       x: event.offsetX,
@@ -35,10 +36,20 @@ Object.assign(ResizeablePoint.prototype, ResizeMouseActions.prototype, CustomEve
   },
 
   mouseUpOverride: function(event) {
+    event.stopPropagation();
+
     this.fire({
       type: 'resizeablePointEnd',
       x: event.offsetX - 5,
       y: event.offsetY
     });
   },
+
+  hide: function() {
+    this.element.classList.add('hidden');
+  },
+
+  show: function() {
+    this.element.classList.remove('hidden');
+  }
 });

@@ -1,11 +1,14 @@
 function Resizeable() {}
 
 Object.assign(Resizeable.prototype, {
-  initResizeable: function(element) {
+  initResizeable: function() {
     this.resizeable = false;
 
+    this.pointSide = 10;
+    this.pointStart = 5;
+
     if (!this.element) {
-      this.element = element;
+      throw(new Error('this.element should already exist'));
     }
 
     if (!this.resizePoints) {
@@ -16,8 +19,19 @@ Object.assign(Resizeable.prototype, {
 
     this.resizeBorderElement = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     this.resizeBorderElement.classList.add('resizeable');
-
     this.element.appendChild(this.resizeBorderElement);
+
+
+    this.createPoint(this.startXHandler.bind(this), 'left');
+    this.createPoint(this.endXHandler.bind(this), 'right');
+
+    this.createPoint(this.startYHandler.bind(this), 'top');
+    this.createPoint(this.endYHandler.bind(this), 'bottom');
+
+    this.createPoint(this.topRightHandler.bind(this), 'topRight');
+    this.createPoint(this.topLeftHandler.bind(this), 'topLeft');
+    this.createPoint(this.bottomRightHandler.bind(this), 'bottomRight');
+    this.createPoint(this.bottomLeftHandler.bind(this), 'bottomLeft');
   },
 
   resizeHandlerOverride: function() {
@@ -44,6 +58,16 @@ Object.assign(Resizeable.prototype, {
     throw(new Error('Resize click should be overriden'));
   },
 
+  unmakeResizeable: function() {
+    this.resizeable = false;
+
+    for (let i = 0; i < this.resizePoints.length; i++) {
+      this.resizePoints[i].hide();
+    }
+
+    this.resizeBorderElement.classList.add('hidden');
+  },
+
   makeResizeable: function() {
     if (this.resizeable) {
       return;
@@ -53,86 +77,36 @@ Object.assign(Resizeable.prototype, {
     this.resizeX = 0;
     this.resizeY = 0;
 
-    this.createPoint(this.startXHandler.bind(this), 'horizontal', 'first');
-    this.createPoint(this.endXHandler.bind(this), 'horizontal', 'second');
+    for (let i = 0; i < this.resizePoints.length; i++) {
+      this.resizePoints[i].show();
+    }
 
-    this.createPoint(this.startYHandler.bind(this), 'vertical', 'first');
-    this.createPoint(this.endYHandler.bind(this), 'vertical', 'second');
-
-    this.createPoint(this.topRightHandler.bind(this), 'both', 'top-right');
-    this.createPoint(this.topLeftHandler.bind(this), 'both', 'top-left');
-    this.createPoint(this.bottomRightHandler.bind(this), 'both', 'bottom-right');
-    this.createPoint(this.bottomLeftHandler.bind(this), 'both', 'bottom-left');
-
-    this.resizeBorderElement.setAttribute('height', this.position.height);
-    this.resizeBorderElement.setAttribute('width', this.position.width);
+    this.updateResizePointsPositions();
     this.resizeBorderElement.classList.remove('hidden');
   },
 
-  createPoint: function(moveHandler, direction, position) {
+  createPoint: function(moveHandler, direction) {
     var point,
-        resizeablePointSide = 10,
-        cursor,
-        positionX, positionY;
+        cursor;
 
-
-    if (direction === 'horizontal') {
-      positionY = this.position.height / 2 - 5;
-
-      if (position === 'first') {
-        positionX = -5;
-      }
-
-      if (position === 'second') {
-        positionX = this.position.width - 5;
-      }
-
+    if (direction === 'left' || direction === 'right') {
       cursor = 'e-resize';
     }
 
-    if (direction === 'vertical') {
-      positionX = this.position.width / 2 - 5;
-
-      if (position === 'first') {
-        positionY = -5;
-      }
-
-      if (position === 'second') {
-        positionY = this.position.height - 5;
-      }
-
+    if (direction === 'top' || direction === 'bottom') {
       cursor = 'n-resize';
     }
 
-    if (direction === 'both') {
-
-      if (position === 'top-right') {
-        positionY = - 5;
-        positionX = this.position.width - 5;
-        cursor = 'nesw-resize';
-      }
-
-      if (position === 'top-left') {
-        positionY = -5;
-        positionX = -5;
-        cursor = 'nwse-resize';
-      }
-
-      if (position === 'bottom-right') {
-        positionY = this.position.height - 5;
-        positionX = this.position.width -5;
-        cursor = 'nwse-resize';
-      }
-
-      if (position === 'bottom-left') {
-        positionY = this.position.height - 5;
-        positionX = -5;
-        cursor = 'nesw-resize';
-      }
+    if (direction === 'topRight' || direction === 'bottomLeft') {
+      cursor = 'nesw-resize';
     }
 
-    point = new ResizeablePoint(resizeablePointSide, positionX, positionY);
-    point.element.classList.add(cursor);
+    if (direction === 'topLeft' || direction === 'bottomRight') {
+      cursor = 'nwse-resize';
+    }
+
+    point = new ResizeablePoint(this.pointSide, 0, 0);
+    point.element.classList.add(cursor, 'hidden');
     point.addListener('resizeablePointMove', moveHandler);
     point.addListener('resizeablePointEnd', this.pointEndHandler.bind(this));
     this.resizePoints.push(point);
@@ -151,28 +125,27 @@ Object.assign(Resizeable.prototype, {
     this.resizeEndHandlerOverride();
   },
 
-  unmakeResizeable: function() {
-    this.resizeable = false;
-
-    for (let i = 0; i < this.resizePoints.length; i++) {
-      const point = this.resizePoints[i];
-      this.element.removeChild(point.element);
-    }
-
-    this.resizePoints = [];
-    this.resizeBorderElement.classList.add('hidden');
+  pointPositions: {
+    'left': 0,
+    'right': 1,
+    'top': 2,
+    'bottom': 3,
+    'topRight': 4,
+    'topLeft': 5,
+    'bottomRight': 6,
+    'bottomLeft': 7
   },
 
   updateResizePointsPositions: function() {
-    this.resizePoints[0].updatePosition(this.resizeX - 5, this.position.height / 2 - 5 + this.resizeY / 2);
-    this.resizePoints[1].updatePosition(this.position.width - 5, this.position.height / 2 - 5 + this.resizeY / 2);
-    this.resizePoints[2].updatePosition(this.position.width / 2 - 5 + this.resizeX / 2, this.resizeY - 5);
-    this.resizePoints[3].updatePosition(this.position.width / 2 - 5 + this.resizeX / 2, this.position.height - 5);
+    this.resizePoints[this.pointPositions.left].updatePosition(this.resizeX - 5, this.position.height / 2 - 5 + this.resizeY / 2);
+    this.resizePoints[this.pointPositions.right].updatePosition(this.position.width - 5, this.position.height / 2 - 5 + this.resizeY / 2);
+    this.resizePoints[this.pointPositions.top].updatePosition(this.position.width / 2 - 5 + this.resizeX / 2, this.resizeY - 5);
+    this.resizePoints[this.pointPositions.bottom].updatePosition(this.position.width / 2 - 5 + this.resizeX / 2, this.position.height - 5);
 
-    this.resizePoints[4].updatePosition(this.position.width - 5, this.resizeY - 5);
-    this.resizePoints[5].updatePosition(this.resizeX - 5, this.resizeY - 5);
-    this.resizePoints[6].updatePosition(this.position.width - 5, this.position.height - 5);
-    this.resizePoints[7].updatePosition(this.resizeX- 5, this.position.height - 5);
+    this.resizePoints[this.pointPositions.topRight].updatePosition(this.position.width - 5, this.resizeY - 5);
+    this.resizePoints[this.pointPositions.topLeft].updatePosition(this.resizeX - 5, this.resizeY - 5);
+    this.resizePoints[this.pointPositions.bottomRight].updatePosition(this.position.width - 5, this.position.height - 5);
+    this.resizePoints[this.pointPositions.bottomLeft].updatePosition(this.resizeX- 5, this.position.height - 5);
 
     this.resizeBorderElement.setAttribute('width', this.position.width - this.resizeX);
     this.resizeBorderElement.setAttribute('height', this.position.height - this.resizeY);
