@@ -11,6 +11,10 @@ Object.assign(Resizeable.prototype, {
       throw(new Error('this.element should already exist'));
     }
 
+    if (!this.position) {
+      throw(new Error('this.position should already exist'));
+    }
+
     if (!this.resizePoints) {
       this.resizePoints = [];
     }
@@ -142,9 +146,9 @@ Object.assign(Resizeable.prototype, {
     this.resizePoints[this.pointPositions.top].updatePosition(this.position.width / 2 + this.resizeX / 2, this.resizeY );
     this.resizePoints[this.pointPositions.bottom].updatePosition(this.position.width / 2 + this.resizeX / 2, this.position.height );
 
-    this.resizePoints[this.pointPositions.topRight].updatePosition(this.position.width , this.resizeY );
-    this.resizePoints[this.pointPositions.topLeft].updatePosition(this.resizeX , this.resizeY );
-    this.resizePoints[this.pointPositions.bottomRight].updatePosition(this.position.width , this.position.height );
+    this.resizePoints[this.pointPositions.topRight].updatePosition(this.position.width, this.resizeY );
+    this.resizePoints[this.pointPositions.topLeft].updatePosition(this.resizeX, this.resizeY );
+    this.resizePoints[this.pointPositions.bottomRight].updatePosition(this.position.width, this.position.height );
     this.resizePoints[this.pointPositions.bottomLeft].updatePosition(this.resizeX, this.position.height );
 
     this.resizeBorderElement.setAttribute('width', this.position.width - this.resizeX);
