@@ -54,13 +54,12 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
 
     }
     var trueY = event.offsetY -  this.mouseDragPosition;
-    this.movePosition = event.offsetY - this.mouseDragPosition - this.margin;
     var positionYVariation = event.offsetY - this.position.y - this.mouseDragPosition - 10;
 
     if (positionYVariation > 0) {
-      this.movePosition = event.offsetY -  this.mouseDragPosition + this.position.height;
+      this.movePosition = event.offsetY - this.mouseDragPosition + this.position.height - this.margin;
     } else {
-      this.movePosition = event.offsetY -  this.mouseDragPosition;
+      this.movePosition = event.offsetY - this.mouseDragPosition - this.margin;
     }
 
     console.log(event.offsetY -  this.mouseDragPosition);
