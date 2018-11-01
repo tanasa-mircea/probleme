@@ -64,7 +64,6 @@ Object.assign(ShapesContainer.prototype, {
   },
 
   shapeMoveEndHandler: function(event) {
-
     var nextIndex = this.searchForNewIndex(event.from, event.positionY);
     this.data = this.moveItem(this.data, event.from, nextIndex);
     this.delimiter.element.classList.add('hidden');
@@ -81,10 +80,8 @@ Object.assign(ShapesContainer.prototype, {
     }
 
     this.clickedShape = event.shape;
-    // this.element.appendChild(event.shape.element);
     this.element.insertBefore(event.shape.element, this.delimiter.element);
   },
-
 
   paintShapes: function() {
     var previousY = 0;
