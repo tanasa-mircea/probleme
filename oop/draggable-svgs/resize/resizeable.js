@@ -105,7 +105,7 @@ Object.assign(Resizeable.prototype, {
       cursor = 'nwse-resize';
     }
 
-    point = new ResizeablePoint(this.pointSide, 0, 0);
+    point = new ResizeablePoint(this.pointSide, 0, 0, this.pointStart);
     point.element.classList.add(cursor, 'hidden');
     point.addListener('resizeablePointMove', moveHandler);
     point.addListener('resizeablePointEnd', this.pointEndHandler.bind(this));
@@ -137,15 +137,15 @@ Object.assign(Resizeable.prototype, {
   },
 
   updateResizePointsPositions: function() {
-    this.resizePoints[this.pointPositions.left].updatePosition(this.resizeX - 5, this.position.height / 2 - 5 + this.resizeY / 2);
-    this.resizePoints[this.pointPositions.right].updatePosition(this.position.width - 5, this.position.height / 2 - 5 + this.resizeY / 2);
-    this.resizePoints[this.pointPositions.top].updatePosition(this.position.width / 2 - 5 + this.resizeX / 2, this.resizeY - 5);
-    this.resizePoints[this.pointPositions.bottom].updatePosition(this.position.width / 2 - 5 + this.resizeX / 2, this.position.height - 5);
+    this.resizePoints[this.pointPositions.left].updatePosition(this.resizeX, this.position.height / 2 + this.resizeY / 2);
+    this.resizePoints[this.pointPositions.right].updatePosition(this.position.width, this.position.height / 2  + this.resizeY / 2);
+    this.resizePoints[this.pointPositions.top].updatePosition(this.position.width / 2 + this.resizeX / 2, this.resizeY );
+    this.resizePoints[this.pointPositions.bottom].updatePosition(this.position.width / 2 + this.resizeX / 2, this.position.height );
 
-    this.resizePoints[this.pointPositions.topRight].updatePosition(this.position.width - 5, this.resizeY - 5);
-    this.resizePoints[this.pointPositions.topLeft].updatePosition(this.resizeX - 5, this.resizeY - 5);
-    this.resizePoints[this.pointPositions.bottomRight].updatePosition(this.position.width - 5, this.position.height - 5);
-    this.resizePoints[this.pointPositions.bottomLeft].updatePosition(this.resizeX- 5, this.position.height - 5);
+    this.resizePoints[this.pointPositions.topRight].updatePosition(this.position.width , this.resizeY );
+    this.resizePoints[this.pointPositions.topLeft].updatePosition(this.resizeX , this.resizeY );
+    this.resizePoints[this.pointPositions.bottomRight].updatePosition(this.position.width , this.position.height );
+    this.resizePoints[this.pointPositions.bottomLeft].updatePosition(this.resizeX, this.position.height );
 
     this.resizeBorderElement.setAttribute('width', this.position.width - this.resizeX);
     this.resizeBorderElement.setAttribute('height', this.position.height - this.resizeY);

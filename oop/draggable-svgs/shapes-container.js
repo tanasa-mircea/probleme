@@ -5,13 +5,12 @@ function ShapesContainer(config) {
   this.config = config;
   this.data = [];
   this.clickedShape;
-  this.delimiter = new Delimiter(500);
+  this.delimiter = new Delimiter(1200);
 
   // generate all shapes and initialize all listeners
   for (let i = 0; i < config.shapesNumber; i++) {
     let shape = new Shape(config.shapeHeight, 300, 0, 0, i);
 
-    shape.initDragNDrop(shape.element);
     shape.addListener('shapeMoveEnd', this.shapeMoveEndHandler.bind(this));
     shape.addListener('shapeMove', this.shapeMoveHandler.bind(this));
     shape.addListener('shapeResize', this.shapeResizeHandler.bind(this));
@@ -54,12 +53,12 @@ Object.assign(ShapesContainer.prototype, {
     var newPosition;
 
     if (nextIndex > event.from) {
-      newPosition = this.data[nextIndex].position.y + this.data[nextIndex].position.height + this.config.shapeMargin / 2 + 10;
+      newPosition = this.data[nextIndex].position.y + this.data[nextIndex].position.height + this.config.shapeMargin * 1.25;
     } else {
       if (nextIndex === 0) {
         newPosition = 5;
       } else {
-        newPosition = this.data[nextIndex].position.y - this.config.shapeMargin / 2 + 10;
+        newPosition = this.data[nextIndex].position.y + this.config.shapeMargin / 2;
       }
     }
 
@@ -95,7 +94,7 @@ Object.assign(ShapesContainer.prototype, {
       shape.setIndex(i);
       shape.position.y = previousY;
 
-      shape.element.setAttribute('transform', `translate(${10 + shape.position.x}, ${10 + previousY})`);
+      shape.element.setAttribute('transform', `translate(${this.config.shapeMargin + shape.position.x}, ${this.config.shapeMargin + previousY})`);
       previousY += shape.position.height + this.config.shapeMargin;
 
       shape.element.setAttribute('height', shape.position.height);

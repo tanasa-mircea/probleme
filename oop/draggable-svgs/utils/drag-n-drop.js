@@ -1,8 +1,12 @@
 function DragNDrop() {}
 
 DragNDrop.prototype = {
-    initDragNDrop: function initDragNDrop(element) {
-        element.addEventListener('mousedown', this.mouseDownHandler.bind(this));
+    initDragNDrop: function initDragNDrop() {
+        if (!this.element) {
+            throw (new Error('this.element should already exist'));
+        }
+
+        this.element.addEventListener('mousedown', this.mouseDownHandler.bind(this));
     },
 
     mouseDownOverride: function() {

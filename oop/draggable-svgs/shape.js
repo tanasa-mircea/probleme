@@ -24,7 +24,8 @@ function Shape(height, width, y, x, index) {
     height: height
   };
 
-  this.initResizeable(this.element, {});
+  this.initDragNDrop();
+  this.initResizeable();
 }
 Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype, Resizeable.prototype, {
   resizeHandlerOverride: function(event) {
@@ -54,7 +55,7 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
 
     }
     var trueY = event.offsetY -  this.mouseDragPosition;
-    var positionYVariation = event.offsetY - this.position.y - this.mouseDragPosition - 10;
+    var positionYVariation = event.offsetY - this.position.y - this.mouseDragPosition - this.margin;
 
     if (positionYVariation > 0) {
       this.movePosition = event.offsetY - this.mouseDragPosition + this.position.height - this.margin;
