@@ -165,9 +165,7 @@ Object.assign(Resizeable.prototype, {
     var xDiff = event.x - this.position.x;
     this.resizeX = xDiff;
 
-    this.position.x = event.x;
-    this.position.width = this.position.width - xDiff;
-    this.resizeEndHandlerOverride();
+    this.pointEndHandler();
   },
 
   endXHandler: function(event) {
