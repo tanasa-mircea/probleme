@@ -1,6 +1,4 @@
-function Resizeable() {
-
-}
+function Resizeable() {}
 
 Object.assign(Resizeable.prototype, {
   initResizeable: function(element) {
@@ -15,6 +13,11 @@ Object.assign(Resizeable.prototype, {
     }
 
     this.element.addEventListener('click', this.clickHandler.bind(this));
+
+    this.resizeBorderElement = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    this.resizeBorderElement.classList.add('resizeable');
+
+    this.element.appendChild(this.resizeBorderElement);
   },
 
   resizeHandlerOverride: function() {
@@ -49,7 +52,6 @@ Object.assign(Resizeable.prototype, {
     this.resizeable = true;
     this.resizeX = 0;
     this.resizeY = 0;
-    this.element.classList.add('resizeable');
 
     this.createPoint(this.startXHandler.bind(this), 'horizontal', 'first');
     this.createPoint(this.endXHandler.bind(this), 'horizontal', 'second');
@@ -61,6 +63,10 @@ Object.assign(Resizeable.prototype, {
     this.createPoint(this.topLeftHandler.bind(this), 'both', 'top-left');
     this.createPoint(this.bottomRightHandler.bind(this), 'both', 'bottom-right');
     this.createPoint(this.bottomLeftHandler.bind(this), 'both', 'bottom-left');
+
+    this.resizeBorderElement.setAttribute('height', this.position.height);
+    this.resizeBorderElement.setAttribute('width', this.position.width);
+    this.resizeBorderElement.classList.remove('hidden');
   },
 
   createPoint: function(moveHandler, direction, position) {
@@ -147,7 +153,6 @@ Object.assign(Resizeable.prototype, {
 
   unmakeResizeable: function() {
     this.resizeable = false;
-    this.element.classList.remove('resizeable');
 
     for (let i = 0; i < this.resizePoints.length; i++) {
       const point = this.resizePoints[i];
@@ -155,6 +160,7 @@ Object.assign(Resizeable.prototype, {
     }
 
     this.resizePoints = [];
+    this.resizeBorderElement.classList.add('hidden');
   },
 
   updateResizePointsPositions: function() {
@@ -167,6 +173,11 @@ Object.assign(Resizeable.prototype, {
     this.resizePoints[5].updatePosition(this.resizeX - 5, this.resizeY - 5);
     this.resizePoints[6].updatePosition(this.position.width - 5, this.position.height - 5);
     this.resizePoints[7].updatePosition(this.resizeX- 5, this.position.height - 5);
+
+    this.resizeBorderElement.setAttribute('width', this.position.width - this.resizeX);
+    this.resizeBorderElement.setAttribute('height', this.position.height - this.resizeY);
+    this.resizeBorderElement.setAttribute('x', this.resizeX);
+    this.resizeBorderElement.setAttribute('y', this.resizeY);
   },
 
   startXHandler: function(event) {
