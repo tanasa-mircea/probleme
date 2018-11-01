@@ -42,6 +42,7 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
   },
 
   clickOverride: function() {
+
     this.fire({ type: 'shapeClick', shape: this});
   },
 

@@ -37,7 +37,7 @@ Object.assign(ResizeablePoint.prototype, ResizeMouseActions.prototype, CustomEve
   mouseUpOverride: function(event) {
     this.fire({
       type: 'resizeablePointEnd',
-      x: event.offsetX,
+      x: event.offsetX - 5,
       y: event.offsetY
     });
   },

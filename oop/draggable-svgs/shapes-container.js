@@ -81,6 +81,8 @@ Object.assign(ShapesContainer.prototype, {
     }
 
     this.clickedShape = event.shape;
+    // this.element.appendChild(event.shape.element);
+    this.element.insertBefore(event.shape.element, this.delimiter.element);
   },
 
 
