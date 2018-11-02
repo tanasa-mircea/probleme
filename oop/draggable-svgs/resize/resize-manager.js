@@ -100,7 +100,6 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
 
   resizeElement: function() {
     this.position.x = this.position.x + this.resizeX;
-    // this.position.y = this.resizeY;
     this.position.width -= this.resizeX;
     this.position.height -= this.resizeY;
 
@@ -126,103 +125,84 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
     'bottomLeft': 7
   },
 
-  liveUpdate: function() {
-    this.resizeHandlerOverride();
-    this.resizeElement();
-  },
-
-  lineUpdate: function() {
-    this.resizeHandlerOverride();
-  },
-
-  leftHandler: function(event) {
+  leftChange: function(event) {
     if (event.x + 20 >= this.position.x + this.position.width) {
       return;
     }
 
     var xDiff = event.x - this.position.x;
     this.resizeX = xDiff;
-
-    this.liveUpdate();
   },
 
-  rightHandler: function(event) {
+  rightChange: function(event) {
     if (event.x - 20 <= this.position.x) {
       return;
     }
 
     this.position.width = event.x - this.position.x;
-
-    this.liveUpdate();
   },
 
-  topHandler: function(event) {
+  topChange: function(event) {
     if (event.y + 20 >= this.position.y + this.position.height) {
       return;
     }
 
     var yDiff = event.y - this.position.y;
     this.resizeY = yDiff;
-    this.lineUpdate();
+
   },
 
-  bottomHandler: function(event) {
+  bottomChange: function(event) {
     if (event.y - 20 <= this.position.y) {
       return;
     }
 
     this.position.height = event.y - this.position.y;
-    this.lineUpdate();
+  },
+
+  leftHandler: function(event) {
+    this.leftChange(event);
+    this.resizeHandlerOverride();
+    this.resizeElement();
+  },
+
+  rightHandler: function(event) {
+    this.rightChange(event);
+    this.resizeHandlerOverride();
+    this.resizeElement();
+  },
+
+  topHandler: function(event) {
+    this.topChange(event);
+    this.resizeHandlerOverride();
+  },
+
+  bottomHandler: function(event) {
+    this.bottomChange(event);
+    this.resizeHandlerOverride();
   },
 
   topRightHandler: function(event) {
-    if (event.y + 20 >= this.position.y + this.position.height || event.x - 20 <= this.position.x) {
-      return;
-    }
-
-    var yDiff = event.y - this.position.y;
-    this.resizeY = yDiff;
-
-    this.position.width = event.x - this.position.x;
-
-    this.lineUpdate();
+    this.topChange(event);
+    this.rightChange(event);
+    this.resizeHandlerOverride();
   },
 
   topLeftHandler: function(event) {
-    if (event.y + 20 >= this.position.y + this.position.height || event.x + 20 >= this.position.x + this.position.width) {
-      return;
-    }
-
-    var yDiff = event.y - this.position.y;
-    this.resizeY = yDiff;
-
-    var xDiff = event.x - this.position.x;
-    this.resizeX = xDiff;
-
-    this.lineUpdate();
+    this.topChange(event);
+    this.leftChange(event);
+    this.resizeHandlerOverride();
   },
 
   bottomRightHandler: function(event) {
-    if (event.y - 20 <= this.position.y || event.x - 20 <= this.position.x) {
-      return;
-    }
-
-    this.position.height = event.y - this.position.y;
-    this.position.width = event.x - this.position.x;
-
-    this.lineUpdate();
+    this.bottomChange(event);
+    this.rightChange(event);
+    this.resizeHandlerOverride();
   },
 
   bottomLeftHandler: function(event) {
-    if (event.y - 20 <= this.position.y || event.x + 20 >= this.position.x + this.position.width) {
-      return;
-    }
-
-    this.position.height = event.y - this.position.y;
-
-    var xDiff = event.x - this.position.x;
-    this.resizeX = xDiff;
-
-    this.lineUpdate();
+    this.bottomChange(event);
+    this.leftChange(event);
+    this.resizeHandlerOverride();
   },
 });
