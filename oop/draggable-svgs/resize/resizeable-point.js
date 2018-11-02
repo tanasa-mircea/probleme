@@ -8,10 +8,10 @@ function ResizeablePoint(pointSide, x, y, pointStart) {
   this.element.setAttribute('width', pointSide);
   this.pointStart = pointStart;
 
-  this.initResizeMouseActions(this.element);
+  this.initDragNDrop();
 }
 
-Object.assign(ResizeablePoint.prototype, ResizeMouseActions.prototype, CustomEventTarget.prototype, {
+Object.assign(ResizeablePoint.prototype, DragNDrop.prototype, CustomEventTarget.prototype, {
   mouseDownOverride: function(event) {
     event.stopPropagation();
   },

@@ -6,4 +6,22 @@ function Delimiter(width) {
   this.element.setAttribute('width', width);
   this.element.setAttribute('y', 0);
   this.element.setAttribute('x', 0);
+
+  this.x = 0;
+  this.y = 0;
 }
+
+Object.assign(Delimiter.prototype, {
+  setY: function(y) {
+    this.y = y;
+    this.element.setAttribute('transform', `translate(${this.x}, ${this.y})`);
+  },
+
+  hide: function() {
+    this.element.classList.add('hidden');
+  },
+
+  show: function() {
+    this.element.classList.remove('hidden');
+  }
+});

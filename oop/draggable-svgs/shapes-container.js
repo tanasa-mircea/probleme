@@ -45,7 +45,7 @@ Object.assign(ShapesContainer.prototype, {
     var nextIndex = this.searchForNewIndex(event.from, event.positionY);
 
     if (nextIndex === event.from) {
-      this.delimiter.element.classList.add('hidden');
+      this.delimiter.hide();
 
       return;
     }
@@ -62,14 +62,14 @@ Object.assign(ShapesContainer.prototype, {
       }
     }
 
-    this.delimiter.element.setAttribute('transform', `translate(0, ${newPosition})`);
-    this.delimiter.element.classList.remove('hidden');
+    this.delimiter.setY(newPosition);
+    this.delimiter.show();
   },
 
   shapeMoveEndHandler: function(event) {
     var nextIndex = this.searchForNewIndex(event.from, event.positionY);
     this.data = this.moveItem(this.data, event.from, nextIndex);
-    this.delimiter.element.classList.add('hidden');
+    this.delimiter.hide();
     this.paintShapes();
   },
 
