@@ -63,8 +63,6 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
     this.resizeBorderElement.setAttribute('height', this.position.height - this.resizeY);
     this.resizeBorderElement.setAttribute('x', this.resizeX);
     this.resizeBorderElement.setAttribute('y', this.resizeY);
-
-    this.element.setAttribute('transform', `translate(${ this.position.x + this.resizeX + 10 }, ${ this.position.y + this.resizeY + 10 })`);
   },
 
   createPoint: function(moveHandler, direction) {
@@ -102,6 +100,8 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
     this.position.x = this.position.x + this.resizeX;
     this.position.width -= this.resizeX;
     this.position.height -= this.resizeY;
+
+    this.element.setAttribute('transform', `translate(${ this.position.x + this.resizeX + 10 }, ${ this.position.y - this.resizeY + 10 })`);
 
     this.resizeX = 0;
     this.resizeY = 0;
