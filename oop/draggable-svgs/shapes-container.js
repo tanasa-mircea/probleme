@@ -118,19 +118,20 @@ Object.assign(ShapesContainer.prototype, {
     }
   },
 
-  searchForNewIndex: function(currentIndex, positionCheck, initialIndex) {
-    var nextItem = this.data[currentIndex + 1],
-        prevItem = this.data[currentIndex - 1];
+   searchForNewIndex: function(currentIndex, positionCheck, initialIndex) {
+    let index = initialIndex;
+    console.log('positionCHeck ', positionCheck)
 
-    if (prevItem && positionCheck < prevItem.position.y + 10) {
-      return this.searchForNewIndex(prevItem.index, positionCheck, initialIndex);
+    for (let i = 0; i < this.data.length; i++) {
+      let current = this.data[i];
+
+      if (positionCheck > current.position.y + current.position.height && positionCheck < current.position.y + current.position.height + 10) {
+        index = current.index;
+        return index;
+      }
     }
 
-    if (nextItem && positionCheck > nextItem.position.y + nextItem.position.height) {
-      return this.searchForNewIndex(nextItem.index, positionCheck, initialIndex);
-    }
-
-    return currentIndex;
+    return index;
   },
 
   moveItem(arr, from, to) {
