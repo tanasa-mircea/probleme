@@ -25,9 +25,9 @@ function Shape(height, width, y, x, index) {
   };
 
   this.initDragNDrop();
-  this.initResizeable();
+  this.initResizeableElement();
 }
-Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype, Resizeable.prototype, {
+Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype, ResizeableElement.prototype, {
   resizeHandlerOverride: function(event) {
     this.updateResizePointsPositions();
   },
@@ -75,5 +75,18 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
 
   setIndex(index) {
     this.index = index;
+  },
+
+  resize: function(position) {
+    this.position = Object.assign({}, position);
+
+    this.element.setAttribute('transform', `translate(${10 + this.position.x}, ${10 + this.position.y})`);
+
+
+    this.element.setAttribute('height', this.position.height);
+    this.element.setAttribute('width', this.position.width);
+
+    this.backgroundElement.setAttribute('height', this.position.height);
+    this.backgroundElement.setAttribute('width', this.position.width);
   }
 });

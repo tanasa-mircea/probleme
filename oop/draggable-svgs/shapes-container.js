@@ -6,6 +6,9 @@ function ShapesContainer(config) {
   this.data = [];
   this.clickedShape;
   this.delimiter = new Delimiter(1200);
+  this.resizeManager = new ResizeManager();
+
+  this.resizeManager.addListener('resizeControllerEnd', this.resizeControllerEndHandler.bind(this));
 
   // generate all shapes and initialize all listeners
   for (let i = 0; i < config.shapesNumber; i++) {
@@ -21,6 +24,8 @@ function ShapesContainer(config) {
   }
 
   this.element.appendChild(this.delimiter.element);
+  this.element.appendChild(this.resizeManager.element);
+
   this.paintShapes();
 
   document.addEventListener('click', this.documentClickHandler.bind(this));
@@ -32,9 +37,14 @@ Object.assign(ShapesContainer.prototype, {
       return;
     }
 
-    if (this.clickedShape) {
-      this.clickedShape.unmakeResizeable();
-    }
+    // if (this.clickedShape) {
+    //   this.clickedShape = null;
+    //   this.resizeManager.hide();
+    // }
+  },
+
+  resizeControllerEndHandler: function() {
+    this.paintShapes();
   },
 
   shapeMoveHandler: function(event) {
@@ -74,16 +84,18 @@ Object.assign(ShapesContainer.prototype, {
   },
 
   shapeResizeHandler: function() {
-    this.paintShapes();
+    // this.paintShapes();
   },
 
   shapeClickHandler: function(event) {
-    if (this.clickedShape && this.clickedShape !== event.shape) {
-      this.clickedShape.unmakeResizeable();
+    if (this.clickedShape === event.shape) {
+      return;
     }
 
     this.clickedShape = event.shape;
-    this.element.insertBefore(event.shape.element, this.delimiter.element);
+
+    this.resizeManager.show();
+    this.resizeManager.updateElement(event.shape);
   },
 
   paintShapes: function() {
