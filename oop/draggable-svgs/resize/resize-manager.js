@@ -52,6 +52,28 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
     this.updateResizePosition();
   },
 
+  updateSelectedItemPosition: function(offsetX, offsetY) {
+    if (!this.selectedElement) {
+      return;
+    }
+
+    this.position = Object.assign({}, this.selectedElement.position);
+
+    var positionX = this.position.x + 10;
+    var positionY = this.position.y + 10;
+
+    if (!isNaN(offsetX) && offsetX !== null) {
+      positionX = offsetX;
+    }
+
+    if (!isNaN(offsetY) && offsetY !== null) {
+      positionY = offsetY;
+    }
+
+    this.element.setAttribute('transform', `translate(${positionX}, ${positionY})`);
+    this.updateResizePosition();
+  },
+
   // Set the positions of the resize border and points
   updateResizePosition: function() {
     this.resizePoints[this.pointPositions.left].updatePosition(this.resizeX, this.position.height / 2 + this.resizeY / 2);
@@ -64,7 +86,6 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
     this.resizePoints[this.pointPositions.bottomRight].updatePosition(this.position.width, this.position.height );
     this.resizePoints[this.pointPositions.bottomLeft].updatePosition(this.resizeX, this.position.height );
 
-    console.log('this.resizeY updateResizePosition', this.resizeY);
     this.resizeBorderElement.setAttribute('width', this.position.width - this.resizeX);
     this.resizeBorderElement.setAttribute('height', this.position.height - this.resizeY);
     this.resizeBorderElement.setAttribute('x', this.resizeX);
@@ -157,7 +178,6 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
 
 
     var yDiff = event.y - this.position.y;
-    console.log('yDiff topChange', yDiff);
     this.resizeY = yDiff;
   },
 

@@ -53,6 +53,7 @@ Object.assign(ShapesContainer.prototype, {
     }
 
     var nextIndex = this.searchForNewIndex(event.from, event.positionY);
+    this.resizeManager.updateSelectedItemPosition(null, event.trueY);
 
     if (nextIndex === event.from) {
       this.delimiter.hide();
@@ -81,6 +82,8 @@ Object.assign(ShapesContainer.prototype, {
     this.data = this.moveItem(this.data, event.from, nextIndex);
     this.delimiter.hide();
     this.paintShapes();
+
+    this.resizeManager.updateSelectedItemPosition(null, null);
   },
 
   shapeResizeHandler: function() {

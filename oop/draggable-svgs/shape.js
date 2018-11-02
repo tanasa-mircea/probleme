@@ -64,12 +64,12 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
     }
 
     this.element.setAttribute('transform', `translate(${this.position.x + this.margin}, ${trueY})`);
-    this.fire({ type: 'shapeMove', from: this.index, positionY: this.movePosition, shouldMoveInFront: shouldMoveInFront, shape: this });
+    this.fire({ type: 'shapeMove', from: this.index, positionY: this.movePosition, shouldMoveInFront: shouldMoveInFront, shape: this, trueY: trueY });
   },
 
   mouseUpOverride: function(event) {
     if (this.hasMoved) {
-      this.fire({ type: 'shapeMoveEnd', from: this.index, positionY: this.movePosition });
+      this.fire({ type: 'shapeMoveEnd', from: this.index, positionY: this.movePosition, shape: this });
     }
   },
 
