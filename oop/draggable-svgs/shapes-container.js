@@ -32,7 +32,6 @@ function ShapesContainer(config) {
 
 Object.assign(ShapesContainer.prototype, {
   documentClickHandler: function(event) {
-    console.log('event ', event);
     if (event.target.matches('.shape') || event.target.matches('.resize-point') || event.target.matches('.resizeable-group')) {
       return;
     }
@@ -53,7 +52,10 @@ Object.assign(ShapesContainer.prototype, {
     }
 
     var nextIndex = this.searchForNewIndex(event.from, event.positionY);
-    this.resizeManager.updateSelectedItemPosition(null, event.trueY);
+
+    if (event.shape === this.clickedShape) {
+      this.resizeManager.updateSelectedItemPosition(null, event.trueY);
+    }
 
     if (nextIndex === event.from) {
       this.delimiter.hide();
@@ -129,7 +131,7 @@ Object.assign(ShapesContainer.prototype, {
       return this.searchForNewIndex(prevItem.index, positionCheck);
     }
 
-    if (nextItem && positionCheck > nextItem.position.y) {
+    if (nextItem && positionCheck > nextItem.position.y + nextItem.position.height) {
       return this.searchForNewIndex(nextItem.index, positionCheck);
     }
 

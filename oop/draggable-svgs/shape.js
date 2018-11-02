@@ -55,21 +55,13 @@ Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype,
 
     }
     var trueY = event.offsetY -  this.mouseDragPosition;
-    var positionYVariation = event.offsetY - this.position.y - this.mouseDragPosition - this.margin;
-
-    if (positionYVariation > 0) {
-      this.movePosition = event.offsetY - this.mouseDragPosition + this.position.height - this.margin;
-    } else {
-      this.movePosition = event.offsetY - this.mouseDragPosition - this.margin;
-    }
-
     this.element.setAttribute('transform', `translate(${this.position.x + this.margin}, ${trueY})`);
-    this.fire({ type: 'shapeMove', from: this.index, positionY: this.movePosition, shouldMoveInFront: shouldMoveInFront, shape: this, trueY: trueY });
+    this.fire({ type: 'shapeMove', from: this.index, positionY: event.offsetY, shouldMoveInFront: shouldMoveInFront, shape: this, trueY: trueY });
   },
 
   mouseUpOverride: function(event) {
     if (this.hasMoved) {
-      this.fire({ type: 'shapeMoveEnd', from: this.index, positionY: this.movePosition, shape: this });
+      this.fire({ type: 'shapeMoveEnd', from: this.index, positionY: event.offsetY, shape: this });
     }
   },
 
