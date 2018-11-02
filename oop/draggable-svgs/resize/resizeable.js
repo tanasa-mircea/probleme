@@ -158,7 +158,7 @@ Object.assign(Resizeable.prototype, {
   },
 
   startXHandler: function(event) {
-    if (event.x >= this.position.x + this.position.width) {
+    if (event.x + 20 >= this.position.x + this.position.width) {
       return;
     }
 
@@ -169,7 +169,7 @@ Object.assign(Resizeable.prototype, {
   },
 
   endXHandler: function(event) {
-    if (event.x <= this.position.x) {
+    if (event.x - 20 <= this.position.x) {
       return;
     }
 
@@ -178,7 +178,7 @@ Object.assign(Resizeable.prototype, {
   },
 
   startYHandler: function(event) {
-    if (event.y >= this.position.y + this.position.height) {
+    if (event.y + 20 >= this.position.y + this.position.height) {
       return;
     }
 
@@ -188,7 +188,7 @@ Object.assign(Resizeable.prototype, {
   },
 
   endYHandler: function(event) {
-    if (event.y <= this.position.y) {
+    if (event.y - 20 <= this.position.y) {
       return;
     }
 
@@ -197,7 +197,7 @@ Object.assign(Resizeable.prototype, {
   },
 
   topRightHandler: function(event) {
-    if (event.y >= this.position.y + this.position.height || event.x <= this.position.x) {
+    if (event.y + 20 >= this.position.y + this.position.height || event.x - 20 <= this.position.x) {
       return;
     }
 
@@ -210,7 +210,7 @@ Object.assign(Resizeable.prototype, {
   },
 
   topLeftHandler: function(event) {
-    if (event.y >= this.position.y + this.position.height || event.x >= this.position.x + this.position.width) {
+    if (event.y + 20 >= this.position.y + this.position.height || event.x + 20 >= this.position.x + this.position.width) {
       return;
     }
 
@@ -224,7 +224,7 @@ Object.assign(Resizeable.prototype, {
   },
 
   bottomRightHandler: function(event) {
-    if (event.y <= this.position.y || event.x <= this.position.x) {
+    if (event.y - 20 <= this.position.y || event.x - 20 <= this.position.x) {
       return;
     }
 
@@ -235,7 +235,7 @@ Object.assign(Resizeable.prototype, {
   },
 
   bottomLeftHandler: function(event) {
-    if (event.y <= this.position.y || event.x >= this.position.x + this.position.width) {
+    if (event.y - 20 <= this.position.y || event.x + 20 >= this.position.x + this.position.width) {
       return;
     }
 
