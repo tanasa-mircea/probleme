@@ -1,14 +1,19 @@
 function ResizeManager() {
+  // Create the group that will contain the border and the points
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
   this.element.classList.add('hidden');
+
+  // Constants
   this.pointSide = 10;
   this.pointStart = 5;
+
   this.resizePoints = [];
+  // Group and points positions
+  this.position = {};
 
   this.resizeBorderElement = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   this.resizeBorderElement.classList.add('resizeable');
   this.element.appendChild(this.resizeBorderElement);
-  this.position = {};
 
   this.createPoint(this.leftHandler.bind(this), 'left');
   this.createPoint(this.rightHandler.bind(this), 'right');
@@ -23,11 +28,9 @@ function ResizeManager() {
 }
 
 Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
-  resizeHandlerOverride: function() {
+  // Called at a point movement
+  resizeHandler: function() {
     this.updateResizePosition();
-  },
-
-  resizeEndHandlerOverride: function() {
   },
 
   show: function() {
@@ -38,7 +41,8 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
     this.element.classList.add('hidden');
   },
 
-  updateElement: function(element) {
+  // Called when the clicked element is changed
+  resetPosition: function(element) {
     this.selectedElement = element;
     this.position = Object.assign({}, element.position);
     this.resizeX = 0;
@@ -48,21 +52,43 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
     this.updateResizePosition();
   },
 
+  // Set the positions of the resize border and points
   updateResizePosition: function() {
     this.resizePoints[this.pointPositions.left].updatePosition(this.resizeX, this.position.height / 2 + this.resizeY / 2);
     this.resizePoints[this.pointPositions.right].updatePosition(this.position.width, this.position.height / 2  + this.resizeY / 2);
-    this.resizePoints[this.pointPositions.top].updatePosition(this.position.width / 2 + this.resizeX / 2, this.resizeY );
+    this.resizePoints[this.pointPositions.top].updatePosition(this.position.width / 2 + this.resizeX / 2, this.resizeY);
     this.resizePoints[this.pointPositions.bottom].updatePosition(this.position.width / 2 + this.resizeX / 2, this.position.height );
 
-    this.resizePoints[this.pointPositions.topRight].updatePosition(this.position.width, this.resizeY );
-    this.resizePoints[this.pointPositions.topLeft].updatePosition(this.resizeX, this.resizeY );
+    this.resizePoints[this.pointPositions.topRight].updatePosition(this.position.width, this.resizeY);
+    this.resizePoints[this.pointPositions.topLeft].updatePosition(this.resizeX, this.resizeY);
     this.resizePoints[this.pointPositions.bottomRight].updatePosition(this.position.width, this.position.height );
     this.resizePoints[this.pointPositions.bottomLeft].updatePosition(this.resizeX, this.position.height );
 
+    console.log('this.resizeY updateResizePosition', this.resizeY);
     this.resizeBorderElement.setAttribute('width', this.position.width - this.resizeX);
     this.resizeBorderElement.setAttribute('height', this.position.height - this.resizeY);
     this.resizeBorderElement.setAttribute('x', this.resizeX);
     this.resizeBorderElement.setAttribute('y', this.resizeY);
+  },
+
+  // Trigger selected element resize
+  resizeElement: function() {
+    this.position.x = this.position.x + this.resizeX;
+    this.position.width -= this.resizeX;
+    this.position.height -= this.resizeY;
+
+    this.element.setAttribute('transform', `translate(${ this.position.x + 10 }, ${ this.position.y + 10 })`);
+
+    this.resizeX = 0;
+    this.resizeY = 0;
+
+    this.selectedElement.resize(this.position);
+  },
+
+  pointEndHandler: function(event) {
+    this.resizeElement();
+    this.updateResizePosition();
+    this.fire({ type: 'resizeControllerEnd' });
   },
 
   createPoint: function(moveHandler, direction) {
@@ -94,24 +120,6 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
     point.addListener('resizeablePointMove', moveHandler);
     this.resizePoints.push(point);
     this.element.appendChild(point.element);
-  },
-
-  resizeElement: function() {
-    this.position.x = this.position.x + this.resizeX;
-    this.position.width -= this.resizeX;
-    this.position.height -= this.resizeY;
-
-    this.element.setAttribute('transform', `translate(${ this.position.x + this.resizeX + 10 }, ${ this.position.y - this.resizeY + 10 })`);
-
-    this.resizeX = 0;
-    this.resizeY = 0;
-
-    this.selectedElement.resize(this.position);
-  },
-
-  pointEndHandler: function(event) {
-    this.resizeElement();
-    this.fire({ type: 'resizeControllerEnd' });
   },
 
   pointPositions: {
@@ -147,9 +155,10 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
       return;
     }
 
-    var yDiff = event.y - this.position.y;
-    this.resizeY = yDiff;
 
+    var yDiff = event.y - this.position.y;
+    console.log('yDiff topChange', yDiff);
+    this.resizeY = yDiff;
   },
 
   bottomChange: function(event) {
@@ -162,47 +171,47 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
 
   leftHandler: function(event) {
     this.leftChange(event);
-    this.resizeHandlerOverride();
+    this.resizeHandler();
     this.resizeElement();
   },
 
   rightHandler: function(event) {
     this.rightChange(event);
-    this.resizeHandlerOverride();
+    this.resizeHandler();
     this.resizeElement();
   },
 
   topHandler: function(event) {
     this.topChange(event);
-    this.resizeHandlerOverride();
+    this.resizeHandler();
   },
 
   bottomHandler: function(event) {
     this.bottomChange(event);
-    this.resizeHandlerOverride();
+    this.resizeHandler();
   },
 
   topRightHandler: function(event) {
     this.topChange(event);
     this.rightChange(event);
-    this.resizeHandlerOverride();
+    this.resizeHandler();
   },
 
   topLeftHandler: function(event) {
     this.topChange(event);
     this.leftChange(event);
-    this.resizeHandlerOverride();
+    this.resizeHandler();
   },
 
   bottomRightHandler: function(event) {
     this.bottomChange(event);
     this.rightChange(event);
-    this.resizeHandlerOverride();
+    this.resizeHandler();
   },
 
   bottomLeftHandler: function(event) {
     this.bottomChange(event);
     this.leftChange(event);
-    this.resizeHandlerOverride();
+    this.resizeHandler();
   },
 });

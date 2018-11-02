@@ -95,7 +95,7 @@ Object.assign(ShapesContainer.prototype, {
     this.clickedShape = event.shape;
 
     this.resizeManager.show();
-    this.resizeManager.updateElement(event.shape);
+    this.resizeManager.resetPosition(event.shape);
   },
 
   paintShapes: function() {
