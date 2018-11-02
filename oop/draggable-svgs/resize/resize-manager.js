@@ -1,7 +1,7 @@
 function ResizeManager() {
   // Create the group that will contain the border and the points
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  this.element.classList.add('hidden');
+  this.element.classList.add('hidden', 'resizeable-group');
 
   // Constants
   this.pointSide = 10;

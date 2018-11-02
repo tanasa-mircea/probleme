@@ -16,7 +16,6 @@ function ShapesContainer(config) {
 
     shape.addListener('shapeMoveEnd', this.shapeMoveEndHandler.bind(this));
     shape.addListener('shapeMove', this.shapeMoveHandler.bind(this));
-    shape.addListener('shapeResize', this.shapeResizeHandler.bind(this));
     shape.addListener('shapeClick', this.shapeClickHandler.bind(this));
 
     this.data.push(shape);
@@ -33,14 +32,15 @@ function ShapesContainer(config) {
 
 Object.assign(ShapesContainer.prototype, {
   documentClickHandler: function(event) {
-    if (event.target.matches('.shape') || event.target.matches('resize-point')) {
+    console.log('event ', event);
+    if (event.target.matches('.shape') || event.target.matches('.resize-point') || event.target.matches('.resizeable-group')) {
       return;
     }
 
-    // if (this.clickedShape) {
-    //   this.clickedShape = null;
-    //   this.resizeManager.hide();
-    // }
+    if (this.clickedShape) {
+      this.clickedShape = null;
+      this.resizeManager.hide();
+    }
   },
 
   resizeControllerEndHandler: function() {
@@ -84,10 +84,6 @@ Object.assign(ShapesContainer.prototype, {
     this.paintShapes();
 
     this.resizeManager.updateSelectedItemPosition(null, null);
-  },
-
-  shapeResizeHandler: function() {
-    // this.paintShapes();
   },
 
   shapeClickHandler: function(event) {

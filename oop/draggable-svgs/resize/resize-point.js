@@ -19,10 +19,11 @@ Object.assign(ResizeablePoint.prototype, DragNDrop.prototype, CustomEventTarget.
   mouseMoveOverride: function(event) {
     event.stopPropagation();
 
+
     this.fire({
       type: 'resizeablePointMove',
-      x: event.offsetX,
-      y: event.offsetY
+      x: event.offsetX - 10,
+      y: event.offsetY - 10
     });
   },
 
@@ -38,11 +39,12 @@ Object.assign(ResizeablePoint.prototype, DragNDrop.prototype, CustomEventTarget.
 
   mouseUpOverride: function(event) {
     event.stopPropagation();
+    event.preventDefault();
 
     this.fire({
       type: 'resizeablePointEnd',
-      x: event.offsetX,
-      y: event.offsetY
+      x: event.offsetX - 10,
+      y: event.offsetY - 10
     });
   },
 });
