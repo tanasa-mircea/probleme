@@ -7,6 +7,8 @@ function ResizeManager() {
   this.pointSide = 10;
   this.pointStart = 5;
 
+  this.minHeightWidth = 15;
+
   this.resizePoints = [];
   // Group and points positions
   this.position = {};
@@ -155,7 +157,7 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
   },
 
   leftChange: function(event) {
-    if (event.x + 20 >= this.position.x + this.position.width) {
+    if (event.x + this.minHeightWidth >= this.position.x + this.position.width) {
       return;
     }
 
@@ -164,7 +166,7 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
   },
 
   rightChange: function(event) {
-    if (event.x - 20 <= this.position.x) {
+    if (event.x - this.minHeightWidth <= this.position.x) {
       return;
     }
 
@@ -172,7 +174,7 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
   },
 
   topChange: function(event) {
-    if (event.y + 20 >= this.position.y + this.position.height) {
+    if (event.y + this.minHeightWidth >= this.position.y + this.position.height) {
       return;
     }
 
@@ -182,7 +184,7 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
   },
 
   bottomChange: function(event) {
-    if (event.y - 20 <= this.position.y) {
+    if (event.y - this.minHeightWidth <= this.position.y) {
       return;
     }
 

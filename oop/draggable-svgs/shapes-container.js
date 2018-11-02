@@ -51,7 +51,7 @@ Object.assign(ShapesContainer.prototype, {
       this.element.insertBefore(event.shape.element, this.delimiter.element);
     }
 
-    var nextIndex = this.searchForNewIndex(event.from, event.positionY);
+    var nextIndex = this.searchForNewIndex(event.from, event.positionY, event.from);
 
     if (event.shape === this.clickedShape) {
       this.resizeManager.updateSelectedItemPosition(null, event.trueY);
@@ -80,7 +80,7 @@ Object.assign(ShapesContainer.prototype, {
   },
 
   shapeMoveEndHandler: function(event) {
-    var nextIndex = this.searchForNewIndex(event.from, event.positionY);
+    var nextIndex = this.searchForNewIndex(event.from, event.positionY, event.from);
     this.data = this.moveItem(this.data, event.from, nextIndex);
     this.delimiter.hide();
     this.paintShapes();
@@ -118,21 +118,16 @@ Object.assign(ShapesContainer.prototype, {
     }
   },
 
-  searchForNewIndex: function(currentIndex, positionCheck) {
-    var currentItem = this.data[currentIndex],
-        nextItem = this.data[currentIndex + 1],
+  searchForNewIndex: function(currentIndex, positionCheck, initialIndex) {
+    var nextItem = this.data[currentIndex + 1],
         prevItem = this.data[currentIndex - 1];
 
-    if (!currentItem) {
-      return currentIndex;
-    }
-
-    if (prevItem && positionCheck < prevItem.position.y) {
-      return this.searchForNewIndex(prevItem.index, positionCheck);
+    if (prevItem && positionCheck < prevItem.position.y + 10) {
+      return this.searchForNewIndex(prevItem.index, positionCheck, initialIndex);
     }
 
     if (nextItem && positionCheck > nextItem.position.y + nextItem.position.height) {
-      return this.searchForNewIndex(nextItem.index, positionCheck);
+      return this.searchForNewIndex(nextItem.index, positionCheck, initialIndex);
     }
 
     return currentIndex;
