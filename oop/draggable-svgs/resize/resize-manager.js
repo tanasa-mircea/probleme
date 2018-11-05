@@ -194,13 +194,13 @@ Object.assign(ResizeManager.prototype, CustomEventTarget.prototype, {
   leftHandler: function(event) {
     this.leftChange(event);
     this.resizeHandler();
-    this.resizeElement();
+    this.pointEndHandler();
   },
 
   rightHandler: function(event) {
     this.rightChange(event);
     this.resizeHandler();
-    this.resizeElement();
+    this.pointEndHandler();
   },
 
   topHandler: function(event) {

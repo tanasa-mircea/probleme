@@ -27,14 +27,14 @@ function ShapesContainer(config) {
 
   this.paintShapes();
 
-  document.addEventListener('click', this.documentClickHandler.bind(this));
+  document.addEventListener('mousedown', this.documentClickHandler.bind(this));
 }
 
 Object.assign(ShapesContainer.prototype, {
   documentClickHandler: function(event) {
-    if (event.target.matches('.shape') || event.target.matches('.resize-point') || event.target.matches('.resizeable-group')) {
-      return;
-    }
+    // if (event.target.matches('.shape') || event.target.matches('.resize-point') || event.target.matches('.resizeable-group')) {
+    //   return;
+    // }
 
     if (this.clickedShape) {
       this.clickedShape = null;

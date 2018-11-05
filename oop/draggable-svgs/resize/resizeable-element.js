@@ -7,10 +7,15 @@ Object.assign(ResizeableElement.prototype, {
 
   clickHandler: function(event) {
     event.stopPropagation();
-   this.clickOverride();
+    event.preventDefault();
+    this.clickOverride();
   },
 
   clickOverride: function() {
+    throw(new Error('Click should be overriden by the resizeable element'));
+  },
+
+  resize: function(position) {
     throw(new Error('Click should be overriden by the resizeable element'));
   }
 });
