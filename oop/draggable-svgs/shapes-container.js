@@ -51,7 +51,7 @@ Object.assign(ShapesContainer.prototype, {
       this.element.insertBefore(event.shape.element, this.delimiter.element);
     }
 
-    var nextIndex = this.searchForNewIndex(event.from, event.positionY, event.from);
+    var nextIndex = this.searchForNewIndex(event.from, event.positionY);
 
     if (event.shape === this.clickedShape) {
       this.resizeManager.updateSelectedItemPosition(null, event.trueY);
@@ -68,7 +68,7 @@ Object.assign(ShapesContainer.prototype, {
     if (nextIndex > event.from) {
       newPosition = this.data[nextIndex].position.y + this.data[nextIndex].position.height + this.config.shapeMargin * 1.25;
     } else {
-      if (nextIndex === 0) {
+      if (nextIndex === -1) {
         newPosition = 5;
       } else {
         newPosition = this.data[nextIndex].position.y + this.config.shapeMargin / 2;
@@ -80,7 +80,7 @@ Object.assign(ShapesContainer.prototype, {
   },
 
   shapeMoveEndHandler: function(event) {
-    var nextIndex = this.searchForNewIndex(event.from, event.positionY, event.from);
+    var nextIndex = this.searchForNewIndex(event.from, event.positionY);
     this.data = this.moveItem(this.data, event.from, nextIndex);
     this.delimiter.hide();
     this.paintShapes();
@@ -118,16 +118,19 @@ Object.assign(ShapesContainer.prototype, {
     }
   },
 
-   searchForNewIndex: function(currentIndex, positionCheck, initialIndex) {
-    let index = initialIndex;
-    console.log('positionCHeck ', positionCheck)
+   searchForNewIndex: function(initialIndex, positionCheck) {
+    let index = initialIndex,
+        diff = positionCheck - this.data[initialIndex].position.y;
 
     for (let i = 0; i < this.data.length; i++) {
       let current = this.data[i];
 
-      if (positionCheck > current.position.y + current.position.height && positionCheck < current.position.y + current.position.height + 10) {
+      if (diff > 10 && positionCheck > current.position.y + current.position.height && positionCheck < current.position.y + current.position.height + 20) {
         index = current.index;
-        return index;
+      }
+
+      if (diff < -10 && positionCheck < current.position.y + 10 && positionCheck > current.position.y - 10) {
+        index = current.index;
       }
     }
 

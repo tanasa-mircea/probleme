@@ -1,6 +1,6 @@
 function Delimiter(width) {
   this.element = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  this.element.classList.add('hidden');
+  this.element.classList.add('hidden', 'delimiter');
   this.element.setAttribute('height', 3);
   this.element.setAttribute('fill', '#f00');
   this.element.setAttribute('width', width);
