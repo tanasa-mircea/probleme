@@ -27,7 +27,17 @@ function Shape(height, width, y, x, index) {
   this.initDragNDrop();
   this.initResizeableElement();
 }
-Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype, ResizeableElement.prototype, {
+
+Shape.prototype = Object.create(ResizeableElement.prototype, {
+  constructor: {
+    configurable: true,
+    enumerable: true,
+    value: Shape,
+    writable: true
+  }
+});
+
+Object.assign(Shape.prototype, DragNDrop.prototype, CustomEventTarget.prototype, {
   resizeHandlerOverride: function(event) {
     this.updateResizePointsPositions();
   },
